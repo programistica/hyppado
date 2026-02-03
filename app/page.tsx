@@ -1036,7 +1036,7 @@ export default function HomePage() {
                   {
                     question: "O que está subindo agora?",
                     answer:
-                      "A Hyppado mostra em tempo real os produtos que estão ganhando tração. Você vê quais itens estão crescendo em vendas e engajamento antes de todo mundo.",
+                      "A Hyppado destaca sinais de tração com base no comportamento recente de vídeos e produtos. Você enxerga o que está chamando atenção e ganhando força para decidir mais rápido o que vale testar.",
                   },
                   {
                     question: "Quais vídeos estão puxando resultado?",
@@ -1047,12 +1047,12 @@ export default function HomePage() {
                     question:
                       "Esse produto ainda está no começo ou já saturou?",
                     answer:
-                      "Analise o ciclo de vida do produto com dados históricos. Identifique se ainda há espaço para crescer ou se o mercado já está competitivo demais.",
+                      "A Hyppado te ajuda a avaliar o nível de concorrência e o fôlego do produto a partir de sinais práticos do mercado. Assim, você entende se ainda existe espaço para entrar com um bom criativo ou se vale buscar outra aposta.",
                   },
                   {
                     question: "O que comparar antes de postar?",
                     answer:
-                      "Use a ferramenta de comparação para colocar produtos lado a lado. Avalie métricas, tendências e potencial antes de escolher o que promover.",
+                      'Antes de postar, valide o "pacote completo": produto, promessa, formato do vídeo e abordagem do criativo. A Hyppado te dá clareza do que costuma funcionar naquele tipo de produto para você escolher melhor o que testar.',
                   },
                   {
                     question: "Como sair do 'achismo' na escolha do criativo?",
