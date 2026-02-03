@@ -37,8 +37,8 @@ import theme from "./theme";
 const NAV_LINKS = [
   { label: "Início", href: "#inicio" },
   { label: "Como funciona", href: "#como-funciona" },
-  { label: "Planos", href: "#planos" },
   { label: "Para quem é", href: "#para-quem-e" },
+  { label: "Planos", href: "#planos" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -660,6 +660,21 @@ export default function HomePage() {
               oportunidades para criadores e afiliados.
             </Typography>
 
+            {/* ===== PASSO A PASSO ===== */}
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#39D5FF",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                textAlign: "center",
+                mb: 4,
+              }}
+            >
+              PASSO A PASSO
+            </Typography>
+
             <Grid container spacing={4} justifyContent="center">
               {[
                 {
@@ -1121,7 +1136,359 @@ export default function HomePage() {
               </Stack>
             </Box>
 
-            {/* ===== D) CTA FINAL ===== */}
+            {/* ===== D) MODELAGEM DE CRIATIVO ===== */}
+            <Box sx={{ mt: { xs: 12, md: 16 } }}>
+              <Typography
+                sx={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  color: "#39D5FF",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  textAlign: "center",
+                  mb: 2,
+                }}
+              >
+                MODELAGEM DE CRIATIVO
+              </Typography>
+
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "1.75rem" },
+                  fontWeight: 700,
+                  color: "#fff",
+                  textAlign: "center",
+                  mb: 2,
+                }}
+              >
+                Transforme um vídeo em variações prontas para testar
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.95rem", md: "1rem" },
+                  color: "#A0B0C0",
+                  textAlign: "center",
+                  maxWidth: 640,
+                  mx: "auto",
+                  mb: 6,
+                }}
+              >
+                Você sai do &quot;não sei o que gravar&quot; para um roteiro claro,
+                com opções de ganchos e chamadas, em minutos.
+              </Typography>
+
+              {/* Timeline - Desktop (horizontal) */}
+              <Box
+                sx={{
+                  display: { xs: "none", md: "block" },
+                  position: "relative",
+                }}
+              >
+                {/* Connecting line */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 24,
+                    left: "12.5%",
+                    right: "12.5%",
+                    height: 2,
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(57, 213, 255, 0.3) 20%, rgba(57, 213, 255, 0.3) 80%, transparent)",
+                    zIndex: 0,
+                  }}
+                />
+
+                <Grid container spacing={3}>
+                  {[
+                    {
+                      step: 1,
+                      title: "Escolha o que testar",
+                      text: "Encontre um produto com sinais de oportunidade para começar com mais direção.",
+                    },
+                    {
+                      step: 2,
+                      title: "Transcreva o vídeo",
+                      text: "Entenda a estrutura: gancho, prova, ritmo e chamada para ação.",
+                    },
+                    {
+                      step: 3,
+                      title: "Gere variações",
+                      text: "Receba ideias de ângulos, ganchos e roteiros para modelar o criativo.",
+                      chips: ["Gancho", "Prova", "Roteiro", "CTA"],
+                    },
+                    {
+                      step: 4,
+                      title: "Teste e aprenda",
+                      text: "Publique versões, compare respostas e refine o que funciona.",
+                    },
+                  ].map((item) => (
+                    <Grid item xs={12} md={3} key={item.step}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          textAlign: "center",
+                          position: "relative",
+                          zIndex: 1,
+                        }}
+                      >
+                        {/* Step dot */}
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: "50%",
+                            background:
+                              "linear-gradient(135deg, #39D5FF 0%, #1a8fb3 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                            boxShadow: "0 0 20px rgba(57, 213, 255, 0.4)",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontSize: "1.125rem",
+                              fontWeight: 800,
+                              color: "#070B12",
+                            }}
+                          >
+                            {item.step}
+                          </Typography>
+                        </Box>
+
+                        {/* Card */}
+                        <Box
+                          sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            background: "rgba(13, 21, 32, 0.6)",
+                            border: "1px solid rgba(255, 255, 255, 0.06)",
+                            height: "100%",
+                            width: "100%",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                              background: "rgba(13, 21, 32, 0.8)",
+                              borderColor: "rgba(57, 213, 255, 0.15)",
+                              transform: "translateY(-2px)",
+                            },
+                          }}
+                        >
+                          <Typography
+                            component="h4"
+                            sx={{
+                              fontSize: "1rem",
+                              fontWeight: 700,
+                              color: "#fff",
+                              mb: 1.5,
+                            }}
+                          >
+                            {item.title}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: "0.875rem",
+                              color: "#8595A5",
+                              lineHeight: 1.6,
+                              mb: item.chips ? 2 : 0,
+                            }}
+                          >
+                            {item.text}
+                          </Typography>
+
+                          {/* Chips for step 3 */}
+                          {item.chips && (
+                            <Stack
+                              direction="row"
+                              spacing={0.75}
+                              flexWrap="wrap"
+                              justifyContent="center"
+                              sx={{ gap: 0.75 }}
+                            >
+                              {item.chips.map((chip) => (
+                                <Box
+                                  key={chip}
+                                  sx={{
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: "999px",
+                                    background: "rgba(57, 213, 255, 0.1)",
+                                    border: "1px solid rgba(57, 213, 255, 0.25)",
+                                    fontSize: "0.7rem",
+                                    fontWeight: 600,
+                                    color: "#39D5FF",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.02em",
+                                  }}
+                                >
+                                  {chip}
+                                </Box>
+                              ))}
+                            </Stack>
+                          )}
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+
+              {/* Timeline - Mobile (vertical) */}
+              <Box
+                sx={{
+                  display: { xs: "block", md: "none" },
+                  position: "relative",
+                  pl: 4,
+                }}
+              >
+                {/* Vertical connecting line */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 24,
+                    bottom: 24,
+                    left: 11,
+                    width: 2,
+                    background:
+                      "linear-gradient(180deg, rgba(57, 213, 255, 0.3), rgba(57, 213, 255, 0.15))",
+                    zIndex: 0,
+                  }}
+                />
+
+                <Stack spacing={3}>
+                  {[
+                    {
+                      step: 1,
+                      title: "Escolha o que testar",
+                      text: "Encontre um produto com sinais de oportunidade para começar com mais direção.",
+                    },
+                    {
+                      step: 2,
+                      title: "Transcreva o vídeo",
+                      text: "Entenda a estrutura: gancho, prova, ritmo e chamada para ação.",
+                    },
+                    {
+                      step: 3,
+                      title: "Gere variações",
+                      text: "Receba ideias de ângulos, ganchos e roteiros para modelar o criativo.",
+                      chips: ["Gancho", "Prova", "Roteiro", "CTA"],
+                    },
+                    {
+                      step: 4,
+                      title: "Teste e aprenda",
+                      text: "Publique versões, compare respostas e refine o que funciona.",
+                    },
+                  ].map((item) => (
+                    <Box
+                      key={item.step}
+                      sx={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        position: "relative",
+                        zIndex: 1,
+                      }}
+                    >
+                      {/* Step dot */}
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          left: -28,
+                          width: 24,
+                          height: 24,
+                          borderRadius: "50%",
+                          background:
+                            "linear-gradient(135deg, #39D5FF 0%, #1a8fb3 100%)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 0 12px rgba(57, 213, 255, 0.4)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.75rem",
+                            fontWeight: 800,
+                            color: "#070B12",
+                          }}
+                        >
+                          {item.step}
+                        </Typography>
+                      </Box>
+
+                      {/* Card */}
+                      <Box
+                        sx={{
+                          p: 2.5,
+                          borderRadius: 2.5,
+                          background: "rgba(13, 21, 32, 0.6)",
+                          border: "1px solid rgba(255, 255, 255, 0.06)",
+                          width: "100%",
+                        }}
+                      >
+                        <Typography
+                          component="h4"
+                          sx={{
+                            fontSize: "0.95rem",
+                            fontWeight: 700,
+                            color: "#fff",
+                            mb: 1,
+                          }}
+                        >
+                          {item.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: "0.85rem",
+                            color: "#8595A5",
+                            lineHeight: 1.6,
+                            mb: item.chips ? 2 : 0,
+                          }}
+                        >
+                          {item.text}
+                        </Typography>
+
+                        {/* Chips for step 3 */}
+                        {item.chips && (
+                          <Stack
+                            direction="row"
+                            spacing={0.75}
+                            flexWrap="wrap"
+                            sx={{ gap: 0.75 }}
+                          >
+                            {item.chips.map((chip) => (
+                              <Box
+                                key={chip}
+                                sx={{
+                                  px: 1.5,
+                                  py: 0.5,
+                                  borderRadius: "999px",
+                                  background: "rgba(57, 213, 255, 0.1)",
+                                  border: "1px solid rgba(57, 213, 255, 0.25)",
+                                  fontSize: "0.65rem",
+                                  fontWeight: 600,
+                                  color: "#39D5FF",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.02em",
+                                }}
+                              >
+                                {chip}
+                              </Box>
+                            ))}
+                          </Stack>
+                        )}
+                      </Box>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+            </Box>
+
+            {/* ===== E) CTA FINAL ===== */}
             <Box
               sx={{
                 mt: { xs: 12, md: 16 },
@@ -1160,6 +1527,211 @@ export default function HomePage() {
                 size="large"
                 sx={{
                   px: 5,
+                  py: 1.5,
+                  fontSize: "0.95rem",
+                  fontWeight: 600,
+                  borderRadius: "999px",
+                  background: "#39D5FF",
+                  color: "#070B12",
+                  textTransform: "none",
+                  boxShadow:
+                    "0 0 24px rgba(57, 213, 255, 0.4), 0 4px 16px rgba(0,0,0,0.25)",
+                  transition: "all 0.25s ease",
+                  "&:hover": {
+                    background: "#5BE0FF",
+                    boxShadow:
+                      "0 0 32px rgba(57, 213, 255, 0.55), 0 6px 20px rgba(0,0,0,0.3)",
+                    transform: "translateY(-2px)",
+                  },
+                }}
+              >
+                Quero acesso agora
+              </Button>
+            </Box>
+          </Container>
+        </Box>
+
+        {/* ==================== PARA QUEM É SECTION ==================== */}
+        <Box
+          id="para-quem-e"
+          component="section"
+          sx={{
+            py: { xs: 10, md: 14 },
+          }}
+        >
+          <Container maxWidth="lg">
+            <Typography
+              component="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", sm: "2rem", md: "2.5rem" },
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+                color: "#fff",
+                textAlign: "center",
+                mb: 2,
+              }}
+            >
+              Para quem é a Hyppado
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "1rem", md: "1.125rem" },
+                color: "#A0B0C0",
+                textAlign: "center",
+                maxWidth: 640,
+                mx: "auto",
+                mb: 6,
+              }}
+            >
+              Para criadores e afiliados que querem decidir o que testar e
+              acelerar a criação de criativos com clareza.
+            </Typography>
+
+            {/* Two Column Cards */}
+            <Grid container spacing={3} sx={{ mb: 5 }}>
+              {/* Left Card - Ideal para você se... */}
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: { xs: 3, md: 4 },
+                    borderRadius: 3,
+                    background: "rgba(13, 21, 32, 0.6)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    height: "100%",
+                  }}
+                >
+                  <Typography
+                    component="h3"
+                    sx={{
+                      fontSize: "1.125rem",
+                      fontWeight: 700,
+                      color: "#39D5FF",
+                      mb: 3,
+                    }}
+                  >
+                    Ideal para você se...
+                  </Typography>
+                  <Stack spacing={2}>
+                    {[
+                      "Você quer escolher produtos com mais chance de performar",
+                      "Você precisa de um processo simples para testar ideias com consistência",
+                      "Você quer transformar vídeos em insights práticos (sem adivinhação)",
+                      "Você quer produzir criativos mais rápido, sem perder qualidade",
+                    ].map((item, index) => (
+                      <Stack
+                        key={index}
+                        direction="row"
+                        spacing={1.5}
+                        alignItems="flex-start"
+                      >
+                        <CheckCircleOutline
+                          sx={{
+                            fontSize: 18,
+                            color: "#39D5FF",
+                            mt: 0.25,
+                            flexShrink: 0,
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "0.95rem",
+                            color: "#C0D0E0",
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {item}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Box>
+              </Grid>
+
+              {/* Right Card - Você ganha com... */}
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: { xs: 3, md: 4 },
+                    borderRadius: 3,
+                    background:
+                      "linear-gradient(135deg, rgba(57, 213, 255, 0.08) 0%, rgba(13, 21, 32, 0.7) 100%)",
+                    border: "1px solid rgba(57, 213, 255, 0.15)",
+                    height: "100%",
+                  }}
+                >
+                  <Typography
+                    component="h3"
+                    sx={{
+                      fontSize: "1.125rem",
+                      fontWeight: 700,
+                      color: "#fff",
+                      mb: 3,
+                    }}
+                  >
+                    Você ganha com...
+                  </Typography>
+                  <Stack spacing={2}>
+                    {[
+                      "Transcrição do vídeo para entender o que prende atenção",
+                      "Sugestões de ângulos e roteiros para modelar o criativo",
+                      "Estrutura pronta para testar variações (gancho, prova, CTA)",
+                      "Mais velocidade para publicar e aprender com os testes",
+                    ].map((item, index) => (
+                      <Stack
+                        key={index}
+                        direction="row"
+                        spacing={1.5}
+                        alignItems="flex-start"
+                      >
+                        <CheckCircleOutline
+                          sx={{
+                            fontSize: 18,
+                            color: "#39D5FF",
+                            mt: 0.25,
+                            flexShrink: 0,
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "0.95rem",
+                            color: "#C0D0E0",
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {item}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Box>
+              </Grid>
+            </Grid>
+
+            {/* CTA Row */}
+            <Box sx={{ textAlign: "center" }}>
+              <Typography
+                sx={{
+                  fontSize: "0.9rem",
+                  color: "#8595A5",
+                  mb: 3,
+                }}
+              >
+                Sem promessas mágicas. Só um processo mais inteligente para
+                testar.
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                href="#planos"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("planos")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                sx={{
+                  px: 4,
                   py: 1.5,
                   fontSize: "0.95rem",
                   fontWeight: 600,
