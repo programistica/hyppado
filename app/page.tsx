@@ -20,6 +20,7 @@ import {
   ListItemButton,
   ListItemText,
   Paper,
+  Chip,
   ThemeProvider,
   CssBaseline,
 } from "@mui/material";
@@ -30,6 +31,7 @@ import {
   CheckCircleOutline,
 } from "@mui/icons-material";
 import theme from "./theme";
+import { PLANS } from "./data/plans";
 
 /* ============================================
    NAV LINKS CONFIG
@@ -1175,8 +1177,8 @@ export default function HomePage() {
                   mb: 6,
                 }}
               >
-                Você sai do &quot;não sei o que gravar&quot; para um roteiro claro,
-                com opções de ganchos e chamadas, em minutos.
+                Você sai do &quot;não sei o que gravar&quot; para um roteiro
+                claro, com opções de ganchos e chamadas, em minutos.
               </Typography>
 
               {/* Timeline - Desktop (horizontal) */}
@@ -1317,7 +1319,8 @@ export default function HomePage() {
                                     py: 0.5,
                                     borderRadius: "999px",
                                     background: "rgba(57, 213, 255, 0.1)",
-                                    border: "1px solid rgba(57, 213, 255, 0.25)",
+                                    border:
+                                      "1px solid rgba(57, 213, 255, 0.25)",
                                     fontSize: "0.7rem",
                                     fontWeight: 600,
                                     color: "#39D5FF",
@@ -1753,6 +1756,225 @@ export default function HomePage() {
                 Quero acesso agora
               </Button>
             </Box>
+          </Container>
+        </Box>
+
+        {/* ==================== PLANOS SECTION ==================== */}
+        <Box
+          id="planos"
+          component="section"
+          sx={{
+            py: { xs: 10, md: 14 },
+            scrollMarginTop: "80px",
+          }}
+        >
+          <Container maxWidth="lg">
+            <Typography
+              component="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", sm: "2rem", md: "2.5rem" },
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+                color: "#fff",
+                textAlign: "center",
+                mb: 2,
+              }}
+            >
+              Planos
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "1rem", md: "1.125rem" },
+                color: "#A0B0C0",
+                textAlign: "center",
+                maxWidth: 600,
+                mx: "auto",
+                mb: 8,
+              }}
+            >
+              Escolha o plano ideal para organizar ideias, transcrever vídeos e
+              modelar criativos com mais direção.
+            </Typography>
+
+            <Grid container spacing={3} justifyContent="center">
+              {PLANS.map((plan) => (
+                <Grid item xs={12} sm={6} md={4} key={plan.id}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      p: { xs: 3, md: 4 },
+                      borderRadius: 3,
+                      background: plan.highlight
+                        ? "linear-gradient(135deg, rgba(57, 213, 255, 0.08) 0%, rgba(13, 21, 32, 0.9) 100%)"
+                        : "rgba(13, 21, 32, 0.6)",
+                      border: plan.highlight
+                        ? "2px solid rgba(57, 213, 255, 0.4)"
+                        : "1px solid rgba(255, 255, 255, 0.06)",
+                      boxShadow: plan.highlight
+                        ? "0 0 40px rgba(57, 213, 255, 0.15), 0 8px 32px rgba(0,0,0,0.3)"
+                        : "none",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        borderColor: plan.highlight
+                          ? "rgba(57, 213, 255, 0.6)"
+                          : "rgba(57, 213, 255, 0.2)",
+                        boxShadow: plan.highlight
+                          ? "0 0 50px rgba(57, 213, 255, 0.2), 0 12px 40px rgba(0,0,0,0.35)"
+                          : "0 8px 24px rgba(0,0,0,0.2)",
+                      },
+                    }}
+                  >
+                    {/* Badge */}
+                    {plan.badge && (
+                      <Chip
+                        label={plan.badge}
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: -12,
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          background:
+                            "linear-gradient(135deg, #39D5FF 0%, #00B8E6 100%)",
+                          color: "#070B12",
+                          fontWeight: 700,
+                          fontSize: "0.7rem",
+                          letterSpacing: "0.02em",
+                          px: 1.5,
+                          height: 24,
+                        }}
+                      />
+                    )}
+
+                    {/* Plan name */}
+                    <Typography
+                      component="h3"
+                      sx={{
+                        fontSize: "1.25rem",
+                        fontWeight: 700,
+                        color: "#fff",
+                        mb: 1,
+                        mt: plan.badge ? 1 : 0,
+                      }}
+                    >
+                      {plan.name}
+                    </Typography>
+
+                    {/* Price */}
+                    <Box sx={{ mb: 2 }}>
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontSize: { xs: "2rem", md: "2.5rem" },
+                          fontWeight: 800,
+                          color: plan.highlight ? "#39D5FF" : "#fff",
+                          letterSpacing: "-0.02em",
+                        }}
+                      >
+                        {plan.price}
+                      </Typography>
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontSize: "0.95rem",
+                          color: "#8595A5",
+                          ml: 0.5,
+                        }}
+                      >
+                        /{plan.period}
+                      </Typography>
+                    </Box>
+
+                    {/* Description */}
+                    <Typography
+                      sx={{
+                        fontSize: "0.9rem",
+                        color: "#A0B0C0",
+                        mb: 3,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {plan.description}
+                    </Typography>
+
+                    {/* Features */}
+                    <Stack spacing={1.5} sx={{ mb: 4, flexGrow: 1 }}>
+                      {plan.features.map((feature, index) => (
+                        <Stack
+                          key={index}
+                          direction="row"
+                          spacing={1.5}
+                          alignItems="flex-start"
+                        >
+                          <CheckCircleOutline
+                            sx={{
+                              fontSize: 18,
+                              color: plan.highlight ? "#39D5FF" : "#5A6A7A",
+                              mt: 0.25,
+                              flexShrink: 0,
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: "0.875rem",
+                              color: "#C0D0E0",
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            {feature}
+                          </Typography>
+                        </Stack>
+                      ))}
+                    </Stack>
+
+                    {/* CTA Button */}
+                    <Button
+                      variant={plan.highlight ? "contained" : "outlined"}
+                      fullWidth
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        // Placeholder for checkout or signup flow
+                      }}
+                      sx={{
+                        py: 1.5,
+                        fontSize: "0.95rem",
+                        fontWeight: 600,
+                        borderRadius: "999px",
+                        textTransform: "none",
+                        ...(plan.highlight
+                          ? {
+                              background: "#39D5FF",
+                              color: "#070B12",
+                              boxShadow:
+                                "0 0 20px rgba(57, 213, 255, 0.35), 0 4px 12px rgba(0,0,0,0.2)",
+                              "&:hover": {
+                                background: "#5BE0FF",
+                                boxShadow:
+                                  "0 0 28px rgba(57, 213, 255, 0.5), 0 6px 16px rgba(0,0,0,0.25)",
+                              },
+                            }
+                          : {
+                              borderColor: "rgba(57, 213, 255, 0.3)",
+                              color: "#39D5FF",
+                              "&:hover": {
+                                borderColor: "rgba(57, 213, 255, 0.6)",
+                                background: "rgba(57, 213, 255, 0.08)",
+                              },
+                            }),
+                      }}
+                    >
+                      Quero acesso agora
+                    </Button>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
           </Container>
         </Box>
       </Box>
