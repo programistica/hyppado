@@ -743,6 +743,444 @@ export default function HomePage() {
                 </Grid>
               ))}
             </Grid>
+
+            {/* ===== A) O QUE VOCÊ RECEBE ===== */}
+            <Box sx={{ mt: { xs: 12, md: 16 } }}>
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "1.75rem" },
+                  fontWeight: 700,
+                  color: "#fff",
+                  textAlign: "center",
+                  mb: 1.5,
+                }}
+              >
+                O que você recebe
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.95rem", md: "1rem" },
+                  color: "#8595A5",
+                  textAlign: "center",
+                  maxWidth: 480,
+                  mx: "auto",
+                  mb: 5,
+                }}
+              >
+                Ferramentas práticas para quem quer resultados reais.
+              </Typography>
+
+              <Grid container spacing={3}>
+                {[
+                  {
+                    title: "Radar de produtos",
+                    description: "Veja o que está subindo antes de saturar.",
+                  },
+                  {
+                    title: "Biblioteca de vídeos",
+                    description: "Encontre referências por formato e estilo.",
+                  },
+                  {
+                    title: "Filtros por nicho",
+                    description: "Isole oportunidades por categoria e público.",
+                  },
+                  {
+                    title: "Métricas essenciais",
+                    description: "Valide sinais com números claros.",
+                  },
+                  {
+                    title: "Transcrição de vídeos",
+                    description:
+                      "Transforme vídeo em texto para analisar rápido.",
+                  },
+                  {
+                    title: "Prompts para criativos",
+                    description:
+                      "Gere prompts para modelar variações do criativo.",
+                  },
+                ].map((card, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        borderRadius: 3,
+                        background: "rgba(13, 21, 32, 0.6)",
+                        border: "1px solid rgba(255, 255, 255, 0.06)",
+                        height: "100%",
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                          background: "rgba(13, 21, 32, 0.8)",
+                          borderColor: "rgba(57, 213, 255, 0.15)",
+                          transform: "translateY(-2px)",
+                        },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 2,
+                          background:
+                            "linear-gradient(135deg, rgba(57, 213, 255, 0.15) 0%, rgba(57, 213, 255, 0.05) 100%)",
+                          border: "1px solid rgba(57, 213, 255, 0.2)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          mb: 2,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: "50%",
+                            background: "#39D5FF",
+                            boxShadow: "0 0 12px rgba(57, 213, 255, 0.5)",
+                          }}
+                        />
+                      </Box>
+                      <Typography
+                        component="h4"
+                        sx={{
+                          fontSize: "1rem",
+                          fontWeight: 600,
+                          color: "#fff",
+                          mb: 0.75,
+                        }}
+                      >
+                        {card.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.875rem",
+                          color: "#8595A5",
+                          lineHeight: 1.55,
+                        }}
+                      >
+                        {card.description}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+
+            {/* ===== B) DO DADO À AÇÃO ===== */}
+            <Box sx={{ mt: { xs: 12, md: 16 } }}>
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "1.75rem" },
+                  fontWeight: 700,
+                  color: "#fff",
+                  textAlign: "center",
+                  mb: 1.5,
+                }}
+              >
+                Do dado à ação
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.95rem", md: "1rem" },
+                  color: "#8595A5",
+                  textAlign: "center",
+                  maxWidth: 480,
+                  mx: "auto",
+                  mb: 6,
+                }}
+              >
+                Um fluxo simples para transformar informação em resultado.
+              </Typography>
+
+              <Grid container spacing={2} justifyContent="center">
+                {[
+                  {
+                    step: "1",
+                    title: "Descubra",
+                    description:
+                      "Encontre produtos e vídeos em alta com filtros inteligentes.",
+                  },
+                  {
+                    step: "2",
+                    title: "Valide",
+                    description:
+                      "Analise métricas reais antes de investir tempo ou dinheiro.",
+                  },
+                  {
+                    step: "3",
+                    title: "Compare",
+                    description:
+                      "Coloque opções lado a lado e identifique a melhor escolha.",
+                  },
+                  {
+                    step: "4",
+                    title: "Aja",
+                    description:
+                      "Promova com confiança sabendo que os dados sustentam sua decisão.",
+                  },
+                ].map((item, index, arr) => (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={3}
+                    key={item.step}
+                    sx={{ position: "relative" }}
+                  >
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        p: 3,
+                        position: "relative",
+                      }}
+                    >
+                      {/* Connector line */}
+                      {index < arr.length - 1 && (
+                        <Box
+                          sx={{
+                            display: { xs: "none", md: "block" },
+                            position: "absolute",
+                            top: 32,
+                            right: -16,
+                            width: 32,
+                            height: 2,
+                            background:
+                              "linear-gradient(90deg, rgba(57, 213, 255, 0.3) 0%, rgba(57, 213, 255, 0.1) 100%)",
+                          }}
+                        />
+                      )}
+                      <Box
+                        sx={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: "50%",
+                          background:
+                            "linear-gradient(135deg, rgba(57, 213, 255, 0.25) 0%, rgba(57, 213, 255, 0.08) 100%)",
+                          border: "2px solid rgba(57, 213, 255, 0.35)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          mx: "auto",
+                          mb: 2,
+                          boxShadow: "0 0 20px rgba(57, 213, 255, 0.15)",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "1.25rem",
+                            fontWeight: 800,
+                            color: "#39D5FF",
+                          }}
+                        >
+                          {item.step}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        component="h4"
+                        sx={{
+                          fontSize: "1.125rem",
+                          fontWeight: 700,
+                          color: "#fff",
+                          mb: 1,
+                        }}
+                      >
+                        {item.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.875rem",
+                          color: "#8595A5",
+                          lineHeight: 1.6,
+                          maxWidth: 200,
+                          mx: "auto",
+                        }}
+                      >
+                        {item.description}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+
+            {/* ===== C) PERGUNTAS QUE A HYPPADO RESPONDE ===== */}
+            <Box sx={{ mt: { xs: 12, md: 16 } }}>
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "1.75rem" },
+                  fontWeight: 700,
+                  color: "#fff",
+                  textAlign: "center",
+                  mb: 1.5,
+                }}
+              >
+                Perguntas que a Hyppado responde
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.95rem", md: "1rem" },
+                  color: "#8595A5",
+                  textAlign: "center",
+                  maxWidth: 480,
+                  mx: "auto",
+                  mb: 5,
+                }}
+              >
+                Dúvidas práticas que você resolve em segundos na plataforma.
+              </Typography>
+
+              <Stack spacing={2} sx={{ maxWidth: 720, mx: "auto" }}>
+                {[
+                  {
+                    question: "O que está subindo agora?",
+                    answer:
+                      "A Hyppado mostra em tempo real os produtos que estão ganhando tração. Você vê quais itens estão crescendo em vendas e engajamento antes de todo mundo.",
+                  },
+                  {
+                    question: "Quais vídeos estão puxando resultado?",
+                    answer:
+                      "Navegue pela biblioteca de vídeos e descubra quais conteúdos estão convertendo. Use a transcrição automática para entender a estrutura e replicar o que funciona.",
+                  },
+                  {
+                    question:
+                      "Esse produto ainda está no começo ou já saturou?",
+                    answer:
+                      "Analise o ciclo de vida do produto com dados históricos. Identifique se ainda há espaço para crescer ou se o mercado já está competitivo demais.",
+                  },
+                  {
+                    question: "O que comparar antes de postar?",
+                    answer:
+                      "Use a ferramenta de comparação para colocar produtos lado a lado. Avalie métricas, tendências e potencial antes de escolher o que promover.",
+                  },
+                  {
+                    question: "Como sair do 'achismo' na escolha do criativo?",
+                    answer:
+                      "Analise vídeos de sucesso com a transcrição e gere prompts para modelar variações. Assim você cria com base em dados, não em intuição.",
+                  },
+                ].map((faq, index) => (
+                  <Box
+                    key={index}
+                    component="details"
+                    sx={{
+                      borderRadius: 2,
+                      background: "rgba(13, 21, 32, 0.5)",
+                      border: "1px solid rgba(255, 255, 255, 0.06)",
+                      overflow: "hidden",
+                      "&[open]": {
+                        borderColor: "rgba(57, 213, 255, 0.15)",
+                      },
+                      "&[open] summary": {
+                        borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+                      },
+                    }}
+                  >
+                    <Box
+                      component="summary"
+                      sx={{
+                        p: 2.5,
+                        cursor: "pointer",
+                        fontSize: "0.95rem",
+                        fontWeight: 600,
+                        color: "#fff",
+                        listStyle: "none",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        "&::-webkit-details-marker": {
+                          display: "none",
+                        },
+                        "&::after": {
+                          content: '"+"',
+                          color: "#39D5FF",
+                          fontSize: "1.25rem",
+                          fontWeight: 400,
+                        },
+                        "[open] &::after": {
+                          content: '"-"',
+                        },
+                      }}
+                    >
+                      {faq.question}
+                    </Box>
+                    <Box sx={{ p: 2.5, pt: 0 }}>
+                      <Typography
+                        sx={{
+                          fontSize: "0.875rem",
+                          color: "#A0B0C0",
+                          lineHeight: 1.7,
+                          pt: 2,
+                        }}
+                      >
+                        {faq.answer}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
+
+            {/* ===== D) CTA FINAL ===== */}
+            <Box
+              sx={{
+                mt: { xs: 12, md: 16 },
+                p: { xs: 4, md: 6 },
+                borderRadius: 4,
+                background:
+                  "linear-gradient(135deg, rgba(57, 213, 255, 0.08) 0%, rgba(13, 21, 32, 0.8) 100%)",
+                border: "1px solid rgba(57, 213, 255, 0.15)",
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "1.75rem" },
+                  fontWeight: 700,
+                  color: "#fff",
+                  mb: 1.5,
+                }}
+              >
+                Pronto para encontrar oportunidades antes do mercado?
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.95rem", md: "1rem" },
+                  color: "#A0B0C0",
+                  maxWidth: 480,
+                  mx: "auto",
+                  mb: 4,
+                }}
+              >
+                Acesse a Hyppado e comece a validar tendências com dados.
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                sx={{
+                  px: 5,
+                  py: 1.5,
+                  fontSize: "0.95rem",
+                  fontWeight: 600,
+                  borderRadius: "999px",
+                  background: "#39D5FF",
+                  color: "#070B12",
+                  textTransform: "none",
+                  boxShadow:
+                    "0 0 24px rgba(57, 213, 255, 0.4), 0 4px 16px rgba(0,0,0,0.25)",
+                  transition: "all 0.25s ease",
+                  "&:hover": {
+                    background: "#5BE0FF",
+                    boxShadow:
+                      "0 0 32px rgba(57, 213, 255, 0.55), 0 6px 20px rgba(0,0,0,0.3)",
+                    transform: "translateY(-2px)",
+                  },
+                }}
+              >
+                Quero acesso agora
+              </Button>
+            </Box>
           </Container>
         </Box>
       </Box>
