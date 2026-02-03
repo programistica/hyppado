@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   Box,
@@ -334,12 +335,22 @@ export default function HomePage() {
                     key={label}
                     href={href}
                     underline="none"
+                    onClick={(e) => {
+                      if (href.startsWith("#")) {
+                        e.preventDefault();
+                        document.getElementById(href.slice(1))?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
+                      }
+                    }}
                     sx={{
                       fontSize: "0.875rem",
                       fontWeight: 500,
                       color: "#9AA8B8",
                       whiteSpace: "nowrap",
                       transition: "color 0.2s ease",
+                      cursor: "pointer",
                       "&:hover": {
                         color: "#fff",
                       },
@@ -409,7 +420,20 @@ export default function HomePage() {
                   <ListItemButton
                     component="a"
                     href={href}
-                    onClick={handleDrawerToggle}
+                    onClick={(e: React.MouseEvent) => {
+                      handleDrawerToggle();
+                      if (href.startsWith("#")) {
+                        e.preventDefault();
+                        setTimeout(() => {
+                          document
+                            .getElementById(href.slice(1))
+                            ?.scrollIntoView({
+                              behavior: "smooth",
+                              block: "start",
+                            });
+                        }, 300);
+                      }
+                    }}
                     sx={{
                       py: 1.5,
                       "&:hover": { background: "rgba(57,213,255,0.08)" },
@@ -593,6 +617,131 @@ export default function HomePage() {
               <Grid item xs={12} md={6}>
                 <HeroVisual />
               </Grid>
+            </Grid>
+          </Container>
+        </Box>
+
+        {/* ==================== COMO FUNCIONA SECTION ==================== */}
+        <Box
+          id="como-funciona"
+          component="section"
+          sx={{
+            py: { xs: 10, md: 14 },
+            background:
+              "linear-gradient(180deg, transparent 0%, rgba(13, 21, 32, 0.4) 50%, transparent 100%)",
+          }}
+        >
+          <Container maxWidth="lg">
+            <Typography
+              component="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", sm: "2rem", md: "2.5rem" },
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+                color: "#fff",
+                textAlign: "center",
+                mb: 2,
+              }}
+            >
+              Como funciona
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "1rem", md: "1.125rem" },
+                color: "#A0B0C0",
+                textAlign: "center",
+                maxWidth: 560,
+                mx: "auto",
+                mb: 6,
+              }}
+            >
+              Da conexão à ação: veja como a Hyppado transforma dados em
+              oportunidades para criadores e afiliados.
+            </Typography>
+
+            <Grid container spacing={4} justifyContent="center">
+              {[
+                {
+                  step: "1",
+                  title: "Conecte sua conta",
+                  description:
+                    "Crie sua conta em segundos e acesse o painel. Sem burocracia.",
+                },
+                {
+                  step: "2",
+                  title: "Descubra produtos em alta",
+                  description:
+                    "Explore milhares de produtos com métricas de desempenho.",
+                },
+                {
+                  step: "3",
+                  title: "Analise vídeos e métricas",
+                  description:
+                    "Veja quais vídeos estão bombando e entenda os padrões.",
+                },
+                {
+                  step: "4",
+                  title: "Aja com confiança",
+                  description:
+                    "Tome decisões baseadas em dados reais. Promova os produtos certos.",
+                },
+              ].map((item) => (
+                <Grid item xs={12} sm={6} md={3} key={item.step}>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      p: 3,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: "50%",
+                        background:
+                          "linear-gradient(135deg, rgba(57, 213, 255, 0.2) 0%, rgba(57, 213, 255, 0.05) 100%)",
+                        border: "1px solid rgba(57, 213, 255, 0.25)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mx: "auto",
+                        mb: 2,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: "1.125rem",
+                          fontWeight: 700,
+                          color: "#39D5FF",
+                        }}
+                      >
+                        {item.step}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      component="h3"
+                      sx={{
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        color: "#fff",
+                        mb: 1,
+                      }}
+                    >
+                      {item.title}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "0.875rem",
+                        color: "#8595A5",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {item.description}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
             </Grid>
           </Container>
         </Box>
