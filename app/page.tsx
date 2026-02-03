@@ -26,7 +26,6 @@ import {
   Menu as MenuIcon,
   Close as CloseIcon,
   PersonOutline,
-  TrendingUp,
   CheckCircleOutline,
 } from "@mui/icons-material";
 import theme from "./theme";
@@ -101,7 +100,7 @@ function HeroMedia({
 }
 
 /* ============================================
-   HERO VISUAL - GLASS CARD WITH INFLUENCER
+   HERO VISUAL - FLOATING INFLUENCER WITH GLOW
 ============================================ */
 function HeroVisual() {
   const [imageError, setImageError] = useState(false);
@@ -113,136 +112,135 @@ function HeroVisual() {
         justifyContent: "center",
         alignItems: "center",
         position: "relative",
+        minHeight: { xs: 400, sm: 480, md: 520, lg: 580 },
       }}
     >
-      {/* Glass Card Container */}
+      {/* ===== DECORATIVE LAYERS (no glass panel) ===== */}
+
+      {/* Large radial glow - main */}
+      <Box
+        sx={{
+          position: "absolute",
+          width: { xs: 380, sm: 480, md: 560, lg: 640 },
+          height: { xs: 480, sm: 580, md: 660, lg: 740 },
+          borderRadius: "50%",
+          background: `radial-gradient(
+            ellipse at center,
+            rgba(57, 213, 255, 0.14) 0%,
+            rgba(57, 213, 255, 0.06) 35%,
+            rgba(57, 213, 255, 0.02) 55%,
+            transparent 70%
+          )`,
+          filter: "blur(60px)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Secondary glow - accent top right */}
+      <Box
+        sx={{
+          position: "absolute",
+          width: { xs: 160, md: 220 },
+          height: { xs: 160, md: 220 },
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(57, 213, 255, 0.12) 0%, transparent 65%)",
+          filter: "blur(40px)",
+          top: { xs: "5%", md: "8%" },
+          right: { xs: "5%", md: "10%" },
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Concentric ring 1 - inner */}
+      <Box
+        sx={{
+          position: "absolute",
+          width: { xs: 300, sm: 360, md: 420, lg: 480 },
+          height: { xs: 300, sm: 360, md: 420, lg: 480 },
+          borderRadius: "50%",
+          border: "1px solid rgba(57, 213, 255, 0.08)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Concentric ring 2 - outer */}
+      <Box
+        sx={{
+          position: "absolute",
+          width: { xs: 400, sm: 480, md: 560, lg: 640 },
+          height: { xs: 400, sm: 480, md: 560, lg: 640 },
+          borderRadius: "50%",
+          border: "1px solid rgba(57, 213, 255, 0.04)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* ===== INFLUENCER IMAGE ===== */}
       <Box
         sx={{
           position: "relative",
-          overflow: "hidden",
-          borderRadius: { xs: "20px", md: "24px" },
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          background: "rgba(255, 255, 255, 0.03)",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.45)",
-          width: { xs: 320, sm: 380, md: 440, lg: 500 },
-          height: { xs: 400, sm: 480, md: 580, lg: 640 },
+          zIndex: 5,
+          height: { xs: 380, sm: 460, md: 500, lg: 560 },
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
         }}
       >
-        {/* Inner radial glow (top-right) */}
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at 70% 25%, rgba(34, 211, 238, 0.18) 0%, transparent 55%)",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Bottom fade gradient */}
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.12) 30%, transparent 60%)",
-            pointerEvents: "none",
-            zIndex: 3,
-          }}
-        />
-
-        {/* Stat badge - inside card, top-left */}
-        <Paper
-          elevation={0}
-          sx={{
-            position: "absolute",
-            top: { xs: 16, md: 20 },
-            left: { xs: 16, md: 20 },
-            zIndex: 10,
-            px: 1.75,
-            py: 1.25,
-            borderRadius: 2,
-            background: "rgba(10, 18, 28, 0.85)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(57, 213, 255, 0.15)",
-            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
-          }}
-        >
-          <Stack
-            direction="row"
-            spacing={0.75}
-            alignItems="center"
-            sx={{ mb: 0.5 }}
-          >
-            <TrendingUp sx={{ fontSize: 14, color: "#39D5FF" }} />
-            <Typography
-              sx={{
-                fontSize: "0.65rem",
-                fontWeight: 700,
-                color: "#39D5FF",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Em alta hoje
-            </Typography>
-          </Stack>
-          <Typography
-            sx={{ fontSize: "0.7rem", color: "#A0B0C0", lineHeight: 1.5 }}
-          >
-            Produtos: 128
-          </Typography>
-          <Typography
-            sx={{ fontSize: "0.7rem", color: "#A0B0C0", lineHeight: 1.5 }}
-          >
-            Vídeos: 342
-          </Typography>
-        </Paper>
-
-        {/* Influencer image wrapper - anchored to bottom, centered */}
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-end",
-            zIndex: 2,
-          }}
-        >
-          <Box
-            sx={{
-              height: { xs: 360, sm: 440, md: 520, lg: 600 },
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-            }}
-          >
-            <HeroMedia
-              hasError={imageError}
-              onError={() => setImageError(true)}
-            />
-          </Box>
-        </Box>
-
-        {/* Ground shadow beneath influencer */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: { xs: 24, md: 32 },
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: { xs: 180, md: 240 },
-            height: { xs: 12, md: 16 },
-            borderRadius: "50%",
-            background: "rgba(0, 0, 0, 0.4)",
-            filter: "blur(16px)",
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
+        <HeroMedia hasError={imageError} onError={() => setImageError(true)} />
       </Box>
+
+      {/* Ground shadow beneath influencer */}
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: { xs: "2%", md: "4%" },
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: { xs: 160, md: 220 },
+          height: { xs: 14, md: 20 },
+          borderRadius: "50%",
+          background:
+            "radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, transparent 70%)",
+          filter: "blur(14px)",
+          pointerEvents: "none",
+          zIndex: 4,
+        }}
+      />
+
+      {/* ===== BOTTOM FADE / VIGNETTE ===== */}
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          zIndex: 6,
+          background: `
+            linear-gradient(
+              to bottom,
+              rgba(7, 11, 18, 0) 0%,
+              rgba(7, 11, 18, 0) 55%,
+              rgba(7, 11, 18, 0.5) 80%,
+              rgba(7, 11, 18, 0.85) 95%,
+              rgba(7, 11, 18, 1) 100%
+            ),
+            radial-gradient(
+              ellipse 120% 60% at 50% 100%,
+              rgba(7, 11, 18, 0.7) 0%,
+              transparent 70%
+            )
+          `,
+        }}
+      />
     </Box>
   );
 }
