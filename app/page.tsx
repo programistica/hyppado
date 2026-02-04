@@ -161,68 +161,151 @@ function Reveal({
 }
 
 /* ============================================
-   SCROLL FAB COMPONENT
+   SCROLL ARROWS COMPONENT (↑ top + ↓ bottom)
 ============================================ */
-function ScrollFAB() {
-  const { isNearTop } = useScrollState();
+const SECTION_IDS = ["inicio", "como-funciona", "para-quem-e", "planos", "faq"];
+const HEADER_OFFSET = 88;
+
+function ScrollArrows() {
   const [mounted, setMounted] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     setMounted(true);
+    setScrollY(window.scrollY);
   }, []);
 
-  const handleClick = () => {
-    if (isNearTop) {
-      const nextId = getNextSectionId();
-      scrollToId(nextId);
-    } else {
-      scrollToId("inicio");
+  // Listener de scroll simples
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Mostrar seta ↑ quando rolar mais de 300px
+  const showUpArrow = scrollY > 300;
+
+  // Scroll para a próxima seção
+  const handleDownClick = () => {
+    const currentY = window.scrollY;
+    let targetEl: HTMLElement | null = null;
+
+    for (let i = 0; i < SECTION_IDS.length; i++) {
+      const el = document.getElementById(SECTION_IDS[i]);
+      if (el && el.offsetTop > currentY + HEADER_OFFSET + 1) {
+        targetEl = el;
+        break;
+      }
     }
+
+    if (targetEl) {
+      window.scrollTo({
+        top: targetEl.offsetTop - HEADER_OFFSET,
+        behavior: "smooth",
+      });
+    } else {
+      // Scroll para o final da página
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Scroll para o topo
+  const handleUpClick = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (!mounted) return null;
 
+  // Estilos base do botão
+  const arrowButtonSx = {
+    position: "fixed" as const,
+    left: "50%",
+    zIndex: 1400,
+    width: 48,
+    height: 48,
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: "50%",
+    border: "1px solid rgba(255, 255, 255, 0.10)",
+    background: "rgba(13, 21, 32, 0.78)",
+    backdropFilter: "blur(14px)",
+    boxShadow: "0 8px 28px rgba(0, 0, 0, 0.38)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "all 0.22s ease",
+    "&:hover": {
+      borderColor: "rgba(57, 213, 255, 0.30)",
+      boxShadow:
+        "0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(57, 213, 255, 0.15)",
+    },
+  };
+
   return (
-    <Tooltip title={isNearTop ? "Continuar" : "Topo"} placement="left" arrow>
-      <Box
-        component="button"
-        onClick={handleClick}
-        aria-label={isNearTop ? "Rolar para próxima seção" : "Voltar ao topo"}
-        sx={{
-          position: "fixed",
-          bottom: { xs: 18, md: 24 },
-          right: { xs: 18, md: 24 },
-          zIndex: 1200,
-          width: 48,
-          height: 48,
-          borderRadius: "50%",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
-          background: "rgba(13, 21, 32, 0.72)",
-          backdropFilter: "blur(14px)",
-          boxShadow: "0 10px 28px rgba(0, 0, 0, 0.35)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          transition: "all 0.25s ease",
-          "&:hover": {
-            borderColor: "rgba(57, 213, 255, 0.25)",
-            transform: "translateY(-2px)",
-            boxShadow:
-              "0 12px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(57, 213, 255, 0.15)",
-          },
-          "&:active": {
-            transform: "translateY(0)",
-          },
-        }}
-      >
-        {isNearTop ? (
+    <>
+      {/* Seta ↑ no topo (só aparece a partir da 2ª seção) */}
+      {showUpArrow && (
+        <Tooltip title="Voltar ao topo" placement="bottom" arrow>
+          <Box
+            component="button"
+            onClick={handleUpClick}
+            aria-label="Voltar ao topo"
+            sx={{
+              ...arrowButtonSx,
+              top: { xs: 78, md: 86 },
+              transform: "translateX(-50%)",
+              "&:hover": {
+                ...arrowButtonSx["&:hover"],
+                transform: "translateX(-50%) translateY(2px)",
+              },
+              "&:active": {
+                transform: "translateX(-50%) translateY(0)",
+              },
+            }}
+          >
+            <KeyboardArrowUpRounded sx={{ fontSize: 26, color: "#39D5FF" }} />
+          </Box>
+        </Tooltip>
+      )}
+
+      {/* Seta ↓ no rodapé (sempre visível) */}
+      <Tooltip title="Próxima seção" placement="top" arrow>
+        <Box
+          component="button"
+          onClick={handleDownClick}
+          aria-label="Rolar para próxima seção"
+          sx={{
+            ...arrowButtonSx,
+            bottom: { xs: 18, md: 24 },
+            transform: "translateX(-50%)",
+            "&:hover": {
+              ...arrowButtonSx["&:hover"],
+              transform: "translateX(-50%) translateY(-2px)",
+            },
+            "&:active": {
+              transform: "translateX(-50%) translateY(0)",
+            },
+          }}
+        >
           <KeyboardArrowDownRounded sx={{ fontSize: 26, color: "#39D5FF" }} />
-        ) : (
-          <KeyboardArrowUpRounded sx={{ fontSize: 26, color: "#39D5FF" }} />
-        )}
-      </Box>
-    </Tooltip>
+        </Box>
+      </Tooltip>
+    </>
   );
 }
 
@@ -261,9 +344,8 @@ const SECTION_STYLES: Record<
     `,
     dividerColor: "rgba(13, 21, 32, 0.85)",
     py: { xs: 0, md: 0 },
-    pt: { xs: 14, md: 12 },
     pb: { xs: 8, md: 8 },
-    minHeight: { xs: "auto", md: "82vh" },
+    minHeight: { xs: "100vh", md: "100vh" },
   },
   how: {
     base: `
@@ -866,7 +948,15 @@ export default function HomePage() {
           />
 
           {/* Conteúdo do hero */}
-          <Container maxWidth="lg" sx={{ position: "relative", zIndex: 4 }}>
+          <Container
+            maxWidth="lg"
+            sx={{
+              position: "relative",
+              zIndex: 4,
+              pt: { xs: "80px", md: "96px" },
+              pb: { xs: 4, md: 6 },
+            }}
+          >
             <Grid container spacing={{ xs: 6, md: 8 }} alignItems="center">
               {/* ===== LEFT COLUMN - Content ===== */}
               <Grid item xs={12} md={6}>
@@ -2642,8 +2732,8 @@ export default function HomePage() {
           </Container>
         </Box>
 
-        {/* Scroll FAB */}
-        <ScrollFAB />
+        {/* Scroll Arrows */}
+        <ScrollArrows />
       </Box>
     </ThemeProvider>
   );
