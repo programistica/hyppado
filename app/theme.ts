@@ -43,7 +43,17 @@ const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        "*, *::before, *::after": {
+          boxSizing: "border-box",
+        },
+        html: {
+          margin: 0,
+          padding: 0,
+          backgroundColor: "#070B12",
+        },
         body: {
+          margin: 0,
+          padding: 0,
           backgroundColor: "#070B12",
         },
       },
