@@ -21,6 +21,10 @@ import {
   ListItemText,
   Paper,
   Chip,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Divider,
   ThemeProvider,
   CssBaseline,
 } from "@mui/material";
@@ -29,6 +33,8 @@ import {
   Close as CloseIcon,
   PersonOutline,
   CheckCircleOutline,
+  ExpandMore as ExpandMoreIcon,
+  Instagram as InstagramIcon,
 } from "@mui/icons-material";
 import theme from "./theme";
 import { PLANS } from "./data/plans";
@@ -91,12 +97,14 @@ function HeroMedia({
       priority
       onError={onError}
       style={{
+        display: "block",
         height: "100%",
         width: "auto",
         maxWidth: "none",
         objectFit: "contain",
         objectPosition: "center bottom",
-        filter: "drop-shadow(0 20px 35px rgba(0, 0, 0, 0.55))",
+        filter: "none",
+        boxShadow: "none",
       }}
     />
   );
@@ -118,69 +126,40 @@ function HeroVisual() {
         minHeight: { xs: 400, sm: 480, md: 520, lg: 580 },
       }}
     >
-      {/* ===== DECORATIVE LAYERS (no glass panel) ===== */}
-
-      {/* Large radial glow - main */}
+      {/* ===== GLOW DE FUNDO ===== */}
       <Box
         sx={{
           position: "absolute",
-          width: { xs: 380, sm: 480, md: 560, lg: 640 },
-          height: { xs: 480, sm: 580, md: 660, lg: 740 },
-          borderRadius: "50%",
-          background: `radial-gradient(
-            ellipse at center,
-            rgba(57, 213, 255, 0.14) 0%,
-            rgba(57, 213, 255, 0.06) 35%,
-            rgba(57, 213, 255, 0.02) 55%,
-            transparent 70%
-          )`,
-          filter: "blur(60px)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          inset: 0,
           pointerEvents: "none",
+          background: `
+            radial-gradient(ellipse 70% 60% at 50% 40%, rgba(57, 213, 255, 0.10) 0%, transparent 60%),
+            radial-gradient(ellipse 40% 40% at 70% 30%, rgba(57, 213, 255, 0.06) 0%, transparent 50%)
+          `,
         }}
       />
 
-      {/* Secondary glow - accent top right */}
-      <Box
-        sx={{
-          position: "absolute",
-          width: { xs: 160, md: 220 },
-          height: { xs: 160, md: 220 },
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(57, 213, 255, 0.12) 0%, transparent 65%)",
-          filter: "blur(40px)",
-          top: { xs: "5%", md: "8%" },
-          right: { xs: "5%", md: "10%" },
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Concentric ring 1 - inner */}
+      {/* Anéis decorativos */}
       <Box
         sx={{
           position: "absolute",
           width: { xs: 300, sm: 360, md: 420, lg: 480 },
           height: { xs: 300, sm: 360, md: 420, lg: 480 },
           borderRadius: "50%",
-          border: "1px solid rgba(57, 213, 255, 0.08)",
+          border: "1px solid rgba(57, 213, 255, 0.06)",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           pointerEvents: "none",
         }}
       />
-
-      {/* Concentric ring 2 - outer */}
       <Box
         sx={{
           position: "absolute",
           width: { xs: 400, sm: 480, md: 560, lg: 640 },
           height: { xs: 400, sm: 480, md: 560, lg: 640 },
           borderRadius: "50%",
-          border: "1px solid rgba(57, 213, 255, 0.04)",
+          border: "1px solid rgba(57, 213, 255, 0.03)",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
@@ -188,7 +167,7 @@ function HeroVisual() {
         }}
       />
 
-      {/* ===== INFLUENCER IMAGE ===== */}
+      {/* ===== IMAGEM COM MÁSCARA DE FADE ===== */}
       <Box
         sx={{
           position: "relative",
@@ -197,53 +176,15 @@ function HeroVisual() {
           display: "flex",
           alignItems: "flex-end",
           justifyContent: "center",
+          // Máscara que dissolve a parte inferior da imagem
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
         }}
       >
         <HeroMedia hasError={imageError} onError={() => setImageError(true)} />
       </Box>
-
-      {/* Ground shadow beneath influencer */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: { xs: "2%", md: "4%" },
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: { xs: 160, md: 220 },
-          height: { xs: 14, md: 20 },
-          borderRadius: "50%",
-          background:
-            "radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, transparent 70%)",
-          filter: "blur(14px)",
-          pointerEvents: "none",
-          zIndex: 4,
-        }}
-      />
-
-      {/* ===== BOTTOM FADE / VIGNETTE ===== */}
-      <Box
-        sx={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          zIndex: 6,
-          background: `
-            linear-gradient(
-              to bottom,
-              rgba(7, 11, 18, 0) 0%,
-              rgba(7, 11, 18, 0) 55%,
-              rgba(7, 11, 18, 0.5) 80%,
-              rgba(7, 11, 18, 0.85) 95%,
-              rgba(7, 11, 18, 1) 100%
-            ),
-            radial-gradient(
-              ellipse 120% 60% at 50% 100%,
-              rgba(7, 11, 18, 0.7) 0%,
-              transparent 70%
-            )
-          `,
-        }}
-      />
     </Box>
   );
 }
@@ -1021,124 +962,7 @@ export default function HomePage() {
               </Grid>
             </Box>
 
-            {/* ===== C) PERGUNTAS QUE A HYPPADO RESPONDE ===== */}
-            <Box sx={{ mt: { xs: 12, md: 16 } }}>
-              <Typography
-                component="h3"
-                sx={{
-                  fontSize: { xs: "1.5rem", md: "1.75rem" },
-                  fontWeight: 700,
-                  color: "#fff",
-                  textAlign: "center",
-                  mb: 1.5,
-                }}
-              >
-                Perguntas que a Hyppado responde
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: { xs: "0.95rem", md: "1rem" },
-                  color: "#8595A5",
-                  textAlign: "center",
-                  maxWidth: 480,
-                  mx: "auto",
-                  mb: 5,
-                }}
-              >
-                Dúvidas práticas que você resolve em segundos na plataforma.
-              </Typography>
-
-              <Stack spacing={2} sx={{ maxWidth: 720, mx: "auto" }}>
-                {[
-                  {
-                    question: "O que está subindo agora?",
-                    answer:
-                      "A Hyppado destaca sinais de tração com base no comportamento recente de vídeos e produtos. Você enxerga o que está chamando atenção e ganhando força para decidir mais rápido o que vale testar.",
-                  },
-                  {
-                    question: "Quais vídeos estão puxando resultado?",
-                    answer:
-                      "Navegue pela biblioteca de vídeos e descubra quais conteúdos estão convertendo. Use a transcrição automática para entender a estrutura e replicar o que funciona.",
-                  },
-                  {
-                    question:
-                      "Esse produto ainda está no começo ou já saturou?",
-                    answer:
-                      "A Hyppado te ajuda a avaliar o nível de concorrência e o fôlego do produto a partir de sinais práticos do mercado. Assim, você entende se ainda existe espaço para entrar com um bom criativo ou se vale buscar outra aposta.",
-                  },
-                  {
-                    question: "O que comparar antes de postar?",
-                    answer:
-                      'Antes de postar, valide o "pacote completo": produto, promessa, formato do vídeo e abordagem do criativo. A Hyppado te dá clareza do que costuma funcionar naquele tipo de produto para você escolher melhor o que testar.',
-                  },
-                  {
-                    question: "Como sair do 'achismo' na escolha do criativo?",
-                    answer:
-                      "Analise vídeos de sucesso com a transcrição e gere prompts para modelar variações. Assim você cria com base em dados, não em intuição.",
-                  },
-                ].map((faq, index) => (
-                  <Box
-                    key={index}
-                    component="details"
-                    sx={{
-                      borderRadius: 2,
-                      background: "rgba(13, 21, 32, 0.5)",
-                      border: "1px solid rgba(255, 255, 255, 0.06)",
-                      overflow: "hidden",
-                      "&[open]": {
-                        borderColor: "rgba(57, 213, 255, 0.15)",
-                      },
-                      "&[open] summary": {
-                        borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-                      },
-                    }}
-                  >
-                    <Box
-                      component="summary"
-                      sx={{
-                        p: 2.5,
-                        cursor: "pointer",
-                        fontSize: "0.95rem",
-                        fontWeight: 600,
-                        color: "#fff",
-                        listStyle: "none",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        "&::-webkit-details-marker": {
-                          display: "none",
-                        },
-                        "&::after": {
-                          content: '"+"',
-                          color: "#39D5FF",
-                          fontSize: "1.25rem",
-                          fontWeight: 400,
-                        },
-                        "[open] &::after": {
-                          content: '"-"',
-                        },
-                      }}
-                    >
-                      {faq.question}
-                    </Box>
-                    <Box sx={{ p: 2.5, pt: 0 }}>
-                      <Typography
-                        sx={{
-                          fontSize: "0.875rem",
-                          color: "#A0B0C0",
-                          lineHeight: 1.7,
-                          pt: 2,
-                        }}
-                      >
-                        {faq.answer}
-                      </Typography>
-                    </Box>
-                  </Box>
-                ))}
-              </Stack>
-            </Box>
-
-            {/* ===== D) MODELAGEM DE CRIATIVO ===== */}
+            {/* ===== C) MODELAGEM DE CRIATIVO ===== */}
             <Box sx={{ mt: { xs: 12, md: 16 } }}>
               <Typography
                 sx={{
@@ -1975,6 +1799,405 @@ export default function HomePage() {
                 </Grid>
               ))}
             </Grid>
+          </Container>
+        </Box>
+
+        {/* ==================== FAQ SECTION ==================== */}
+        <Box
+          id="faq"
+          component="section"
+          sx={{
+            py: { xs: 10, md: 14 },
+            scrollMarginTop: "80px",
+          }}
+        >
+          <Container maxWidth="lg">
+            <Grid container spacing={{ xs: 4, md: 8 }} alignItems="flex-start">
+              {/* Left Column - Title and supporting text */}
+              <Grid item xs={12} md={4}>
+                <Box
+                  sx={{
+                    position: { md: "sticky" },
+                    top: { md: 120 },
+                  }}
+                >
+                  <Typography
+                    component="h2"
+                    sx={{
+                      fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+                      fontWeight: 800,
+                      lineHeight: 1.15,
+                      letterSpacing: "-0.02em",
+                      color: "#fff",
+                      mb: 2,
+                    }}
+                  >
+                    Perguntas frequentes
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: { xs: "1rem", md: "1.05rem" },
+                      color: "#A0B0C0",
+                      lineHeight: 1.6,
+                      mb: 3,
+                    }}
+                  >
+                    Respostas diretas para você entender a Hyppado e decidir com
+                    segurança.
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "0.875rem",
+                      color: "#6A7A8A",
+                      mb: 3,
+                    }}
+                  >
+                    Ainda com dúvidas? Fale com a gente.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="medium"
+                    href="#planos"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("planos")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }}
+                    sx={{
+                      px: 3,
+                      py: 1.25,
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      borderRadius: "999px",
+                      background: "#39D5FF",
+                      color: "#070B12",
+                      textTransform: "none",
+                      boxShadow:
+                        "0 0 20px rgba(57, 213, 255, 0.35), 0 4px 12px rgba(0,0,0,0.2)",
+                      transition: "all 0.25s ease",
+                      "&:hover": {
+                        background: "#5BE0FF",
+                        boxShadow:
+                          "0 0 28px rgba(57, 213, 255, 0.5), 0 6px 16px rgba(0,0,0,0.25)",
+                        transform: "translateY(-2px)",
+                      },
+                    }}
+                  >
+                    Fale com nosso suporte
+                  </Button>
+                </Box>
+              </Grid>
+
+              {/* Right Column - Accordions */}
+              <Grid item xs={12} md={8}>
+                <Stack spacing={2}>
+                  {[
+                    {
+                      question: "O que é a Hyppado?",
+                      answer:
+                        "Uma plataforma para descobrir oportunidades e acelerar a criação de criativos. Você pode transcrever vídeos e gerar prompts para modelar variações do criativo com mais direção.",
+                    },
+                    {
+                      question: "Para quem é?",
+                      answer:
+                        "Para criadores e afiliados que querem decidir o que testar e produzir com consistência, sem depender de 'achismo'.",
+                    },
+                    {
+                      question: "A Hyppado serve para quem está começando?",
+                      answer:
+                        "Sim. Você consegue partir de exemplos, entender a estrutura do vídeo e usar prompts para guiar seu primeiro roteiro e suas variações.",
+                    },
+                    {
+                      question: "O que eu recebo no plano?",
+                      answer:
+                        "Acesso aos recursos do seu plano, incluindo descoberta de produtos e vídeos, transcrição de vídeo e prompts para modelagem do criativo. Os detalhes exatos ficam descritos em cada plano.",
+                    },
+                    {
+                      question: "Eu preciso instalar alguma coisa?",
+                      answer:
+                        "Não. É uma plataforma web: você acessa pelo navegador e organiza seu processo por lá.",
+                    },
+                    {
+                      question: "Posso cancelar quando quiser?",
+                      answer:
+                        "Sim. Você pode cancelar quando quiser. Assim que o cancelamento for confirmado, você mantém acesso até o fim do período contratado.",
+                    },
+                  ].map((faq, index) => (
+                    <Accordion
+                      key={index}
+                      disableGutters
+                      elevation={0}
+                      sx={{
+                        background: "rgba(13, 21, 32, 0.5)",
+                        border: "1px solid rgba(255, 255, 255, 0.06)",
+                        borderRadius: "12px !important",
+                        overflow: "hidden",
+                        "&:before": {
+                          display: "none",
+                        },
+                        "&.Mui-expanded": {
+                          borderColor: "rgba(57, 213, 255, 0.2)",
+                          margin: 0,
+                        },
+                      }}
+                    >
+                      <AccordionSummary
+                        expandIcon={
+                          <ExpandMoreIcon sx={{ color: "#39D5FF" }} />
+                        }
+                        sx={{
+                          px: 3,
+                          py: 1,
+                          minHeight: 64,
+                          "& .MuiAccordionSummary-content": {
+                            my: 1.5,
+                          },
+                          "&:hover": {
+                            background: "rgba(57, 213, 255, 0.04)",
+                          },
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.95rem",
+                            fontWeight: 600,
+                            color: "#fff",
+                          }}
+                        >
+                          {faq.question}
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails
+                        sx={{
+                          px: 3,
+                          pb: 3,
+                          pt: 0,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.9rem",
+                            color: "#A0B0C0",
+                            lineHeight: 1.7,
+                          }}
+                        >
+                          {faq.answer}
+                        </Typography>
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                </Stack>
+              </Grid>
+            </Grid>
+          </Container>
+        </Box>
+
+        {/* ==================== FOOTER ==================== */}
+        <Box
+          component="footer"
+          sx={{
+            mt: "auto",
+            pt: { xs: 6, md: 8 },
+            pb: { xs: 4, md: 5 },
+            background:
+              "linear-gradient(180deg, rgba(7, 11, 18, 0) 0%, rgba(13, 21, 32, 0.5) 100%)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          <Container maxWidth="lg">
+            {/* Footer Main Content - 3 Columns */}
+            <Grid container spacing={{ xs: 4, md: 6 }} sx={{ mb: { xs: 4, md: 6 } }}>
+              {/* Column 1 - Brand */}
+              <Grid item xs={12} md={5}>
+                <Stack direction="row" alignItems="center" spacing={1.25} sx={{ mb: 2.5 }}>
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      background:
+                        "linear-gradient(135deg, #39D5FF 0%, #0099CC 100%)",
+                      borderRadius: "4px",
+                      transform: "rotate(45deg)",
+                      boxShadow: "0 0 10px rgba(57, 213, 255, 0.4)",
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: "1.15rem",
+                      color: "#fff",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
+                    Hyppado
+                  </Typography>
+                </Stack>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    color: "#8595A5",
+                    lineHeight: 1.7,
+                    maxWidth: 360,
+                  }}
+                >
+                  A Hyppado ajuda criadores e afiliados a escolher produtos e
+                  entender criativos com mais clareza, usando transcrição e
+                  sugestões de prompt para modelagem.
+                </Typography>
+              </Grid>
+
+              {/* Column 2 - Quick Access */}
+              <Grid item xs={6} md={3}>
+                <Typography
+                  sx={{
+                    fontSize: "0.8rem",
+                    fontWeight: 700,
+                    color: "#fff",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    mb: 2.5,
+                  }}
+                >
+                  Acesso Rápido
+                </Typography>
+                <Stack spacing={1.5}>
+                  {[
+                    { label: "Início", href: "#inicio" },
+                    { label: "Como funciona", href: "#como-funciona" },
+                    { label: "Para quem é", href: "#para-quem-e" },
+                    { label: "Planos", href: "#planos" },
+                    { label: "FAQ", href: "#faq" },
+                    { label: "Suporte", href: "mailto:suporte@hyppado.com" },
+                  ].map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      underline="none"
+                      onClick={(e) => {
+                        if (link.href.startsWith("#")) {
+                          e.preventDefault();
+                          const id = link.href.slice(1);
+                          document
+                            .getElementById(id)
+                            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }}
+                      sx={{
+                        fontSize: "0.875rem",
+                        color: "#9AA8B8",
+                        transition: "color 0.2s ease",
+                        "&:hover": {
+                          color: "#39D5FF",
+                        },
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </Stack>
+              </Grid>
+
+              {/* Column 3 - Legal */}
+              <Grid item xs={6} md={4}>
+                <Typography
+                  sx={{
+                    fontSize: "0.8rem",
+                    fontWeight: 700,
+                    color: "#fff",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    mb: 2.5,
+                  }}
+                >
+                  Legal
+                </Typography>
+                <Stack spacing={1.5}>
+                  <Link
+                    href="#"
+                    underline="none"
+                    sx={{
+                      fontSize: "0.875rem",
+                      color: "#9AA8B8",
+                      transition: "color 0.2s ease",
+                      "&:hover": {
+                        color: "#39D5FF",
+                      },
+                    }}
+                  >
+                    Termos de Uso
+                  </Link>
+                  <Link
+                    href="#"
+                    underline="none"
+                    sx={{
+                      fontSize: "0.875rem",
+                      color: "#9AA8B8",
+                      transition: "color 0.2s ease",
+                      "&:hover": {
+                        color: "#39D5FF",
+                      },
+                    }}
+                  >
+                    Política de Privacidade
+                  </Link>
+                </Stack>
+              </Grid>
+            </Grid>
+
+            {/* Divider */}
+            <Divider
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.06)",
+                mb: { xs: 3, md: 4 },
+              }}
+            />
+
+            {/* Bottom Row - Copyright & Social */}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              alignItems={{ xs: "center", sm: "center" }}
+              spacing={2}
+            >
+              <Typography
+                sx={{
+                  fontSize: "0.8rem",
+                  color: "#6A7A8A",
+                }}
+              >
+                © Hyppado 2026. Todos os direitos reservados.
+              </Typography>
+
+              <Stack direction="row" alignItems="center" spacing={1.5}>
+                <Typography
+                  sx={{
+                    fontSize: "0.8rem",
+                    color: "#6A7A8A",
+                    display: { xs: "none", sm: "block" },
+                  }}
+                >
+                  Siga-nos nas redes sociais:
+                </Typography>
+                <IconButton
+                  aria-label="Instagram da Hyppado"
+                  href="https://instagram.com/hyppado"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    color: "#9AA8B8",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      color: "#39D5FF",
+                      background: "rgba(57, 213, 255, 0.1)",
+                    },
+                  }}
+                >
+                  <InstagramIcon fontSize="small" />
+                </IconButton>
+              </Stack>
+            </Stack>
           </Container>
         </Box>
       </Box>
