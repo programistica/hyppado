@@ -19,6 +19,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  ListItemIcon,
   Paper,
   Chip,
   Accordion,
@@ -35,6 +36,12 @@ import {
   CheckCircleOutline,
   ExpandMore as ExpandMoreIcon,
   Instagram as InstagramIcon,
+  HomeOutlined,
+  AutoAwesomeOutlined,
+  GroupOutlined,
+  WorkspacePremiumOutlined,
+  HelpOutlineOutlined,
+  LoginOutlined,
 } from "@mui/icons-material";
 import theme from "./theme";
 import { PLANS } from "./data/plans";
@@ -43,11 +50,11 @@ import { PLANS } from "./data/plans";
    NAV LINKS CONFIG
 ============================================ */
 const NAV_LINKS = [
-  { label: "Início", href: "#inicio" },
-  { label: "Como funciona", href: "#como-funciona" },
-  { label: "Para quem é", href: "#para-quem-e" },
-  { label: "Planos", href: "#planos" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Início", href: "#inicio", icon: HomeOutlined },
+  { label: "Como funciona", href: "#como-funciona", icon: AutoAwesomeOutlined },
+  { label: "Para quem é", href: "#para-quem-e", icon: GroupOutlined },
+  { label: "Planos", href: "#planos", icon: WorkspacePremiumOutlined },
+  { label: "FAQ", href: "#faq", icon: HelpOutlineOutlined },
 ];
 
 /* ============================================
@@ -265,7 +272,7 @@ export default function HomePage() {
               <Stack
                 component="nav"
                 direction="row"
-                spacing={4}
+                spacing={1}
                 sx={{
                   display: { xs: "none", md: "flex" },
                   position: "absolute",
@@ -273,7 +280,7 @@ export default function HomePage() {
                   transform: "translateX(-50%)",
                 }}
               >
-                {NAV_LINKS.map(({ label, href }) => (
+                {NAV_LINKS.map(({ label, href, icon: Icon }) => (
                   <Link
                     key={label}
                     href={href}
@@ -288,38 +295,64 @@ export default function HomePage() {
                       }
                     }}
                     sx={{
-                      fontSize: "0.875rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 0.75,
+                      fontSize: "0.85rem",
                       fontWeight: 500,
                       color: "#9AA8B8",
                       whiteSpace: "nowrap",
-                      transition: "color 0.2s ease",
+                      borderRadius: "999px",
+                      border: "1px solid transparent",
+                      transition: "all 0.2s ease",
                       cursor: "pointer",
                       "&:hover": {
                         color: "#fff",
+                        background: "rgba(255, 255, 255, 0.04)",
+                        borderColor: "rgba(255, 255, 255, 0.08)",
+                      },
+                      "& .nav-icon": {
+                        fontSize: 18,
+                        opacity: 0.7,
+                        transition: "opacity 0.2s ease",
+                      },
+                      "&:hover .nav-icon": {
+                        opacity: 1,
                       },
                     }}
                   >
+                    <Icon className="nav-icon" />
                     {label}
                   </Link>
                 ))}
               </Stack>
 
-              {/* Desktop right section - Login only (NO CTA) */}
+              {/* Desktop right section - Entrar */}
               <Box sx={{ display: { xs: "none", md: "block" } }}>
                 <Link
                   href="#"
                   underline="none"
                   sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 0.75,
                     fontSize: "0.875rem",
                     fontWeight: 600,
                     color: "#fff",
-                    transition: "color 0.2s ease",
+                    transition: "all 0.2s ease",
                     "&:hover": {
                       color: "#39D5FF",
                     },
+                    "& .login-icon": {
+                      fontSize: 18,
+                      transition: "color 0.2s ease",
+                    },
                   }}
                 >
-                  Login
+                  <LoginOutlined className="login-icon" />
+                  Entrar
                 </Link>
               </Box>
 
@@ -358,7 +391,7 @@ export default function HomePage() {
               </IconButton>
             </Stack>
             <List sx={{ mt: 2 }}>
-              {NAV_LINKS.map(({ label, href }) => (
+              {NAV_LINKS.map(({ label, href, icon: Icon }) => (
                 <ListItem key={label} disablePadding>
                   <ListItemButton
                     component="a"
@@ -382,6 +415,9 @@ export default function HomePage() {
                       "&:hover": { background: "rgba(57,213,255,0.08)" },
                     }}
                   >
+                    <ListItemIcon sx={{ minWidth: 40 }}>
+                      <Icon sx={{ fontSize: 20, color: "#9AA8B8" }} />
+                    </ListItemIcon>
                     <ListItemText
                       primary={label}
                       primaryTypographyProps={{
@@ -403,8 +439,11 @@ export default function HomePage() {
                     "&:hover": { background: "rgba(57,213,255,0.08)" },
                   }}
                 >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <LoginOutlined sx={{ fontSize: 20, color: "#39D5FF" }} />
+                  </ListItemIcon>
                   <ListItemText
-                    primary="Login"
+                    primary="Entrar"
                     primaryTypographyProps={{
                       fontSize: "0.95rem",
                       fontWeight: 600,
