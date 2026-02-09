@@ -1323,7 +1323,7 @@ export default function HomePage() {
               {/* Desktop right section - Entrar */}
               <Box sx={{ display: { xs: "none", md: "block" } }}>
                 <Link
-                  href="#"
+                  href="/login"
                   underline="none"
                   sx={{
                     display: "inline-flex",
@@ -1423,7 +1423,7 @@ export default function HomePage() {
               <ListItem disablePadding>
                 <ListItemButton
                   component="a"
-                  href="#"
+                  href="/login"
                   onClick={handleDrawerToggle}
                   sx={{
                     py: 1.5,
