@@ -58,3 +58,19 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =============================================
+   APP SHELL VIEWPORT HEIGHT
+   dvh fallback for browsers without support
+============================================= */
+.app-shell {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-sidebar {
+  height: 100vh;
+  height: 100dvh;
+}
