@@ -191,9 +191,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       className="app-sidebar"
       sx={{
         width: 260,
-        height: { xs: '100dvh', md: '100dvh' },
-        minHeight: { xs: '100dvh', md: '100dvh' },
-        maxHeight: { xs: '100dvh', md: '100dvh' },
+        height: { xs: "100dvh", md: "100dvh" },
+        minHeight: { xs: "100dvh", md: "100dvh" },
+        maxHeight: { xs: "100dvh", md: "100dvh" },
         background: "#0A0F18",
         borderRight: "1px solid rgba(255,255,255,0.06)",
         display: "flex",
@@ -223,7 +223,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
 
       {/* Navigation */}
-      <List sx={{ flex: 1, py: 2, overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      <List
+        sx={{
+          flex: 1,
+          py: 2,
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+        }}
+      >
         {NAV_ITEMS.map(({ label, icon: Icon, href }) => {
           const active = isActive(href);
           return (
@@ -349,9 +356,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Box
         className="app-shell"
         sx={{
-          height: { xs: '100dvh', md: '100dvh' },
-          minHeight: { xs: '100dvh', md: '100dvh' },
-          maxHeight: { xs: '100dvh', md: '100dvh' },
+          height: { xs: "100dvh", md: "100dvh" },
+          minHeight: { xs: "100dvh", md: "100dvh" },
+          maxHeight: { xs: "100dvh", md: "100dvh" },
           background: `
             radial-gradient(ellipse 800px 500px at 10% 10%, rgba(45, 212, 255, 0.04), transparent 50%),
             radial-gradient(ellipse 600px 400px at 90% 90%, rgba(45, 212, 255, 0.03), transparent 45%),
@@ -368,7 +375,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             width: { md: 260 },
             flexShrink: 0,
             display: { xs: "none", md: "block" },
-            height: '100%',
+            height: "100%",
           }}
         >
           {sidebarContent}
@@ -384,9 +391,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             display: { xs: "block", md: "none" },
             "& .MuiDrawer-paper": {
               width: 260,
-              height: '100dvh',
-              maxHeight: '100dvh',
-              overflow: 'hidden',
+              height: "100dvh",
+              maxHeight: "100dvh",
+              overflow: "hidden",
             },
           }}
         >
@@ -399,7 +406,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </Drawer>
 
         {/* Main Content */}
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", height: '100%', overflow: 'hidden' }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            overflow: "hidden",
+          }}
+        >
           {/* Desktop Header with Quota Pills */}
           <QuotaHeader />
 
@@ -434,7 +449,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </AppBar>
 
           {/* Page Content */}
-          <Box sx={{ flex: 1, py: { xs: 3, md: 4 }, px: { xs: 2, md: 4 }, overflowY: 'auto', overscrollBehavior: 'contain' }}>
+          <Box
+            sx={{
+              flex: 1,
+              py: { xs: 3, md: 4 },
+              px: { xs: 2, md: 4 },
+              overflowY: "auto",
+              overscrollBehavior: "contain",
+            }}
+          >
             {children}
           </Box>
         </Box>
