@@ -85,7 +85,7 @@ export function ThumbnailSkeleton({ className }: { className?: string }) {
       sx={{
         position: "relative",
         width: "100%",
-        aspectRatio: "16/9",
+        aspectRatio: "9 / 16",
         overflow: "hidden",
         borderRadius: "12px 12px 0 0",
         background: "#0a0f18",

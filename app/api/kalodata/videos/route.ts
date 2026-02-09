@@ -1,6 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseTopVideos7d } from "@/lib/kalodata/xlsx-parser";
-import type { TimeRange } from "@/lib/types/kalodata";
+import type { TimeRange, VideoDTO } from "@/lib/types/kalodata";
+import {
+  isShortTikTokUrl,
+  resolveShortTikTokUrl,
+  normalizeTikTokUrlToCanonical,
+  fetchTikTokOEmbed,
+  withConcurrency,
+} from "@/lib/kalodata/tiktok";
+
+// Force dynamic rendering so oEmbed fetches run server-side
+export const dynamic = "force-dynamic";
+
+/**
+ * Enriches a parsed VideoDTO with:
+ * 1) Canonical TikTok URL (resolves short links)
+ * 2) Real thumbnail from TikTok oEmbed
+ */
+async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
+  const rawUrl = video.tiktokUrl;
+  const creatorUsername = video.creatorHandle; // e.g. "@ba.heck"
+
+  // Step 1: Resolve redirects for shortened links
+  let resolvedUrl: string | null = null;
+  if (rawUrl && isShortTikTokUrl(rawUrl)) {
+    resolvedUrl = await resolveShortTikTokUrl(rawUrl, 8000);
+  }
+
+  // Step 2: Build canonical URL
+  const canonical = normalizeTikTokUrlToCanonical({
+    rawUrl,
+    creatorUsername,
+    resolvedUrl,
+  });
+
+  // Step 3: Fetch oEmbed thumbnail
+  const oEmbedUrl = canonical ?? resolvedUrl ?? rawUrl;
+  let thumbnailUrl: string | null = null;
+
+  if (oEmbedUrl) {
+    const oembed = await fetchTikTokOEmbed(oEmbedUrl, 8000);
+    thumbnailUrl = oembed?.thumbnail_url ?? null;
+  }
+
+  return {
+    ...video,
+    tiktokUrl: canonical ?? rawUrl,
+    thumbnailUrl,
+  };
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,7 +57,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const search = searchParams.get("search") || undefined;
 
-    // Parse from XLSX or fallback to mock
+    // Parse from XLSX
     let videos = await parseTopVideos7d();
 
     // Apply search filter if provided
@@ -28,17 +76,19 @@ export async function GET(request: NextRequest) {
     );
     const limitedVideos = sortedVideos.slice(0, limit);
 
+    // Enrich with canonical URLs + thumbnails (concurrency = 3)
+    const enrichedVideos = await withConcurrency(limitedVideos, 3, enrichVideo);
+
     return NextResponse.json({
       success: true,
       data: {
-        items: limitedVideos,
+        items: enrichedVideos,
         total: videos.length,
         range,
       },
     });
   } catch (error) {
     console.error("Error fetching videos:", error);
-    // Return empty array with success to avoid breaking layout
     return NextResponse.json({
       success: true,
       data: {

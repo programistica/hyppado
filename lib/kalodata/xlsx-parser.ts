@@ -1,8 +1,8 @@
 /**
  * XLSX Parser for Kalodata exports
  *
- * Reads Excel files from /app/data/kalodata/exports/ and normalizes to DTOs.
- * Falls back to mock data if files don't exist or fail to parse.
+ * Reads Excel files from /app/data/kalodata/ and normalizes to DTOs.
+ * Returns empty arrays when XLSX files are missing — no mock data.
  */
 
 import * as XLSX from "xlsx";
@@ -181,17 +181,11 @@ function parseVideoRow(row: Record<string, unknown>, index: number): VideoDTO {
     roas: parseNumber(row["ROAS"] || row["roas"]),
     kalodataUrl: sanitizeString(
       row["Link de Kalodata"] || row["kalodataUrl"],
-      `https://kalodata.com/video/${index}`,
+      "",
     ),
-    tiktokUrl: sanitizeString(
-      row["Link do TikTok"] || row["tiktokUrl"],
-      `https://tiktok.com/@creator/video/${index}`,
-    ),
-    // thumbnailUrl: only use if exists in XLSX, otherwise undefined (shows skeleton)
-    thumbnailUrl:
-      row["thumbnailUrl"] || row["Thumbnail"]
-        ? sanitizeString(row["thumbnailUrl"] || row["Thumbnail"], "")
-        : undefined,
+    tiktokUrl: sanitizeString(row["Link do TikTok"] || row["tiktokUrl"], ""),
+    // thumbnailUrl: set by API route via oEmbed; parser always returns null
+    thumbnailUrl: null,
     dateRange: "Últimos 7 dias",
   };
 }
@@ -216,7 +210,7 @@ function parseProductRow(
       row["Link da imagem"] || row["imageUrl"]
         ? sanitizeString(row["Link da imagem"] || row["imageUrl"], "")
         : "",
-    category: sanitizeString(row["Categoria"] || row["category"], "Geral"),
+    category: sanitizeString(row["Categoria"] || row["category"], "—"),
     priceBRL: parseNumber(row["Preço (R$)"] || row["price"] || row["priceBRL"]),
     launchDate: parseDate(row["Data de lançamento"] || row["launchDate"]),
     isNew,
@@ -256,12 +250,9 @@ function parseProductRow(
     ),
     kalodataUrl: sanitizeString(
       row["Link de Kalodata"] || row["kalodataUrl"],
-      `https://kalodata.com/product/${index}`,
+      "",
     ),
-    tiktokUrl: sanitizeString(
-      row["Link do TikTok"] || row["tiktokUrl"],
-      `https://tiktok.com/shop/product/${index}`,
-    ),
+    tiktokUrl: sanitizeString(row["Link do TikTok"] || row["tiktokUrl"], ""),
     dateRange: "Últimos 7 dias",
   };
 }
@@ -306,136 +297,11 @@ function parseCreatorRow(
     debutDate: parseDate(row["Data de estreia do criador"] || row["debutDate"]),
     kalodataUrl: sanitizeString(
       row["Link de Kalodata"] || row["kalodataUrl"],
-      `https://kalodata.com/creator/${index}`,
+      "",
     ),
-    tiktokUrl: sanitizeString(
-      row["Link do TikTok"] || row["tiktokUrl"],
-      `https://tiktok.com/${handle}`,
-    ),
+    tiktokUrl: sanitizeString(row["Link do TikTok"] || row["tiktokUrl"], ""),
     dateRange: "Últimos 7 dias",
   };
-}
-
-// ============================================
-// Mock Data Generators (fallback)
-// ============================================
-function generateMockVideos(): VideoDTO[] {
-  const creators = [
-    "@mariabela",
-    "@joaotech",
-    "@anafit",
-    "@pedrosaude",
-    "@carlavlog",
-    "@lucasmorning",
-    "@techreview",
-    "@juliareal",
-    "@fernandodicas",
-    "@paulounbox",
-  ];
-  const titles = [
-    "Como usar o produto X em 5 passos",
-    "Review HONESTA do produto Y",
-    "Testei por 30 dias e olha no que deu",
-    "ANTES E DEPOIS impressionante",
-    "O que ninguém te conta sobre Z",
-    "Rotina matinal com os melhores",
-    "Comparativo: produto A vs B",
-    "Minha experiência real",
-    "Dicas que mudaram minha vida",
-    "Unboxing surpresa chegou!",
-  ];
-
-  return titles.map((title, i) => ({
-    id: generateId("vid", i, title),
-    title,
-    duration: `${Math.floor(Math.random() * 3) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}`,
-    creatorHandle: creators[i % creators.length],
-    publishedAt: new Date(
-      Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    revenueBRL: Math.floor(Math.random() * 500000) + 10000,
-    sales: Math.floor(Math.random() * 50000) + 500,
-    views: Math.floor(Math.random() * 5000000) + 100000,
-    gpmBRL: Math.floor(Math.random() * 50) + 5,
-    cpaBRL: Math.floor(Math.random() * 30) + 2,
-    adRatio: Math.random() * 0.5 + 0.1,
-    adCostBRL: Math.floor(Math.random() * 10000) + 500,
-    roas: Math.random() * 10 + 1,
-    kalodataUrl: `https://kalodata.com/video/${i}`,
-    tiktokUrl: `https://tiktok.com/@creator/video/${1000000 + i}`,
-    thumbnailUrl: `https://picsum.photos/seed/${i}/320/180`,
-    dateRange: "Últimos 7 dias",
-  }));
-}
-
-function generateMockProducts(isNew = false): ProductDTO[] {
-  const products = [
-    { name: "Sérum Vitamina C 30ml", category: "Skincare" },
-    { name: "Fone Bluetooth Pro Max", category: "Eletrônicos" },
-    { name: "Suplemento Whey Isolado", category: "Fitness" },
-    { name: "Luminária LED Inteligente", category: "Casa" },
-    { name: "Creme Anti-idade Premium", category: "Skincare" },
-    { name: "Smartwatch Fitness Tracker", category: "Eletrônicos" },
-    { name: "Kit Organizador Minimalista", category: "Casa" },
-    { name: "Proteína Vegana Cacau", category: "Fitness" },
-    { name: "Massageador Facial", category: "Beleza" },
-    { name: "Cadeira Ergonômica Home", category: "Home Office" },
-  ];
-
-  return products.map((p, i) => ({
-    id: generateId("prod", i, p.name),
-    name: p.name,
-    imageUrl: `https://picsum.photos/seed/prod${i}/200/200`,
-    category: p.category,
-    priceBRL: Math.floor(Math.random() * 300) + 29,
-    launchDate: new Date(
-      Date.now() - Math.random() * (isNew ? 7 : 90) * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    isNew,
-    rating: Math.random() * 2 + 3,
-    sales: Math.floor(Math.random() * 50000) + 1000,
-    avgPriceBRL: Math.floor(Math.random() * 200) + 30,
-    commissionRate: Math.random() * 0.3 + 0.05,
-    revenueBRL: Math.floor(Math.random() * 1000000) + 50000,
-    liveRevenueBRL: Math.floor(Math.random() * 200000),
-    videoRevenueBRL: Math.floor(Math.random() * 500000) + 30000,
-    mallRevenueBRL: Math.floor(Math.random() * 100000),
-    creatorCount: Math.floor(Math.random() * 500) + 10,
-    creatorConversionRate: Math.random() * 0.15 + 0.01,
-    kalodataUrl: `https://kalodata.com/product/${i}`,
-    tiktokUrl: `https://tiktok.com/shop/product/${i}`,
-    dateRange: "Últimos 7 dias",
-  }));
-}
-
-function generateMockCreators(): CreatorDTO[] {
-  const creators = [
-    { name: "Maria Bela", handle: "@mariabela" },
-    { name: "João Tech", handle: "@joaotech" },
-    { name: "Ana Fit", handle: "@anafit" },
-    { name: "Pedro Saúde", handle: "@pedrosaude" },
-    { name: "Carla Vlog", handle: "@carlavlog" },
-  ];
-
-  return creators.map((c, i) => ({
-    id: generateId("creator", i, c.handle),
-    name: c.name,
-    handle: c.handle,
-    followers: Math.floor(Math.random() * 3000000) + 100000,
-    revenueBRL: Math.floor(Math.random() * 500000) + 10000,
-    productCount: Math.floor(Math.random() * 50) + 5,
-    liveCount: Math.floor(Math.random() * 30) + 1,
-    liveGmvBRL: Math.floor(Math.random() * 100000),
-    videoCount: Math.floor(Math.random() * 200) + 20,
-    videoGmvBRL: Math.floor(Math.random() * 300000) + 5000,
-    views: Math.floor(Math.random() * 50000000) + 1000000,
-    debutDate: new Date(
-      Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    kalodataUrl: `https://kalodata.com/creator/${c.handle.slice(1)}`,
-    tiktokUrl: `https://tiktok.com/${c.handle}`,
-    dateRange: "Últimos 7 dias",
-  }));
 }
 
 // ============================================
@@ -448,16 +314,15 @@ export async function parseTopVideos7d(): Promise<VideoDTO[]> {
   }
 
   const sheet = await readXlsxFile(FILES.videos);
-  let videos: VideoDTO[];
 
-  if (sheet) {
-    const rows = sheetToRows(sheet);
-    videos = rows.slice(0, 10).map((row, i) => parseVideoRow(row, i));
-    console.log(`[XLSX] Loaded ${videos.length} videos`);
-  } else {
-    console.log("[XLSX] Using mock videos");
-    videos = generateMockVideos();
+  if (!sheet) {
+    console.warn("[XLSX] No videos XLSX available — returning empty list");
+    return [];
   }
+
+  const rows = sheetToRows(sheet);
+  const videos = rows.slice(0, 10).map((row, i) => parseVideoRow(row, i));
+  console.log(`[XLSX] Loaded ${videos.length} videos`);
 
   cache.videos = { data: videos, timestamp: Date.now() };
   return videos;
@@ -469,16 +334,15 @@ export async function parseTopProducts7d(): Promise<ProductDTO[]> {
   }
 
   const sheet = await readXlsxFile(FILES.products);
-  let products: ProductDTO[];
 
-  if (sheet) {
-    const rows = sheetToRows(sheet);
-    products = rows.slice(0, 10).map((row, i) => parseProductRow(row, i));
-    console.log(`[XLSX] Loaded ${products.length} products`);
-  } else {
-    console.log("[XLSX] Using mock products");
-    products = generateMockProducts();
+  if (!sheet) {
+    console.warn("[XLSX] No products XLSX available — returning empty list");
+    return [];
   }
+
+  const rows = sheetToRows(sheet);
+  const products = rows.slice(0, 10).map((row, i) => parseProductRow(row, i));
+  console.log(`[XLSX] Loaded ${products.length} products`);
 
   cache.products = { data: products, timestamp: Date.now() };
   return products;
@@ -490,16 +354,19 @@ export async function parseTopNewProducts7d(): Promise<ProductDTO[]> {
   }
 
   const sheet = await readXlsxFile(FILES.newProducts);
-  let products: ProductDTO[];
 
-  if (sheet) {
-    const rows = sheetToRows(sheet);
-    products = rows.slice(0, 5).map((row, i) => parseProductRow(row, i, true));
-    console.log(`[XLSX] Loaded ${products.length} new products`);
-  } else {
-    console.log("[XLSX] Using mock new products");
-    products = generateMockProducts(true).slice(0, 5);
+  if (!sheet) {
+    console.warn(
+      "[XLSX] No new products XLSX available — returning empty list",
+    );
+    return [];
   }
+
+  const rows = sheetToRows(sheet);
+  const products = rows
+    .slice(0, 5)
+    .map((row, i) => parseProductRow(row, i, true));
+  console.log(`[XLSX] Loaded ${products.length} new products`);
 
   cache.newProducts = { data: products, timestamp: Date.now() };
   return products;
@@ -511,16 +378,15 @@ export async function parseTopCreators7d(): Promise<CreatorDTO[]> {
   }
 
   const sheet = await readXlsxFile(FILES.creators);
-  let creators: CreatorDTO[];
 
-  if (sheet) {
-    const rows = sheetToRows(sheet);
-    creators = rows.slice(0, 5).map((row, i) => parseCreatorRow(row, i));
-    console.log(`[XLSX] Loaded ${creators.length} creators`);
-  } else {
-    console.log("[XLSX] Using mock creators");
-    creators = generateMockCreators();
+  if (!sheet) {
+    console.warn("[XLSX] No creators XLSX available — returning empty list");
+    return [];
   }
+
+  const rows = sheetToRows(sheet);
+  const creators = rows.slice(0, 5).map((row, i) => parseCreatorRow(row, i));
+  console.log(`[XLSX] Loaded ${creators.length} creators`);
 
   cache.creators = { data: creators, timestamp: Date.now() };
   return creators;

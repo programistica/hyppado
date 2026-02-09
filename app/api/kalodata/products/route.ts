@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const filter = searchParams.get("filter") || undefined; // 'new' for new products
     const search = searchParams.get("search") || undefined;
 
-    // Parse from XLSX or fallback to mock
+    // Parse from XLSX (returns empty array if file missing)
     let products =
       filter === "new"
         ? await parseTopNewProducts7d()

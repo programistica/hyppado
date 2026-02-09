@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "5", 10);
     const search = searchParams.get("search") || undefined;
 
-    // Parse from XLSX or fallback to mock
+    // Parse from XLSX (returns empty array if file missing)
     let creators = await parseTopCreators7d();
 
     // Apply search filter if provided

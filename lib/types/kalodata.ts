@@ -26,8 +26,8 @@ export interface VideoDTO {
   adCostBRL: number; // Custo de publicidade (R$)
   roas: number; // ROAS
   kalodataUrl: string; // Link de Kalodata
-  tiktokUrl: string; // Link do TikTok
-  thumbnailUrl?: string; // Extracted from TikTok URL or placeholder
+  tiktokUrl: string; // Link do TikTok (canonical when possible)
+  thumbnailUrl: string | null; // Real thumbnail from TikTok oEmbed
   dateRange: string; // Intervalo de datas
 }
 
