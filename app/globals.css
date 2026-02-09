@@ -1,0 +1,60 @@
+/* =============================================
+   HYPPADO THEME TOKENS - DARK/LIGHT ALTERNATION
+   Only navy, blue, cyan, sky - ZERO green tints
+============================================= */
+
+:root {
+  /* LIGHT TONE - white-blue backgrounds */
+  --bg-light: #f7fbff;
+  --bg-light-2: #eef6ff;
+  --card-light: rgba(255, 255, 255, 0.78);
+  --border-light: rgba(148, 163, 184, 0.35);
+  --text-light: #0f172a;
+  --muted-light: #475569;
+
+  /* DARK TONE - deep navy backgrounds */
+  --bg-dark: #06080f;
+  --bg-dark-2: #0a0f18;
+  --card-dark: rgba(255, 255, 255, 0.06);
+  --border-dark: rgba(148, 163, 184, 0.18);
+  --text-dark: rgba(255, 255, 255, 0.92);
+  --muted-dark: rgba(226, 232, 240, 0.7);
+
+  /* ACCENT COLORS - cyan/sky only */
+  --accent: #22d3ee;
+  --accent-2: #38bdf8;
+  --accent-rgb: 34, 211, 238;
+  --accent-2-rgb: 56, 189, 248;
+}
+
+/* Shimmer animation for placeholders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Glow pulse animation */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

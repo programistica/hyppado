@@ -45,6 +45,8 @@ import {
   LoginOutlined,
   KeyboardArrowDownRounded,
   KeyboardArrowUpRounded,
+  ImageOutlined,
+  AutoAwesome,
 } from "@mui/icons-material";
 import theme from "./theme";
 import { PLANS } from "./data/plans";
@@ -178,7 +180,7 @@ function ScrollArrows() {
   // Listener de scroll simples
   useEffect(() => {
     let ticking = false;
-    
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
@@ -310,87 +312,197 @@ function ScrollArrows() {
 }
 
 /* ============================================
-   SECTION SHELL - BACKGROUND SYSTEM
+   SECTION SHELL - BACKGROUND SYSTEM + THEME
 ============================================ */
-type SectionVariant = "hero" | "how" | "who" | "pricing" | "faq";
+type SectionVariant =
+  | "hero"
+  | "how"
+  | "receive"
+  | "flow"
+  | "who"
+  | "pricing"
+  | "faq";
+type SectionTheme =
+  | "hero"
+  | "how"
+  | "receive"
+  | "flow"
+  | "audience"
+  | "pricing"
+  | "faq";
+
+type SectionTone = "dark" | "light";
 
 interface SectionShellProps {
   id: string;
   children: ReactNode;
   variant: SectionVariant;
+  theme?: SectionTheme;
+  tone?: SectionTone;
   noDivider?: boolean;
+  noGlowLine?: boolean;
+  allowOverflow?: boolean;
 }
+
+/*
+ * SECTION ACCENT COLORS
+ * Cada seção possui um accent hue diferente para criar
+ * variação visual integrada (premium SaaS look)
+ */
+const SECTION_ACCENTS: Record<
+  SectionVariant,
+  {
+    primary: string;
+    glow: string;
+    rgb: string;
+  }
+> = {
+  hero: {
+    primary: "rgba(56, 189, 248, 0.15)",
+    glow: "rgba(56, 189, 248, 0.30)",
+    rgb: "56, 189, 248",
+  },
+  how: {
+    primary: "rgba(45, 212, 255, 0.10)",
+    glow: "rgba(45, 212, 255, 0.20)",
+    rgb: "45, 212, 255",
+  },
+  receive: {
+    primary: "rgba(80, 140, 255, 0.08)",
+    glow: "rgba(80, 140, 255, 0.18)",
+    rgb: "80, 140, 255",
+  },
+  flow: {
+    primary: "rgba(130, 100, 255, 0.07)",
+    glow: "rgba(130, 100, 255, 0.16)",
+    rgb: "130, 100, 255",
+  },
+  who: {
+    primary: "rgba(120, 90, 255, 0.06)",
+    glow: "rgba(120, 90, 255, 0.14)",
+    rgb: "120, 90, 255",
+  },
+  pricing: {
+    primary: "rgba(50, 180, 255, 0.10)",
+    glow: "rgba(50, 180, 255, 0.22)",
+    rgb: "50, 180, 255",
+  },
+  faq: {
+    primary: "rgba(57, 213, 255, 0.05)",
+    glow: "rgba(57, 213, 255, 0.12)",
+    rgb: "57, 213, 255",
+  },
+};
 
 const SECTION_STYLES: Record<
   SectionVariant,
   {
     base: string;
     decorative: string;
+    topFade: string;
     dividerColor: string;
+    glowLineColor: string;
     py: { xs: number; md: number };
     pt?: { xs: number; md: number };
     pb?: { xs: number; md: number };
     minHeight?: { xs: string; md: string };
   }
 > = {
+  // HERO: fundo escuro uniforme #06080F + glows sutis (sem faixa clara)
   hero: {
-    base: `
-      linear-gradient(175deg, #0c1420 0%, #070B12 55%, #050810 100%)
-    `,
+    base: `#06080F`,
     decorative: `
-      radial-gradient(ellipse 55% 45% at 12% 25%, rgba(57, 213, 255, 0.10) 0%, transparent 55%),
-      radial-gradient(ellipse 45% 40% at 85% 55%, rgba(57, 213, 255, 0.06) 0%, transparent 50%),
-      repeating-linear-gradient(90deg, rgba(57, 213, 255, 0.02) 0px, transparent 1px, transparent 120px)
+      radial-gradient(900px 520px at 22% 40%, rgba(56, 189, 248, 0.30) 0%, rgba(56, 189, 248, 0.08) 45%, transparent 70%),
+      radial-gradient(800px 520px at 78% 35%, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0.04) 45%, transparent 72%)
     `,
-    dividerColor: "rgba(13, 21, 32, 0.85)",
+    topFade: "transparent",
+    dividerColor: "transparent",
+    glowLineColor: "transparent",
     py: { xs: 0, md: 0 },
-    pb: { xs: 8, md: 8 },
+    pb: { xs: 10, md: 10 },
     minHeight: { xs: "100vh", md: "100vh" },
   },
+  // COMO FUNCIONA: teal/cyan com neon haze
   how: {
-    base: `
-      linear-gradient(180deg, rgba(13, 21, 32, 0.65) 0%, rgba(9, 14, 22, 0.9) 45%, rgba(7, 11, 18, 1) 100%)
-    `,
+    base: `linear-gradient(180deg, #0a1118 0%, #0b1320 35%, #0a1018 70%, #080d15 100%)`,
     decorative: `
-      linear-gradient(90deg, transparent 47px, rgba(57, 213, 255, 0.025) 48px, transparent 49px),
-      linear-gradient(0deg, transparent 47px, rgba(57, 213, 255, 0.025) 48px, transparent 49px),
-      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(57, 213, 255, 0.04) 0%, transparent 60%)
+      radial-gradient(ellipse 50% 35% at 8% 15%, rgba(45, 212, 255, 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 92% 85%, rgba(45, 212, 255, 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 25% at 50% 0%, rgba(45, 212, 255, 0.05) 0%, transparent 50%),
+      linear-gradient(90deg, transparent 47px, rgba(45, 212, 255, 0.018) 48px, transparent 49px),
+      linear-gradient(0deg, transparent 47px, rgba(45, 212, 255, 0.018) 48px, transparent 49px)
     `,
-    dividerColor: "rgba(57, 213, 255, 0.04)",
-    py: { xs: 10, md: 14 },
+    topFade: "linear-gradient(to bottom, #0a1118 0%, transparent 100%)",
+    dividerColor: "#090e18",
+    glowLineColor: "rgba(45, 212, 255, 0.25)",
+    py: { xs: 12, md: 16 },
   },
+  // O QUE VOCÊ RECEBE: indigo/blue sutil
+  receive: {
+    base: `linear-gradient(180deg, #090e18 0%, #0b1220 30%, #0c1424 55%, #0a1118 100%)`,
+    decorative: `
+      radial-gradient(ellipse 55% 40% at 15% 20%, rgba(80, 140, 255, 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 45% at 85% 75%, rgba(80, 140, 255, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 30% at 50% 50%, rgba(80, 140, 255, 0.04) 0%, transparent 60%)
+    `,
+    topFade: "linear-gradient(to bottom, #090e18 0%, transparent 100%)",
+    dividerColor: "#0a0f1a",
+    glowLineColor: "rgba(80, 140, 255, 0.22)",
+    py: { xs: 12, md: 16 },
+  },
+  // DO DADO À AÇÃO: purple sutil
+  flow: {
+    base: `linear-gradient(180deg, #0a0f1a 0%, #0c1424 30%, #0d1428 55%, #0b1220 100%)`,
+    decorative: `
+      radial-gradient(ellipse 45% 35% at 10% 25%, rgba(130, 100, 255, 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 90% 70%, rgba(130, 100, 255, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 25% at 50% 85%, rgba(130, 100, 255, 0.04) 0%, transparent 55%)
+    `,
+    topFade: "linear-gradient(to bottom, #0a0f1a 0%, transparent 100%)",
+    dividerColor: "#080d15",
+    glowLineColor: "rgba(130, 100, 255, 0.20)",
+    py: { xs: 12, md: 16 },
+  },
+  // PARA QUEM É: roxo/azulado sutil + cyan discreto
   who: {
-    base: `
-      linear-gradient(180deg, rgba(57, 213, 255, 0.05) 0%, rgba(10, 15, 24, 0.95) 40%, rgba(7, 11, 18, 1) 100%)
-    `,
+    base: `linear-gradient(180deg, #080d15 0%, #0a1220 25%, #0d1428 50%, #0b1322 75%, #0a1118 100%)`,
     decorative: `
-      radial-gradient(ellipse 50% 50% at 15% 30%, rgba(255, 77, 166, 0.04) 0%, transparent 60%),
-      radial-gradient(ellipse 45% 45% at 85% 70%, rgba(57, 213, 255, 0.05) 0%, transparent 55%)
+      radial-gradient(ellipse 50% 40% at 5% 20%, rgba(120, 90, 255, 0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 45% 35% at 95% 80%, rgba(120, 90, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 30% at 50% 50%, rgba(57, 213, 255, 0.03) 0%, transparent 45%),
+      radial-gradient(ellipse 60% 20% at 50% 95%, rgba(57, 213, 255, 0.025) 0%, transparent 45%)
     `,
-    dividerColor: "#060912",
-    py: { xs: 10, md: 14 },
+    topFade: "linear-gradient(to bottom, #080d15 0%, transparent 100%)",
+    dividerColor: "#070b12",
+    glowLineColor: "rgba(120, 90, 255, 0.18)",
+    py: { xs: 12, md: 16 },
   },
+  // PLANOS: electric blue, vitrine premium
   pricing: {
-    base: `
-      linear-gradient(180deg, #060912 0%, #070B12 45%, #050810 100%)
-    `,
+    base: `linear-gradient(180deg, #070b12 0%, #080e18 20%, #0a1220 45%, #0b1424 55%, #080d15 80%, #070b12 100%)`,
     decorative: `
-      radial-gradient(ellipse 80% 30% at 50% 50%, rgba(57, 213, 255, 0.03) 0%, transparent 70%),
-      linear-gradient(180deg, transparent 30%, rgba(57, 213, 255, 0.015) 50%, transparent 70%)
+      radial-gradient(ellipse 75% 45% at 50% 45%, rgba(50, 180, 255, 0.08) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 30% at 15% 55%, rgba(50, 180, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 30% at 85% 55%, rgba(50, 180, 255, 0.05) 0%, transparent 50%),
+      linear-gradient(180deg, transparent 15%, rgba(50, 180, 255, 0.025) 50%, transparent 85%)
     `,
-    dividerColor: "rgba(13, 21, 32, 0.75)",
-    py: { xs: 10, md: 14 },
+    topFade: "linear-gradient(to bottom, #070b12 0%, transparent 100%)",
+    dividerColor: "#060910",
+    glowLineColor: "rgba(50, 180, 255, 0.25)",
+    py: { xs: 12, md: 16 },
   },
+  // FAQ: clean, calmo, linhas sutis
   faq: {
-    base: `
-      linear-gradient(180deg, rgba(13, 21, 32, 0.75) 0%, rgba(9, 14, 22, 0.9) 50%, rgba(7, 11, 18, 1) 100%)
-    `,
+    base: `linear-gradient(180deg, #060910 0%, #080c14 30%, #0a0f18 60%, #070b12 100%)`,
     decorative: `
-      radial-gradient(circle at 20% 80%, rgba(57, 213, 255, 0.02) 0%, transparent 40%),
-      radial-gradient(circle at 80% 20%, rgba(57, 213, 255, 0.02) 0%, transparent 40%)
+      radial-gradient(circle at 15% 75%, rgba(57, 213, 255, 0.03) 0%, transparent 35%),
+      radial-gradient(circle at 85% 25%, rgba(57, 213, 255, 0.025) 0%, transparent 30%),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 60px, rgba(255,255,255,0.006) 60px, rgba(255,255,255,0.006) 61px)
     `,
+    topFade: "linear-gradient(to bottom, #060910 0%, transparent 100%)",
     dividerColor: "transparent",
-    py: { xs: 10, md: 14 },
+    glowLineColor: "transparent",
+    py: { xs: 12, md: 16 },
   },
 };
 
@@ -398,25 +510,67 @@ function SectionShell({
   id,
   children,
   variant,
+  theme,
+  tone,
   noDivider = false,
+  noGlowLine = false,
+  allowOverflow = false,
 }: SectionShellProps) {
   const styles = SECTION_STYLES[variant];
+  const accent = SECTION_ACCENTS[variant];
   const isHero = variant === "hero";
+  const dataTheme = theme || (variant === "who" ? "audience" : variant);
+
+  // Tone-based backgrounds (DARK ↔ LIGHT alternation)
+  // Only navy, blue, cyan, sky - ZERO green
+  const toneStyles = {
+    dark: {
+      base: `
+        radial-gradient(900px 500px at 20% 20%, rgba(34, 211, 238, 0.10), transparent 60%),
+        radial-gradient(700px 420px at 70% 25%, rgba(56, 189, 248, 0.10), transparent 55%),
+        linear-gradient(180deg, var(--bg-dark, #06080F), var(--bg-dark-2, #0A0F18))
+      `,
+      text: "var(--text-dark, rgba(255, 255, 255, 0.92))",
+      muted: "var(--muted-dark, rgba(226, 232, 240, 0.70))",
+    },
+    light: {
+      base: `
+        radial-gradient(900px 520px at 20% 10%, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(800px 520px at 80% 0%, rgba(34, 211, 238, 0.14), transparent 52%),
+        linear-gradient(180deg, var(--bg-light, #F7FBFF), var(--bg-light-2, #EEF6FF))
+      `,
+      text: "var(--text-light, #0F172A)",
+      muted: "var(--muted-light, #475569)",
+    },
+  };
+
+  const activeTone = tone ? toneStyles[tone] : null;
 
   return (
     <Box
       id={id}
       component="section"
+      data-theme={dataTheme}
+      data-tone={tone || "dark"}
       sx={{
         position: "relative",
-        overflow: "hidden",
-        scrollMarginTop: isHero ? 0 : "90px",
+        overflow: allowOverflow ? "visible" : "hidden",
+        scrollMarginTop: isHero ? 0 : "88px",
         ...(styles.minHeight && { minHeight: styles.minHeight }),
         ...(styles.pt ? { pt: styles.pt } : {}),
         ...(styles.pb ? { pb: styles.pb } : {}),
         ...(!styles.pt && !styles.pb ? { py: styles.py } : {}),
         display: isHero ? "flex" : "block",
         alignItems: isHero ? "center" : undefined,
+        // CSS custom properties for this section
+        "--section-accent": accent.primary,
+        "--section-glow": accent.glow,
+        "--section-accent-rgb": accent.rgb,
+        // Tone-based text color tokens
+        ...(activeTone && {
+          "--section-text": activeTone.text,
+          "--section-muted": activeTone.muted,
+        }),
       }}
     >
       {/* A) Base background layer */}
@@ -426,47 +580,436 @@ function SectionShell({
           inset: 0,
           zIndex: 0,
           pointerEvents: "none",
-          background: styles.base,
+          background: activeTone ? activeTone.base : styles.base,
         }}
       />
 
-      {/* B) Decorative glows layer */}
-      <Box
-        sx={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 1,
-          pointerEvents: "none",
-          background: styles.decorative,
-          backgroundSize:
-            variant === "how" ? "48px 48px, 48px 48px, 100% 100%" : "100% 100%",
-        }}
-      />
+      {/* B) Decorative glows layer (only show for dark tone or no tone) */}
+      {(!tone || tone === "dark") && (
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+            background: styles.decorative,
+            backgroundSize:
+              variant === "how"
+                ? "100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px"
+                : "100% 100%",
+          }}
+        />
+      )}
 
-      {/* C) Content wrapper */}
+      {/* C) Top glow line divider (integrates with previous section) */}
+      {!isHero &&
+        !noGlowLine &&
+        styles.glowLineColor !== "transparent" &&
+        !tone && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: "10%",
+              right: "10%",
+              height: "1px",
+              zIndex: 5,
+              pointerEvents: "none",
+              background: `linear-gradient(90deg, transparent 0%, ${styles.glowLineColor} 30%, ${styles.glowLineColor} 70%, transparent 100%)`,
+              boxShadow: `0 0 20px 2px ${styles.glowLineColor}, 0 0 40px 4px ${styles.glowLineColor.replace(/[\d.]+\)$/, "0.1)")}`,
+              opacity: 0.8,
+            }}
+          />
+        )}
+
+      {/* D) Top fade (blend from previous section - only for dark sections without tone) */}
+      {!isHero && styles.topFade !== "transparent" && !tone && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: { xs: 100, md: 140 },
+            zIndex: 2,
+            pointerEvents: "none",
+            background: styles.topFade,
+          }}
+        />
+      )}
+
+      {/* E) Content wrapper */}
       <Box
         sx={{
           position: "relative",
-          zIndex: 2,
+          zIndex: 3,
           width: "100%",
         }}
       >
         {children}
       </Box>
 
-      {/* D) Divider to blend into next section */}
-      {!noDivider && styles.dividerColor !== "transparent" && (
+      {/* F) Bottom divider gradient (blends into next section - only for dark sections without tone) */}
+      {!noDivider && styles.dividerColor !== "transparent" && !tone && (
         <Box
           sx={{
             position: "absolute",
             left: 0,
             right: 0,
             bottom: -1,
-            height: { xs: 100, md: 160 },
-            zIndex: 3,
+            height: { xs: 140, md: 200 },
+            zIndex: 4,
             pointerEvents: "none",
             background: `linear-gradient(to bottom, transparent 0%, ${styles.dividerColor} 100%)`,
           }}
+        />
+      )}
+    </Box>
+  );
+}
+
+/* ============================================
+   MEDIA SLOT - PLACEHOLDER/SKELETON COMPONENT
+============================================ */
+/*
+ * === SUGESTÕES DE ASSETS PARA GERAR ===
+ *
+ * public/sections/how-it-works-dashboard.png
+ *   → Mock premium de dashboard dark, cards, gráficos, métricas
+ *   → Estilo: glassmorphism, tons de azul/cyan, sem marcas
+ *   → Dimensões sugeridas: 1200x600px
+ *
+ * public/sections/for-who-banner.png
+ *   → Banner abstrato horizontal: linhas fluidas, partículas, glow cyan
+ *   → Estilo: tech/SaaS, formas geométricas suaves
+ *   → Dimensões sugeridas: 1400x400px
+ *
+ * public/sections/plans-trust-badge.png
+ *   → Mini ilustração: escudo com check, "secure payment" vibe
+ *   → Estilo: ícone/badge premium, sem texto
+ *   → Dimensões sugeridas: 200x60px
+ *
+ * public/sections/faq-abstract.png
+ *   → Ilustração vertical abstrata com formas suaves
+ *   → Estilo: ondas, gradientes, partículas sutis
+ *   → Dimensões sugeridas: 400x600px
+ */
+
+interface ImageSlotProps {
+  src?: string;
+  alt?: string;
+  height?: number | { xs: number; md: number };
+  width?: string | number;
+  radius?: number;
+  variant?: "rounded" | "card" | "banner" | "badge" | "hero" | "icon";
+  icon?: ReactNode;
+  label?: string;
+  className?: string;
+}
+
+/*
+ * ImageSlot - Placeholder premium com glass morphism e shimmer
+ * Usa CSS variables do tema da seção (--section-accent-rgb)
+ *
+ * Variants:
+ * - rounded: cantos arredondados médios (12px)
+ * - card: visual de card com bordas suaves (16px)
+ * - banner: wide/panorâmico com cantos leves (8px)
+ * - badge: pequeno/compacto (full rounded)
+ * - hero: grande destaque (20px)
+ * - icon: circular com ícone central
+ */
+function ImageSlot({
+  src,
+  alt = "Ilustração",
+  height = 280,
+  width = "100%",
+  radius = 16,
+  variant = "rounded",
+  icon,
+  label,
+}: ImageSlotProps) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const radiusMap: Record<string, number> = {
+    rounded: 12,
+    card: 16,
+    banner: 8,
+    badge: 99,
+    hero: 20,
+    icon: 999,
+  };
+
+  const variantStyles = {
+    rounded: {
+      border: "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.10)",
+      background:
+        "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
+      backdropFilter: "blur(8px)",
+      boxShadow: `
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 4px 24px -4px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(0,0,0,0.1)
+      `,
+    },
+    card: {
+      border: "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.12)",
+      background:
+        "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+      backdropFilter: "blur(12px)",
+      boxShadow: `
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 8px 32px rgba(0,0,0,0.25),
+        0 0 0 1px rgba(0,0,0,0.1)
+      `,
+    },
+    banner: {
+      border: "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.08)",
+      background:
+        "linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 100%)",
+      backdropFilter: "blur(8px)",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1)",
+    },
+    badge: {
+      border: "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.15)",
+      background: "rgba(255,255,255,0.03)",
+      backdropFilter: "blur(4px)",
+      boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
+    },
+    hero: {
+      border: "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.12)",
+      background:
+        "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
+      backdropFilter: "blur(16px)",
+      boxShadow: `
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 12px 40px rgba(0,0,0,0.3),
+        0 0 60px rgba(var(--section-accent-rgb, 57, 213, 255), 0.08)
+      `,
+    },
+    icon: {
+      border: "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.20)",
+      background: "rgba(var(--section-accent-rgb, 57, 213, 255), 0.08)",
+      backdropFilter: "blur(4px)",
+      boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+    },
+  };
+
+  const styles = variantStyles[variant] || variantStyles.rounded;
+  const finalRadius = radiusMap[variant] || radius;
+
+  // Se tem src e não deu erro, renderiza imagem
+  if (src && !hasError) {
+    return (
+      <Box
+        sx={{
+          position: "relative",
+          width,
+          height,
+          borderRadius: `${finalRadius}px`,
+          overflow: "hidden",
+          border:
+            "1px solid rgba(var(--section-accent-rgb, 57, 213, 255), 0.08)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            borderColor: "rgba(var(--section-accent-rgb, 57, 213, 255), 0.18)",
+            boxShadow:
+              "0 8px 32px rgba(0,0,0,0.25), 0 0 30px rgba(var(--section-accent-rgb, 57, 213, 255), 0.10)",
+            transform: "translateY(-2px)",
+          },
+        }}
+      >
+        {isLoading && (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(7, 11, 18, 0.8)",
+              zIndex: 1,
+            }}
+          >
+            <ImageOutlined
+              sx={{
+                fontSize: 32,
+                color: "rgba(var(--section-accent-rgb, 57, 213, 255), 0.3)",
+              }}
+            />
+          </Box>
+        )}
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          style={{
+            objectFit: "cover",
+            opacity: isLoading ? 0 : 1,
+            transition: "opacity 0.3s",
+          }}
+          onLoad={() => setIsLoading(false)}
+          onError={() => setHasError(true)}
+        />
+      </Box>
+    );
+  }
+
+  // Fallback: Skeleton premium com glass + shimmer
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width,
+        height,
+        borderRadius: `${finalRadius}px`,
+        overflow: "hidden",
+        ...styles,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        // Shimmer animation usando cor do tema
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          background: `linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(var(--section-accent-rgb, 57, 213, 255), 0.06) 40%,
+            rgba(var(--section-accent-rgb, 57, 213, 255), 0.10) 50%,
+            rgba(var(--section-accent-rgb, 57, 213, 255), 0.06) 60%,
+            transparent 100%
+          )`,
+          backgroundSize: "200% 100%",
+          animation: "shimmer 2.8s ease-in-out infinite",
+        },
+        // Subtle glow pulse
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          inset: -1,
+          borderRadius: "inherit",
+          background: "transparent",
+          boxShadow:
+            "0 0 20px 0 rgba(var(--section-accent-rgb, 57, 213, 255), 0.08)",
+          animation: "glow-pulse 4s ease-in-out infinite",
+          pointerEvents: "none",
+        },
+        "@keyframes shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "@keyframes glow-pulse": {
+          "0%, 100%": { opacity: 0.5 },
+          "50%": { opacity: 1 },
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 1.5,
+          color: "rgba(var(--section-accent-rgb, 57, 213, 255), 0.35)",
+        }}
+      >
+        {icon || (
+          <ImageOutlined
+            sx={{
+              fontSize: variant === "badge" || variant === "icon" ? 24 : 40,
+              color: "rgba(var(--section-accent-rgb, 57, 213, 255), 0.3)",
+            }}
+          />
+        )}
+        {label && variant !== "badge" && variant !== "icon" && (
+          <Typography
+            variant="caption"
+            sx={{
+              color: "rgba(var(--section-accent-rgb, 57, 213, 255), 0.4)",
+              fontSize: "0.7rem",
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              fontWeight: 500,
+            }}
+          >
+            {label}
+          </Typography>
+        )}
+      </Box>
+    </Box>
+  );
+}
+
+// Versão simplificada para uso rápido (compatível com código existente)
+interface MediaSlotProps {
+  src?: string;
+  alt?: string;
+  height?: number | { xs: number; md: number };
+  radius?: number;
+  variant?: "skeleton" | "icon";
+  icon?: ReactNode;
+}
+
+function MediaSlot({
+  src,
+  alt = "Preview",
+  height = 180,
+  radius = 12,
+  variant = "skeleton",
+  icon,
+}: MediaSlotProps) {
+  if (src) {
+    return (
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height,
+          borderRadius: `${radius}px`,
+          overflow: "hidden",
+        }}
+      >
+        <Image src={src} alt={alt} fill style={{ objectFit: "cover" }} />
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: "100%",
+        height,
+        borderRadius: `${radius}px`,
+        overflow: "hidden",
+        background:
+          "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%)",
+        backgroundSize: "200% 100%",
+        animation: "shimmer 2s ease-in-out infinite",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "1px solid rgba(255,255,255,0.04)",
+        "@keyframes shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+      }}
+    >
+      {variant === "icon" && (
+        <Box sx={{ opacity: 0.2 }}>
+          {icon || <AutoAwesome sx={{ fontSize: 40, color: "#39D5FF" }} />}
+        </Box>
+      )}
+      {variant === "skeleton" && (
+        <ImageOutlined
+          sx={{ fontSize: 36, color: "rgba(57, 213, 255, 0.15)" }}
         />
       )}
     </Box>
@@ -905,7 +1448,7 @@ export default function HomePage() {
         </Drawer>
 
         {/* ==================== HERO SECTION ==================== */}
-        <SectionShell id="inicio" variant="hero">
+        <SectionShell id="inicio" variant="hero" tone="dark">
           {/* Video Background - zIndex 0 */}
           <HeroBackgroundVideo />
 
@@ -917,7 +1460,7 @@ export default function HomePage() {
               zIndex: 1,
               pointerEvents: "none",
               background:
-                "linear-gradient(to bottom, rgba(7,11,18,0.55) 0%, rgba(7,11,18,0.80) 55%, rgba(7,11,18,0.92) 75%, rgba(7,11,18,1) 100%)",
+                "linear-gradient(to bottom, rgba(6,8,15,0.55) 0%, rgba(6,8,15,0.80) 55%, rgba(6,8,15,0.95) 80%, #06080F 100%)",
             }}
           />
 
@@ -929,7 +1472,7 @@ export default function HomePage() {
               zIndex: 2,
               pointerEvents: "none",
               background:
-                "radial-gradient(ellipse at 18% 35%, rgba(57,213,255,0.10) 0%, rgba(57,213,255,0.05) 25%, transparent 60%)",
+                "radial-gradient(ellipse at 18% 35%, rgba(56,189,248,0.12) 0%, rgba(56,189,248,0.05) 25%, transparent 60%)",
               mixBlendMode: "normal",
             }}
           />
@@ -942,8 +1485,8 @@ export default function HomePage() {
               zIndex: 3,
               pointerEvents: "none",
               background:
-                "radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.25) 85%)",
-              opacity: 0.9,
+                "radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.20) 85%)",
+              opacity: 0.85,
             }}
           />
 
@@ -1084,7 +1627,7 @@ export default function HomePage() {
         </SectionShell>
 
         {/* ==================== COMO FUNCIONA SECTION ==================== */}
-        <SectionShell id="como-funciona" variant="how">
+        <SectionShell id="como-funciona" variant="how" tone="light">
           <Container maxWidth="lg">
             <Reveal>
               <Typography
@@ -1094,7 +1637,7 @@ export default function HomePage() {
                   fontWeight: 800,
                   lineHeight: 1.15,
                   letterSpacing: "-0.02em",
-                  color: "#fff",
+                  color: "var(--section-text, #fff)",
                   textAlign: "center",
                   mb: 2,
                 }}
@@ -1104,7 +1647,7 @@ export default function HomePage() {
               <Typography
                 sx={{
                   fontSize: { xs: "1rem", md: "1.125rem" },
-                  color: "#A0B0C0",
+                  color: "var(--section-muted, #A0B0C0)",
                   textAlign: "center",
                   maxWidth: 560,
                   mx: "auto",
@@ -1158,34 +1701,49 @@ export default function HomePage() {
                     description:
                       "Tome decisões baseadas em dados reais. Promova os produtos certos.",
                   },
-                ].map((item) => (
+                ].map((item, index) => (
                   <Grid item xs={12} sm={6} md={3} key={item.step}>
                     <Box
                       sx={{
                         textAlign: "center",
                         p: 3,
+                        borderRadius: 3,
+                        position: "relative",
+                        background: "rgba(255, 255, 255, 0.85)",
+                        border: "1px solid rgba(148, 163, 184, 0.25)",
+                        backdropFilter: "blur(8px)",
+                        boxShadow: "0 8px 32px rgba(2, 6, 23, 0.06)",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          border: "1px solid rgba(34, 211, 238, 0.45)",
+                          boxShadow:
+                            "0 12px 40px rgba(2, 6, 23, 0.10), 0 0 24px rgba(34, 211, 238, 0.12)",
+                        },
                       }}
                     >
                       <Box
                         sx={{
-                          width: 48,
-                          height: 48,
+                          width: 52,
+                          height: 52,
                           borderRadius: "50%",
                           background:
-                            "linear-gradient(135deg, rgba(57, 213, 255, 0.2) 0%, rgba(57, 213, 255, 0.05) 100%)",
-                          border: "1px solid rgba(57, 213, 255, 0.25)",
+                            "linear-gradient(135deg, rgba(34, 211, 238, 0.20) 0%, rgba(56, 189, 248, 0.10) 100%)",
+                          border: "1px solid rgba(34, 211, 238, 0.40)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           mx: "auto",
-                          mb: 2,
+                          mb: 2.5,
+                          boxShadow: "0 0 20px rgba(34, 211, 238, 0.15)",
+                          transition: "all 0.3s ease",
                         }}
                       >
                         <Typography
                           sx={{
-                            fontSize: "1.125rem",
+                            fontSize: "1.25rem",
                             fontWeight: 700,
-                            color: "#39D5FF",
+                            color: "#0891B2",
                           }}
                         >
                           {item.step}
@@ -1194,9 +1752,9 @@ export default function HomePage() {
                       <Typography
                         component="h3"
                         sx={{
-                          fontSize: "1rem",
+                          fontSize: "1.05rem",
                           fontWeight: 600,
-                          color: "#fff",
+                          color: "#0F172A",
                           mb: 1,
                         }}
                       >
@@ -1205,7 +1763,7 @@ export default function HomePage() {
                       <Typography
                         sx={{
                           fontSize: "0.875rem",
-                          color: "#8595A5",
+                          color: "#475569",
                           lineHeight: 1.6,
                         }}
                       >
@@ -1217,6 +1775,27 @@ export default function HomePage() {
               </Grid>
             </Reveal>
 
+            {/* Visual Preview Card - Placeholder for future dashboard screenshot */}
+            {/* src="/sections/how-it-works-dashboard.png" quando disponível */}
+            <Reveal delay={150}>
+              <Box
+                sx={{
+                  mt: { xs: 6, md: 8 },
+                  mx: "auto",
+                  maxWidth: 900,
+                }}
+              >
+                <ImageSlot
+                  // src="/sections/how-it-works-dashboard.png"
+                  alt="Preview do dashboard Hyppado"
+                  height={{ xs: 200, md: 320 }}
+                  radius={16}
+                  variant="card"
+                  icon={<AutoAwesome sx={{ fontSize: 48, color: "#39D5FF" }} />}
+                />
+              </Box>
+            </Reveal>
+
             {/* ===== A) O QUE VOCÊ RECEBE ===== */}
             <Reveal delay={50}>
               <Box sx={{ mt: { xs: 12, md: 16 } }}>
@@ -1225,7 +1804,7 @@ export default function HomePage() {
                   sx={{
                     fontSize: { xs: "1.5rem", md: "1.75rem" },
                     fontWeight: 700,
-                    color: "#fff",
+                    color: "#0F172A",
                     textAlign: "center",
                     mb: 1.5,
                   }}
@@ -1235,7 +1814,7 @@ export default function HomePage() {
                 <Typography
                   sx={{
                     fontSize: { xs: "0.95rem", md: "1rem" },
-                    color: "#8595A5",
+                    color: "#475569",
                     textAlign: "center",
                     maxWidth: 480,
                     mx: "auto",
@@ -1280,14 +1859,17 @@ export default function HomePage() {
                         sx={{
                           p: 3,
                           borderRadius: 3,
-                          background: "rgba(13, 21, 32, 0.6)",
-                          border: "1px solid rgba(255, 255, 255, 0.06)",
+                          background: "rgba(255, 255, 255, 0.85)",
+                          border: "1px solid rgba(148, 163, 184, 0.25)",
                           height: "100%",
-                          transition: "all 0.3s ease",
+                          boxShadow: "0 8px 32px rgba(2, 6, 23, 0.06)",
+                          transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
                           "&:hover": {
-                            background: "rgba(13, 21, 32, 0.8)",
-                            borderColor: "rgba(57, 213, 255, 0.15)",
-                            transform: "translateY(-2px)",
+                            background: "rgba(255, 255, 255, 0.95)",
+                            borderColor: "rgba(34, 211, 238, 0.45)",
+                            transform: "translateY(-4px)",
+                            boxShadow:
+                              "0 12px 40px rgba(2, 6, 23, 0.10), 0 0 24px rgba(34, 211, 238, 0.12)",
                           },
                         }}
                       >
@@ -1297,12 +1879,16 @@ export default function HomePage() {
                             height: 40,
                             borderRadius: 2,
                             background:
-                              "linear-gradient(135deg, rgba(57, 213, 255, 0.15) 0%, rgba(57, 213, 255, 0.05) 100%)",
-                            border: "1px solid rgba(57, 213, 255, 0.2)",
+                              "linear-gradient(135deg, rgba(34, 211, 238, 0.20) 0%, rgba(56, 189, 248, 0.10) 100%)",
+                            border: "1px solid rgba(34, 211, 238, 0.40)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             mb: 2,
+                            transition: "all 0.35s ease",
+                            ".MuiBox-root:hover > &": {
+                              boxShadow: "0 0 16px rgba(34, 211, 238, 0.35)",
+                            },
                           }}
                         >
                           <Box
@@ -1310,8 +1896,8 @@ export default function HomePage() {
                               width: 12,
                               height: 12,
                               borderRadius: "50%",
-                              background: "#39D5FF",
-                              boxShadow: "0 0 12px rgba(57, 213, 255, 0.5)",
+                              background: "#0891B2",
+                              boxShadow: "0 0 12px rgba(34, 211, 238, 0.5)",
                             }}
                           />
                         </Box>
@@ -1320,7 +1906,7 @@ export default function HomePage() {
                           sx={{
                             fontSize: "1rem",
                             fontWeight: 600,
-                            color: "#fff",
+                            color: "#0F172A",
                             mb: 0.75,
                           }}
                         >
@@ -1329,7 +1915,7 @@ export default function HomePage() {
                         <Typography
                           sx={{
                             fontSize: "0.875rem",
-                            color: "#8595A5",
+                            color: "#475569",
                             lineHeight: 1.55,
                           }}
                         >
@@ -1350,7 +1936,7 @@ export default function HomePage() {
                   sx={{
                     fontSize: { xs: "1.5rem", md: "1.75rem" },
                     fontWeight: 700,
-                    color: "#fff",
+                    color: "#0F172A",
                     textAlign: "center",
                     mb: 1.5,
                   }}
@@ -1360,7 +1946,7 @@ export default function HomePage() {
                 <Typography
                   sx={{
                     fontSize: { xs: "0.95rem", md: "1rem" },
-                    color: "#8595A5",
+                    color: "#475569",
                     textAlign: "center",
                     maxWidth: 480,
                     mx: "auto",
@@ -1423,7 +2009,8 @@ export default function HomePage() {
                               width: 32,
                               height: 2,
                               background:
-                                "linear-gradient(90deg, rgba(57, 213, 255, 0.3) 0%, rgba(57, 213, 255, 0.1) 100%)",
+                                "linear-gradient(90deg, rgba(34, 211, 238, 0.5) 0%, rgba(56, 189, 248, 0.2) 100%)",
+                              boxShadow: "0 0 8px rgba(34, 211, 238, 0.2)",
                             }}
                           />
                         )}
@@ -1433,21 +2020,26 @@ export default function HomePage() {
                             height: 56,
                             borderRadius: "50%",
                             background:
-                              "linear-gradient(135deg, rgba(57, 213, 255, 0.25) 0%, rgba(57, 213, 255, 0.08) 100%)",
-                            border: "2px solid rgba(57, 213, 255, 0.35)",
+                              "linear-gradient(135deg, rgba(34, 211, 238, 0.25) 0%, rgba(56, 189, 248, 0.12) 100%)",
+                            border: "2px solid rgba(34, 211, 238, 0.50)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             mx: "auto",
                             mb: 2,
-                            boxShadow: "0 0 20px rgba(57, 213, 255, 0.15)",
+                            boxShadow: "0 0 20px rgba(34, 211, 238, 0.20)",
+                            transition: "all 0.35s ease",
+                            "&:hover": {
+                              boxShadow: "0 0 28px rgba(34, 211, 238, 0.40)",
+                              transform: "scale(1.08)",
+                            },
                           }}
                         >
                           <Typography
                             sx={{
                               fontSize: "1.25rem",
                               fontWeight: 800,
-                              color: "#39D5FF",
+                              color: "#0891B2",
                             }}
                           >
                             {item.step}
@@ -1458,7 +2050,7 @@ export default function HomePage() {
                           sx={{
                             fontSize: "1.125rem",
                             fontWeight: 700,
-                            color: "#fff",
+                            color: "#0F172A",
                             mb: 1,
                           }}
                         >
@@ -1467,7 +2059,7 @@ export default function HomePage() {
                         <Typography
                           sx={{
                             fontSize: "0.875rem",
-                            color: "#8595A5",
+                            color: "#475569",
                             lineHeight: 1.6,
                             maxWidth: 200,
                             mx: "auto",
@@ -1489,7 +2081,7 @@ export default function HomePage() {
                   sx={{
                     fontSize: "0.75rem",
                     fontWeight: 700,
-                    color: "#39D5FF",
+                    color: "#0891B2",
                     textTransform: "uppercase",
                     letterSpacing: "0.1em",
                     textAlign: "center",
@@ -1504,7 +2096,7 @@ export default function HomePage() {
                   sx={{
                     fontSize: { xs: "1.5rem", md: "1.75rem" },
                     fontWeight: 700,
-                    color: "#fff",
+                    color: "#0F172A",
                     textAlign: "center",
                     mb: 2,
                   }}
@@ -1515,7 +2107,7 @@ export default function HomePage() {
                 <Typography
                   sx={{
                     fontSize: { xs: "0.95rem", md: "1rem" },
-                    color: "#A0B0C0",
+                    color: "#475569",
                     textAlign: "center",
                     maxWidth: 640,
                     mx: "auto",
@@ -1533,7 +2125,7 @@ export default function HomePage() {
                     position: "relative",
                   }}
                 >
-                  {/* Connecting line */}
+                  {/* Connecting line with glow effect */}
                   <Box
                     sx={{
                       position: "absolute",
@@ -1542,8 +2134,19 @@ export default function HomePage() {
                       right: "12.5%",
                       height: 2,
                       background:
-                        "linear-gradient(90deg, transparent, rgba(57, 213, 255, 0.3) 20%, rgba(57, 213, 255, 0.3) 80%, transparent)",
+                        "linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.5) 20%, rgba(34, 211, 238, 0.5) 80%, transparent)",
                       zIndex: 0,
+                      boxShadow:
+                        "0 0 12px rgba(34, 211, 238, 0.25), 0 0 24px rgba(34, 211, 238, 0.15)",
+                      "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                          "linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.6) 40%, rgba(34, 211, 238, 0.6) 60%, transparent)",
+                        filter: "blur(4px)",
+                        opacity: 0.5,
+                      },
                     }}
                   />
 
@@ -1589,19 +2192,26 @@ export default function HomePage() {
                               height: 48,
                               borderRadius: "50%",
                               background:
-                                "linear-gradient(135deg, #39D5FF 0%, #1a8fb3 100%)",
+                                "linear-gradient(135deg, #22D3EE 0%, #0891B2 100%)",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
                               mb: 3,
-                              boxShadow: "0 0 20px rgba(57, 213, 255, 0.4)",
+                              boxShadow:
+                                "0 0 24px rgba(34, 211, 238, 0.45), 0 0 48px rgba(34, 211, 238, 0.25)",
+                              transition: "all 0.35s ease",
+                              "&:hover": {
+                                transform: "scale(1.1)",
+                                boxShadow:
+                                  "0 0 32px rgba(34, 211, 238, 0.6), 0 0 64px rgba(34, 211, 238, 0.35)",
+                              },
                             }}
                           >
                             <Typography
                               sx={{
                                 fontSize: "1.125rem",
                                 fontWeight: 800,
-                                color: "#070B12",
+                                color: "#fff",
                               }}
                             >
                               {item.step}
@@ -1613,15 +2223,19 @@ export default function HomePage() {
                             sx={{
                               p: 3,
                               borderRadius: 3,
-                              background: "rgba(13, 21, 32, 0.6)",
-                              border: "1px solid rgba(255, 255, 255, 0.06)",
+                              background: "rgba(255, 255, 255, 0.85)",
+                              border: "1px solid rgba(148, 163, 184, 0.25)",
                               height: "100%",
                               width: "100%",
-                              transition: "all 0.3s ease",
+                              boxShadow: "0 8px 32px rgba(2, 6, 23, 0.06)",
+                              transition:
+                                "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
                               "&:hover": {
-                                background: "rgba(13, 21, 32, 0.8)",
-                                borderColor: "rgba(57, 213, 255, 0.15)",
-                                transform: "translateY(-2px)",
+                                background: "rgba(255, 255, 255, 0.95)",
+                                borderColor: "rgba(34, 211, 238, 0.45)",
+                                transform: "translateY(-4px)",
+                                boxShadow:
+                                  "0 12px 40px rgba(2, 6, 23, 0.10), 0 0 24px rgba(34, 211, 238, 0.15)",
                               },
                             }}
                           >
@@ -1630,7 +2244,7 @@ export default function HomePage() {
                               sx={{
                                 fontSize: "1rem",
                                 fontWeight: 700,
-                                color: "#fff",
+                                color: "#0F172A",
                                 mb: 1.5,
                               }}
                             >
@@ -1639,7 +2253,7 @@ export default function HomePage() {
                             <Typography
                               sx={{
                                 fontSize: "0.875rem",
-                                color: "#8595A5",
+                                color: "#475569",
                                 lineHeight: 1.6,
                                 mb: item.chips ? 2 : 0,
                               }}
@@ -1663,12 +2277,12 @@ export default function HomePage() {
                                       px: 1.5,
                                       py: 0.5,
                                       borderRadius: "999px",
-                                      background: "rgba(57, 213, 255, 0.1)",
+                                      background: "rgba(34, 211, 238, 0.15)",
                                       border:
-                                        "1px solid rgba(57, 213, 255, 0.25)",
+                                        "1px solid rgba(34, 211, 238, 0.40)",
                                       fontSize: "0.7rem",
                                       fontWeight: 600,
-                                      color: "#39D5FF",
+                                      color: "#0891B2",
                                       textTransform: "uppercase",
                                       letterSpacing: "0.02em",
                                     }}
@@ -1693,7 +2307,7 @@ export default function HomePage() {
                     pl: 4,
                   }}
                 >
-                  {/* Vertical connecting line */}
+                  {/* Vertical connecting line with glow */}
                   <Box
                     sx={{
                       position: "absolute",
@@ -1702,8 +2316,9 @@ export default function HomePage() {
                       left: 11,
                       width: 2,
                       background:
-                        "linear-gradient(180deg, rgba(57, 213, 255, 0.3), rgba(57, 213, 255, 0.15))",
+                        "linear-gradient(180deg, rgba(34, 211, 238, 0.5), rgba(34, 211, 238, 0.2))",
                       zIndex: 0,
+                      boxShadow: "0 0 8px rgba(34, 211, 238, 0.25)",
                     }}
                   />
 
@@ -1749,11 +2364,11 @@ export default function HomePage() {
                             height: 24,
                             borderRadius: "50%",
                             background:
-                              "linear-gradient(135deg, #39D5FF 0%, #1a8fb3 100%)",
+                              "linear-gradient(135deg, #22D3EE 0%, #0891B2 100%)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            boxShadow: "0 0 12px rgba(57, 213, 255, 0.4)",
+                            boxShadow: "0 0 16px rgba(34, 211, 238, 0.45)",
                             flexShrink: 0,
                           }}
                         >
@@ -1761,7 +2376,7 @@ export default function HomePage() {
                             sx={{
                               fontSize: "0.75rem",
                               fontWeight: 800,
-                              color: "#070B12",
+                              color: "#fff",
                             }}
                           >
                             {item.step}
@@ -1773,9 +2388,10 @@ export default function HomePage() {
                           sx={{
                             p: 2.5,
                             borderRadius: 2.5,
-                            background: "rgba(13, 21, 32, 0.6)",
-                            border: "1px solid rgba(255, 255, 255, 0.06)",
+                            background: "rgba(255, 255, 255, 0.85)",
+                            border: "1px solid rgba(148, 163, 184, 0.25)",
                             width: "100%",
+                            boxShadow: "0 4px 16px rgba(2, 6, 23, 0.06)",
                           }}
                         >
                           <Typography
@@ -1783,7 +2399,7 @@ export default function HomePage() {
                             sx={{
                               fontSize: "0.95rem",
                               fontWeight: 700,
-                              color: "#fff",
+                              color: "#0F172A",
                               mb: 1,
                             }}
                           >
@@ -1792,7 +2408,7 @@ export default function HomePage() {
                           <Typography
                             sx={{
                               fontSize: "0.85rem",
-                              color: "#8595A5",
+                              color: "#475569",
                               lineHeight: 1.6,
                               mb: item.chips ? 2 : 0,
                             }}
@@ -1815,12 +2431,12 @@ export default function HomePage() {
                                     px: 1.5,
                                     py: 0.5,
                                     borderRadius: "999px",
-                                    background: "rgba(57, 213, 255, 0.1)",
+                                    background: "rgba(34, 211, 238, 0.15)",
                                     border:
-                                      "1px solid rgba(57, 213, 255, 0.25)",
+                                      "1px solid rgba(34, 211, 238, 0.40)",
                                     fontSize: "0.65rem",
                                     fontWeight: 600,
-                                    color: "#39D5FF",
+                                    color: "#0891B2",
                                     textTransform: "uppercase",
                                     letterSpacing: "0.02em",
                                   }}
@@ -1845,9 +2461,13 @@ export default function HomePage() {
                   mt: { xs: 12, md: 16 },
                   p: { xs: 4, md: 6 },
                   borderRadius: 4,
-                  background:
-                    "linear-gradient(135deg, rgba(57, 213, 255, 0.08) 0%, rgba(13, 21, 32, 0.8) 100%)",
-                  border: "1px solid rgba(57, 213, 255, 0.15)",
+                  background: `
+                    radial-gradient(ellipse 420px 320px at 8% 50%, rgba(45, 212, 255, 0.12) 0%, transparent 70%),
+                    linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 251, 255, 0.92) 100%)
+                  `,
+                  border: "1px solid rgba(45, 212, 255, 0.22)",
+                  boxShadow:
+                    "0 4px 24px rgba(6, 8, 15, 0.06), 0 1px 3px rgba(6, 8, 15, 0.04)",
                   textAlign: "center",
                 }}
               >
@@ -1856,7 +2476,7 @@ export default function HomePage() {
                   sx={{
                     fontSize: { xs: "1.5rem", md: "1.75rem" },
                     fontWeight: 700,
-                    color: "#fff",
+                    color: "#06080F",
                     mb: 1.5,
                   }}
                 >
@@ -1865,7 +2485,7 @@ export default function HomePage() {
                 <Typography
                   sx={{
                     fontSize: { xs: "0.95rem", md: "1rem" },
-                    color: "#A0B0C0",
+                    color: "rgba(6, 8, 15, 0.62)",
                     maxWidth: 480,
                     mx: "auto",
                     mb: 4,
@@ -1904,7 +2524,7 @@ export default function HomePage() {
         </SectionShell>
 
         {/* ==================== PARA QUEM É SECTION ==================== */}
-        <SectionShell id="para-quem-e" variant="who">
+        <SectionShell id="para-quem-e" variant="who" tone="dark">
           <Container maxWidth="lg">
             <Reveal>
               <Typography
@@ -1944,10 +2564,21 @@ export default function HomePage() {
                   <Box
                     sx={{
                       p: { xs: 3, md: 4 },
-                      borderRadius: 3,
-                      background: "rgba(13, 21, 32, 0.6)",
-                      border: "1px solid rgba(255, 255, 255, 0.06)",
+                      borderRadius: 4,
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.008) 100%)",
+                      backdropFilter: "blur(12px)",
+                      border: "1px solid rgba(120, 90, 255, 0.10)",
                       height: "100%",
+                      transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow:
+                        "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.03)",
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        borderColor: "rgba(120, 90, 255, 0.25)",
+                        boxShadow:
+                          "0 12px 36px rgba(0,0,0,0.25), 0 0 24px rgba(120, 90, 255, 0.08), inset 0 1px 0 rgba(255,255,255,0.05)",
+                      },
                     }}
                   >
                     <Typography
@@ -1955,7 +2586,7 @@ export default function HomePage() {
                       sx={{
                         fontSize: "1.125rem",
                         fontWeight: 700,
-                        color: "#39D5FF",
+                        color: "#9B7AFF",
                         mb: 3,
                       }}
                     >
@@ -1977,7 +2608,7 @@ export default function HomePage() {
                           <CheckCircleOutline
                             sx={{
                               fontSize: 18,
-                              color: "#39D5FF",
+                              color: "#9B7AFF",
                               mt: 0.25,
                               flexShrink: 0,
                             }}
@@ -2002,11 +2633,35 @@ export default function HomePage() {
                   <Box
                     sx={{
                       p: { xs: 3, md: 4 },
-                      borderRadius: 3,
+                      borderRadius: 4,
                       background:
-                        "linear-gradient(135deg, rgba(57, 213, 255, 0.08) 0%, rgba(13, 21, 32, 0.7) 100%)",
-                      border: "1px solid rgba(57, 213, 255, 0.15)",
+                        "linear-gradient(135deg, rgba(120, 90, 255, 0.10) 0%, rgba(57, 213, 255, 0.04) 50%, rgba(13, 21, 32, 0.65) 100%)",
+                      backdropFilter: "blur(12px)",
+                      border: "1px solid rgba(120, 90, 255, 0.20)",
                       height: "100%",
+                      transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow:
+                        "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(120, 90, 255, 0.08)",
+                      position: "relative",
+                      overflow: "hidden",
+                      // Top glow line
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: "15%",
+                        right: "15%",
+                        height: "1px",
+                        background:
+                          "linear-gradient(90deg, transparent 0%, rgba(120, 90, 255, 0.4) 50%, transparent 100%)",
+                        boxShadow: "0 0 8px 1px rgba(120, 90, 255, 0.2)",
+                      },
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        borderColor: "rgba(120, 90, 255, 0.35)",
+                        boxShadow:
+                          "0 12px 36px rgba(0,0,0,0.25), 0 0 40px rgba(120, 90, 255, 0.12), inset 0 1px 0 rgba(120, 90, 255, 0.12)",
+                      },
                     }}
                   >
                     <Typography
@@ -2058,8 +2713,27 @@ export default function HomePage() {
               </Grid>
             </Reveal>
 
-            {/* CTA Row */}
+            {/* Banner ilustrativo - Placeholder para futura ilustração */}
+            {/* src="/sections/for-who-banner.png" quando disponível */}
             <Reveal delay={150}>
+              <Box sx={{ my: { xs: 6, md: 8 } }}>
+                <ImageSlot
+                  // src="/sections/for-who-banner.png"
+                  alt="Ilustração abstrata para criadores"
+                  height={{ xs: 120, md: 160 }}
+                  radius={20}
+                  variant="banner"
+                  icon={
+                    <AutoAwesomeOutlined
+                      sx={{ fontSize: 36, color: "#39D5FF" }}
+                    />
+                  }
+                />
+              </Box>
+            </Reveal>
+
+            {/* CTA Row */}
+            <Reveal delay={200}>
               <Box sx={{ textAlign: "center" }}>
                 <Typography
                   sx={{
@@ -2109,7 +2783,7 @@ export default function HomePage() {
         </SectionShell>
 
         {/* ==================== PLANOS SECTION ==================== */}
-        <SectionShell id="planos" variant="pricing">
+        <SectionShell id="planos" variant="pricing" allowOverflow tone="light">
           <Container maxWidth="lg">
             <Reveal>
               <Typography
@@ -2119,7 +2793,7 @@ export default function HomePage() {
                   fontWeight: 800,
                   lineHeight: 1.15,
                   letterSpacing: "-0.02em",
-                  color: "#fff",
+                  color: "var(--section-text, #fff)",
                   textAlign: "center",
                   mb: 2,
                 }}
@@ -2129,7 +2803,7 @@ export default function HomePage() {
               <Typography
                 sx={{
                   fontSize: { xs: "1rem", md: "1.125rem" },
-                  color: "#A0B0C0",
+                  color: "var(--section-muted, #A0B0C0)",
                   textAlign: "center",
                   maxWidth: 600,
                   mx: "auto",
@@ -2141,36 +2815,112 @@ export default function HomePage() {
               </Typography>
             </Reveal>
 
+            {/* Trust badge - Placeholder para ícone de segurança */}
+            {/* src="/sections/plans-trust-badge.png" quando disponível */}
+            <Reveal delay={80}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mb: { xs: 4, md: 6 },
+                }}
+              >
+                <ImageSlot
+                  // src="/sections/plans-trust-badge.png"
+                  alt="Pagamento seguro"
+                  height={48}
+                  width={180}
+                  radius={8}
+                  variant="badge"
+                  icon={
+                    <CheckCircleOutline
+                      sx={{ fontSize: 24, color: "#39D5FF" }}
+                    />
+                  }
+                />
+              </Box>
+            </Reveal>
+
             <Reveal delay={100}>
-              <Grid container spacing={3} justifyContent="center">
+              <Grid
+                container
+                spacing={3}
+                justifyContent="center"
+                sx={{ overflow: "visible" }}
+              >
                 {PLANS.map((plan) => (
-                  <Grid item xs={12} sm={6} md={4} key={plan.id}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={plan.id}
+                    sx={{ overflow: "visible" }}
+                  >
                     <Box
                       sx={{
                         position: "relative",
+                        overflow: "visible",
                         p: { xs: 3, md: 4 },
-                        borderRadius: 3,
+                        pt: plan.badge ? { xs: 5, md: 6 } : { xs: 3, md: 4 },
+                        borderRadius: 4,
                         background: plan.highlight
-                          ? "linear-gradient(135deg, rgba(57, 213, 255, 0.08) 0%, rgba(13, 21, 32, 0.9) 100%)"
-                          : "rgba(13, 21, 32, 0.6)",
+                          ? "linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(255, 255, 255, 0.95) 100%)"
+                          : "rgba(255, 255, 255, 0.85)",
+                        backdropFilter: "blur(12px)",
                         border: plan.highlight
-                          ? "2px solid rgba(57, 213, 255, 0.4)"
-                          : "1px solid rgba(255, 255, 255, 0.06)",
+                          ? "2px solid rgba(34, 211, 238, 0.45)"
+                          : "1px solid rgba(148, 163, 184, 0.25)",
                         boxShadow: plan.highlight
-                          ? "0 0 40px rgba(57, 213, 255, 0.15), 0 8px 32px rgba(0,0,0,0.3)"
-                          : "none",
+                          ? `
+                            0 0 60px rgba(34, 211, 238, 0.15),
+                            0 12px 40px rgba(2, 6, 23, 0.12),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.8)
+                          `
+                          : "0 12px 40px rgba(2, 6, 23, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5)",
                         height: "100%",
                         display: "flex",
                         flexDirection: "column",
-                        transition: "all 0.3s ease",
+                        transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                        // Top glow line for highlighted
+                        "&::before": plan.highlight
+                          ? {
+                              content: '""',
+                              position: "absolute",
+                              top: 0,
+                              left: "10%",
+                              right: "10%",
+                              height: "2px",
+                              background:
+                                "linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.8) 50%, transparent 100%)",
+                              boxShadow: "0 0 16px 2px rgba(34, 211, 238, 0.4)",
+                            }
+                          : {},
+                        // Bottom subtle glow
+                        "&::after": plan.highlight
+                          ? {
+                              content: '""',
+                              position: "absolute",
+                              bottom: 0,
+                              left: "20%",
+                              right: "20%",
+                              height: "1px",
+                              background:
+                                "linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.35) 50%, transparent 100%)",
+                            }
+                          : {},
                         "&:hover": {
-                          transform: "translateY(-4px)",
+                          transform: "translateY(-6px)",
                           borderColor: plan.highlight
-                            ? "rgba(57, 213, 255, 0.6)"
-                            : "rgba(57, 213, 255, 0.2)",
+                            ? "rgba(34, 211, 238, 0.65)"
+                            : "rgba(34, 211, 238, 0.35)",
                           boxShadow: plan.highlight
-                            ? "0 0 50px rgba(57, 213, 255, 0.2), 0 12px 40px rgba(0,0,0,0.35)"
-                            : "0 8px 24px rgba(0,0,0,0.2)",
+                            ? `
+                              0 0 80px rgba(34, 211, 238, 0.25),
+                              0 16px 48px rgba(2, 6, 23, 0.15),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.9)
+                            `
+                            : "0 16px 48px rgba(2, 6, 23, 0.12), 0 0 24px rgba(34, 211, 238, 0.10)",
                         },
                       }}
                     >
@@ -2181,17 +2931,21 @@ export default function HomePage() {
                           size="small"
                           sx={{
                             position: "absolute",
-                            top: -12,
+                            top: -16,
                             left: "50%",
                             transform: "translateX(-50%)",
+                            zIndex: 30,
                             background:
-                              "linear-gradient(135deg, #39D5FF 0%, #00B8E6 100%)",
-                            color: "#070B12",
+                              "linear-gradient(135deg, #22D3EE 0%, #38BDF8 100%)",
+                            color: "#0F172A",
                             fontWeight: 700,
                             fontSize: "0.7rem",
-                            letterSpacing: "0.02em",
-                            px: 1.5,
-                            height: 24,
+                            letterSpacing: "0.05em",
+                            textTransform: "uppercase",
+                            px: 2,
+                            height: 26,
+                            borderRadius: "9999px",
+                            boxShadow: "0 10px 30px rgba(34, 211, 238, 0.35)",
                           }}
                         />
                       )}
@@ -2202,7 +2956,7 @@ export default function HomePage() {
                         sx={{
                           fontSize: "1.25rem",
                           fontWeight: 700,
-                          color: "#fff",
+                          color: "#0F172A",
                           mb: 1,
                           mt: plan.badge ? 1 : 0,
                         }}
@@ -2217,7 +2971,7 @@ export default function HomePage() {
                           sx={{
                             fontSize: { xs: "2rem", md: "2.5rem" },
                             fontWeight: 800,
-                            color: plan.highlight ? "#39D5FF" : "#fff",
+                            color: plan.highlight ? "#0891B2" : "#0F172A",
                             letterSpacing: "-0.02em",
                           }}
                         >
@@ -2227,7 +2981,7 @@ export default function HomePage() {
                           component="span"
                           sx={{
                             fontSize: "0.95rem",
-                            color: "#8595A5",
+                            color: "#64748B",
                             ml: 0.5,
                           }}
                         >
@@ -2239,7 +2993,7 @@ export default function HomePage() {
                       <Typography
                         sx={{
                           fontSize: "0.9rem",
-                          color: "#A0B0C0",
+                          color: "#475569",
                           mb: 3,
                           lineHeight: 1.5,
                         }}
@@ -2259,7 +3013,7 @@ export default function HomePage() {
                             <CheckCircleOutline
                               sx={{
                                 fontSize: 18,
-                                color: plan.highlight ? "#39D5FF" : "#5A6A7A",
+                                color: plan.highlight ? "#0891B2" : "#22D3EE",
                                 mt: 0.25,
                                 flexShrink: 0,
                               }}
@@ -2267,7 +3021,7 @@ export default function HomePage() {
                             <Typography
                               sx={{
                                 fontSize: "0.875rem",
-                                color: "#C0D0E0",
+                                color: "#334155",
                                 lineHeight: 1.5,
                               }}
                             >
@@ -2325,7 +3079,7 @@ export default function HomePage() {
         </SectionShell>
 
         {/* ==================== FAQ SECTION ==================== */}
-        <SectionShell id="faq" variant="faq" noDivider>
+        <SectionShell id="faq" variant="faq" noDivider tone="dark">
           <Container maxWidth="lg">
             <Reveal>
               <Grid
@@ -2407,6 +3161,28 @@ export default function HomePage() {
                     >
                       Fale com nosso suporte
                     </Button>
+
+                    {/* Ilustração abstrata - visível apenas em md+ */}
+                    {/* src="/sections/faq-abstract.png" quando disponível */}
+                    <Box
+                      sx={{
+                        display: { xs: "none", md: "block" },
+                        mt: 4,
+                      }}
+                    >
+                      <ImageSlot
+                        // src="/sections/faq-abstract.png"
+                        alt="Ilustração abstrata"
+                        height={200}
+                        radius={16}
+                        variant="rounded"
+                        icon={
+                          <AutoAwesome
+                            sx={{ fontSize: 32, color: "#39D5FF" }}
+                          />
+                        }
+                      />
+                    </Box>
                   </Box>
                 </Grid>
 
