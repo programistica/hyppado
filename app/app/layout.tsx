@@ -16,6 +16,8 @@ import {
   ListItemText,
   Divider,
   Tooltip,
+  Chip,
+  Stack,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import {
@@ -25,9 +27,13 @@ import {
   Inventory2,
   Person,
   TrendingUp,
-  Settings,
+  AdminPanelSettingsOutlined,
   Logout,
+  SubtitlesOutlined,
+  TerminalOutlined,
 } from "@mui/icons-material";
+import { Logo } from "@/app/components/ui/Logo";
+import { useQuotaUsage, formatQuotaDisplay } from "@/lib/admin/useQuotaUsage";
 
 // Hyppado dark theme (navy #06080F + accent #2DD4FF)
 const theme = createTheme({
@@ -58,6 +64,113 @@ const NAV_ITEMS = [
   { label: "Tendências", icon: TrendingUp, href: "/app/trends" },
 ];
 
+// Bottom nav items (Admin only shown if NEXT_PUBLIC_ADMIN_MODE === "true")
+const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
+const BOTTOM_NAV_ITEMS = isAdminMode
+  ? [{ label: "Admin", icon: AdminPanelSettingsOutlined, href: "/app/admin" }]
+  : [];
+
+/** Desktop Header with Quota Pills */
+function QuotaHeader() {
+  const quota = useQuotaUsage();
+
+  return (
+    <Box
+      sx={{
+        display: { xs: "none", md: "flex" },
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: 2,
+        px: 4,
+        py: 2,
+        borderBottom: "1px solid rgba(255,255,255,0.04)",
+        background: "rgba(10, 15, 24, 0.5)",
+      }}
+    >
+      {/* Transcripts */}
+      <Tooltip title="Transcrições usadas este mês">
+        <Chip
+          icon={<SubtitlesOutlined sx={{ fontSize: 16 }} />}
+          label={`Transcripts: ${formatQuotaDisplay(quota.transcripts.used, quota.transcripts.max)}`}
+          size="small"
+          sx={{
+            background: "rgba(45, 212, 255, 0.1)",
+            border: "1px solid rgba(45, 212, 255, 0.2)",
+            color: "#2DD4FF",
+            "& .MuiChip-icon": { color: "#2DD4FF" },
+            fontWeight: 500,
+            fontSize: "0.75rem",
+          }}
+        />
+      </Tooltip>
+
+      {/* Scripts */}
+      <Tooltip title="Roteiros gerados este mês">
+        <Chip
+          icon={<TerminalOutlined sx={{ fontSize: 16 }} />}
+          label={`Scripts: ${formatQuotaDisplay(quota.scripts.used, quota.scripts.max)}`}
+          size="small"
+          sx={{
+            background: "rgba(156, 39, 176, 0.1)",
+            border: "1px solid rgba(156, 39, 176, 0.2)",
+            color: "#CE93D8",
+            "& .MuiChip-icon": { color: "#CE93D8" },
+            fontWeight: 500,
+            fontSize: "0.75rem",
+          }}
+        />
+      </Tooltip>
+    </Box>
+  );
+}
+
+/** Mobile Quota Pills - Compact */
+function MobileQuotaPills() {
+  const quota = useQuotaUsage();
+
+  return (
+    <Stack direction="row" spacing={0.5}>
+      <Tooltip
+        title={`Transcripts: ${formatQuotaDisplay(quota.transcripts.used, quota.transcripts.max)}`}
+      >
+        <Chip
+          icon={<SubtitlesOutlined sx={{ fontSize: 12 }} />}
+          label={formatQuotaDisplay(
+            quota.transcripts.used,
+            quota.transcripts.max,
+          )}
+          size="small"
+          sx={{
+            background: "rgba(45, 212, 255, 0.1)",
+            color: "#2DD4FF",
+            "& .MuiChip-icon": { color: "#2DD4FF", ml: 0.5 },
+            height: 24,
+            fontSize: "0.65rem",
+            "& .MuiChip-label": { px: 0.75 },
+          }}
+        />
+      </Tooltip>
+      <Tooltip
+        title={`Scripts: ${formatQuotaDisplay(quota.scripts.used, quota.scripts.max)}`}
+      >
+        <Chip
+          icon={<TerminalOutlined sx={{ fontSize: 12 }} />}
+          label={formatQuotaDisplay(quota.scripts.used, quota.scripts.max)}
+          size="small"
+          sx={{
+            background: "rgba(156, 39, 176, 0.1)",
+            color: "#CE93D8",
+            "& .MuiChip-icon": { color: "#CE93D8", ml: 0.5 },
+            height: 24,
+            fontSize: "0.65rem",
+            "& .MuiChip-label": { px: 0.75 },
+          }}
+        />
+      </Tooltip>
+    </Stack>
+  );
+}
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -84,16 +197,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         flexDirection: "column",
       }}
     >
-      {/* Logo */}
-      <Box sx={{ p: 3, pb: 2 }}>
-        <Link href="/app/videos" style={{ display: "inline-block" }}>
-          <Box
-            component="img"
-            src="/logo/logo.png"
-            alt="Hyppado"
-            sx={{ height: 32 }}
-          />
-        </Link>
+      {/* Logo / Brand Header */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          px: 3,
+          py: 2.5,
+          minHeight: 72,
+          flexShrink: 0,
+        }}
+      >
+        <Logo
+          href="/app/videos"
+          mode="dark"
+          variant="full"
+          responsiveHeight={{ xs: 32, sm: 34, md: 38, lg: 42 }}
+        />
       </Box>
 
       <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
@@ -149,36 +269,49 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Bottom actions */}
       <List sx={{ py: 2 }}>
-        <ListItem disablePadding>
-          <Tooltip title="Em breve" placement="right">
-            <span style={{ width: "100%" }}>
+        {BOTTOM_NAV_ITEMS.map(({ label, icon: Icon, href }) => {
+          const active = isActive(href);
+          return (
+            <ListItem key={label} disablePadding>
               <ListItemButton
-                disabled
+                component={Link}
+                href={href}
+                onClick={() => setMobileOpen(false)}
                 sx={{
                   mx: 1.5,
                   borderRadius: 2,
+                  mb: 0.5,
                   py: 1.25,
-                  opacity: 0.5,
-                  cursor: "not-allowed",
+                  background: active
+                    ? "rgba(45, 212, 255, 0.1)"
+                    : "transparent",
+                  "&:hover": {
+                    background: active
+                      ? "rgba(45, 212, 255, 0.15)"
+                      : "rgba(255,255,255,0.04)",
+                  },
                 }}
               >
                 <ListItemIcon sx={{ minWidth: 40 }}>
-                  <Settings
-                    sx={{ fontSize: 20, color: "rgba(255,255,255,0.5)" }}
+                  <Icon
+                    sx={{
+                      fontSize: 20,
+                      color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
+                    }}
                   />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Configurações"
+                  primary={label}
                   primaryTypographyProps={{
                     fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.75)",
+                    fontWeight: active ? 600 : 500,
+                    color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
                   }}
                 />
               </ListItemButton>
-            </span>
-          </Tooltip>
-        </ListItem>
+            </ListItem>
+          );
+        })}
         <ListItem disablePadding>
           <ListItemButton
             component={Link}
@@ -253,6 +386,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Main Content */}
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          {/* Desktop Header with Quota Pills */}
+          <QuotaHeader />
+
           {/* Mobile Top Bar */}
           <AppBar
             position="static"
@@ -264,25 +400,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               borderBottom: "1px solid rgba(255,255,255,0.06)",
             }}
           >
-            <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="abrir menu"
-                onClick={handleDrawerToggle}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Box sx={{ ml: 2 }}>
-                <Link href="/app/videos">
-                  <Box
-                    component="img"
-                    src="/logo/logo.png"
-                    alt="Hyppado"
-                    sx={{ height: 28 }}
-                  />
-                </Link>
+            <Toolbar sx={{ minHeight: 64, justifyContent: "space-between" }}>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="abrir menu"
+                  onClick={handleDrawerToggle}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
+                  <Logo href="/app/videos" mode="dark" size="nav" />
+                </Box>
               </Box>
+              {/* Mobile quota pills - compact */}
+              <MobileQuotaPills />
             </Toolbar>
           </AppBar>
 

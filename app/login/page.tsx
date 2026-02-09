@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Logo } from "@/app/components/ui/Logo";
 
 // Hyppado dark theme (navy #06080F + accent #2DD4FF) — zero green/pink
 const theme = createTheme({
@@ -116,19 +117,22 @@ export default function LoginPage() {
             }}
           >
             {/* 1) Logo centralizado */}
-            <Box sx={{ textAlign: "center", pt: 0, mb: 2.5 }}>
-              <Link href="/" style={{ display: "inline-block" }}>
-                <Box
-                  component="img"
-                  src="/logo/logo.png"
-                  alt="Hyppado"
-                  sx={{
-                    height: { xs: 48, sm: 56, md: 64 },
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                />
-              </Link>
+            <Box
+              sx={{
+                textAlign: "center",
+                pt: 0,
+                mb: 2.5,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Logo
+                href="/"
+                mode="dark"
+                size="lg"
+                sx={{ height: 48 }}
+                priority
+              />
             </Box>
 
             {/* 2) Texto auxiliar */}

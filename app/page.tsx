@@ -50,6 +50,7 @@ import {
 } from "@mui/icons-material";
 import theme from "./theme";
 import { PLANS } from "./data/plans";
+import { Logo } from "@/app/components/ui/Logo";
 
 /* ============================================
    NAV LINKS CONFIG
@@ -1230,34 +1231,27 @@ export default function HomePage() {
               disableGutters
               sx={{
                 justifyContent: "space-between",
-                py: 1,
-                minHeight: { xs: 64, md: 72 },
+                alignItems: "center",
+                py: { xs: 1.5, md: 2 },
+                minHeight: { xs: 72, sm: 80, md: 92, lg: 100 },
               }}
             >
-              {/* Logo */}
-              <Stack direction="row" alignItems="center" spacing={1.25}>
-                <Box
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    background:
-                      "linear-gradient(135deg, #39D5FF 0%, #0099CC 100%)",
-                    borderRadius: "5px",
-                    transform: "rotate(45deg)",
-                    boxShadow: "0 0 12px rgba(57, 213, 255, 0.5)",
-                  }}
+              {/* Logo - responsive sizing for landing header */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexShrink: 0,
+                  minWidth: { xs: 140, sm: 180, md: 220 },
+                }}
+              >
+                <Logo
+                  href="/"
+                  mode="dark"
+                  responsiveHeight={{ xs: 40, sm: 48, md: 56, lg: 64 }}
+                  priority
                 />
-                <Typography
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: "1.25rem",
-                    color: "#fff",
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  Hyppado
-                </Typography>
-              </Stack>
+              </Box>
 
               {/* Desktop nav links - centered */}
               <Stack
