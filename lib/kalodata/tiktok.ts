@@ -112,7 +112,7 @@ export async function fetchTikTokOEmbed(
   try {
     const res = await fetch(oEmbedEndpoint, {
       signal: controller.signal,
-      next: { revalidate: 86400 }, // cache 24h
+      cache: "no-store", // Don't cache failed requests
     } as RequestInit);
 
     if (!res.ok) return null;

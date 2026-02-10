@@ -34,12 +34,20 @@ async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
     resolvedUrl,
   });
 
-  // Step 3: Fetch oEmbed thumbnail
+  // Step 3: Fetch oEmbed thumbnail (with retry)
   const oEmbedUrl = canonical ?? resolvedUrl ?? rawUrl;
   let thumbnailUrl: string | null = null;
 
   if (oEmbedUrl) {
-    const oembed = await fetchTikTokOEmbed(oEmbedUrl, 8000);
+    // First attempt with 15s timeout
+    let oembed = await fetchTikTokOEmbed(oEmbedUrl, 15000);
+    
+    // Retry once if failed
+    if (!oembed?.thumbnail_url) {
+      await new Promise((r) => setTimeout(r, 500)); // small delay before retry
+      oembed = await fetchTikTokOEmbed(oEmbedUrl, 15000);
+    }
+    
     thumbnailUrl = oembed?.thumbnail_url ?? null;
   }
 
@@ -76,8 +84,8 @@ export async function GET(request: NextRequest) {
     );
     const limitedVideos = sortedVideos.slice(0, limit);
 
-    // Enrich with canonical URLs + thumbnails (concurrency = 3)
-    const enrichedVideos = await withConcurrency(limitedVideos, 3, enrichVideo);
+    // Enrich with canonical URLs + thumbnails (concurrency = 2 to avoid rate limiting)
+    const enrichedVideos = await withConcurrency(limitedVideos, 2, enrichVideo);
 
     return NextResponse.json({
       success: true,
