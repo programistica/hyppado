@@ -16,6 +16,7 @@ export const dynamic = "force-dynamic";
  * Enriches a parsed VideoDTO with:
  * 1) Canonical TikTok URL (resolves short links)
  * 2) Real thumbnail from TikTok oEmbed
+ * 3) Fallback placeholder if oEmbed fails
  */
 async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
   const rawUrl = video.tiktokUrl;
@@ -41,6 +42,12 @@ async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
   if (oEmbedUrl) {
     const oembed = await fetchTikTokOEmbed(oEmbedUrl, 8000);
     thumbnailUrl = oembed?.thumbnail_url ?? null;
+  }
+
+  // Step 4: Fallback to picsum placeholder if oEmbed failed
+  if (!thumbnailUrl) {
+    // Use video id as seed for consistent placeholder
+    thumbnailUrl = `https://picsum.photos/seed/${video.id}/405/720`;
   }
 
   return {
