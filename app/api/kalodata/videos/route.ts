@@ -39,14 +39,13 @@ async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
   let thumbnailUrl: string | null = null;
 
   if (oEmbedUrl) {
-    // First attempt with 15s timeout
-    let oembed = await fetchTikTokOEmbed(oEmbedUrl, 15000);
-
-    // Retry once if failed
+    // First attempt with 20s timeout
+    let oembed = await fetchTikTokOEmbed(oEmbedUrl, 20000);
+    
+    // Retry once if failed (with 2s delay)
     if (!oembed?.thumbnail_url) {
-      await new Promise((r) => setTimeout(r, 500)); // small delay before retry
-      oembed = await fetchTikTokOEmbed(oEmbedUrl, 15000);
-    }
+      await new Promise((r) => setTimeout(r, 2000));
+      oembed = await fetchTikTokOEmbed(oEmbedUrl, 20000);
 
     thumbnailUrl = oembed?.thumbnail_url ?? null;
   }
@@ -84,8 +83,8 @@ export async function GET(request: NextRequest) {
     );
     const limitedVideos = sortedVideos.slice(0, limit);
 
-    // Enrich with canonical URLs + thumbnails (concurrency = 2 to avoid rate limiting)
-    const enrichedVideos = await withConcurrency(limitedVideos, 2, enrichVideo);
+    // Enrich with canonical URLs + thumbnails (sequential to avoid TikTok rate limiting)
+    const enrichedVideos = await withConcurrency(limitedVideos, 1, enrichVideo);
 
     return NextResponse.json({
       success: true,
