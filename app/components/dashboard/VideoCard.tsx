@@ -251,14 +251,14 @@ export function VideoCard({
         },
       }}
     >
-      {/* ======== Preview Area (9:16 thumbnail or placeholder) ======== */}
+      {/* ======== Preview Area (1:1 mobile, 4:5 desktop) ======== */}
       <Box
         sx={{
           position: "relative",
           width: "100%",
-          aspectRatio: "9 / 16",
+          aspectRatio: { xs: "1 / 1", md: "4 / 5" },
           overflow: "hidden",
-          borderRadius: "12px 12px 0 0",
+          borderRadius: `${UI.card.radius * 2}px ${UI.card.radius * 2}px 0 0`,
           background:
             "linear-gradient(160deg, #0d1420 0%, #151c2a 50%, #0f1724 100%)",
         }}
