@@ -1,18 +1,25 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Box, Container, Typography } from "@mui/material";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Box, Typography } from "@mui/material";
 import { VideoGrid } from "@/app/components/dashboard/VideoGrid";
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader";
-import type { TimeRange, VideoDTO } from "@/lib/types/kalodata";
+import type { VideoDTO } from "@/lib/types/kalodata";
+import { normalizeRange, type TimeRange } from "@/lib/filters/timeRange";
 
-export default function VideosPage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("7d");
-  const [searchQuery, setSearchQuery] = useState("");
+function VideosContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [videos, setVideos] = useState<VideoDTO[]>([]);
   const [savedVideoIds, setSavedVideoIds] = useState<Set<string>>(new Set());
+
+  // Read from URL
+  const timeRange = normalizeRange(searchParams.get("range"));
+  const searchQuery = searchParams.get("q") || "";
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -41,6 +48,20 @@ export default function VideosPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleTimeRangeChange = (range: TimeRange) => {
+    const params = new URLSearchParams();
+    params.set("range", range);
+    if (searchQuery) params.set("q", searchQuery);
+    router.push(`/app/videos?${params.toString()}`);
+  };
+
+  const handleSearchChange = (query: string) => {
+    const params = new URLSearchParams();
+    params.set("range", timeRange);
+    if (query) params.set("q", query);
+    router.push(`/app/videos?${params.toString()}`);
+  };
 
   return (
     <Box
@@ -78,9 +99,9 @@ export default function VideosPage() {
         </Box>
         <DashboardHeader
           timeRange={timeRange}
-          onTimeRangeChange={setTimeRange}
+          onTimeRangeChange={handleTimeRangeChange}
           searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
+          onSearchChange={handleSearchChange}
           onRefresh={fetchData}
           loading={loading}
         />
@@ -127,5 +148,26 @@ export default function VideosPage() {
         />
       </Box>
     </Box>
+  );
+}
+
+export default function VideosPage() {
+  return (
+    <Suspense
+      fallback={
+        <Box
+          sx={{
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography>Carregando...</Typography>
+        </Box>
+      }
+    >
+      <VideosContent />
+    </Suspense>
   );
 }

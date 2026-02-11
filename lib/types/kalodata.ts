@@ -1,6 +1,6 @@
 // DTO types for Kalodata normalized data
 
-export type TimeRange = "7d" | "30d" | "90d" | "custom";
+export type TimeRange = "1d" | "7d" | "30d" | "90d";
 
 export interface DateRangeParams {
   range?: TimeRange;

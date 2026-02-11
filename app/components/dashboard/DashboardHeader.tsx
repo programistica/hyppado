@@ -5,15 +5,13 @@ import {
   Box,
   TextField,
   InputAdornment,
-  Select,
-  MenuItem,
-  FormControl,
   IconButton,
   Tooltip,
   Button,
 } from "@mui/material";
 import { Search, FilterList, Refresh } from "@mui/icons-material";
-import type { TimeRange } from "@/lib/types/kalodata";
+import { TimeRangeSelect } from "@/app/components/filters/TimeRangeSelect";
+import type { TimeRange } from "@/lib/filters/timeRange";
 
 interface DashboardHeaderProps {
   timeRange: TimeRange;
@@ -56,35 +54,12 @@ export function DashboardHeader({
         alignItems: { xs: "stretch", md: "center" },
       }}
     >
-      {/* Time Range Selector - Disabled since XLSX data is fixed to 7 days */}
-      <Tooltip title="Dados fixos dos últimos 7 dias">
-        <FormControl size="small" sx={{ minWidth: 140 }}>
-          <Select
-            id="time-range-select"
-            value="7d"
-            disabled
-            aria-label="Período: Últimos 7 dias"
-            sx={{
-              borderRadius: 1.5,
-              backgroundColor: "rgba(255,255,255,0.04)",
-              color: "rgba(255,255,255,0.5)",
-              fontSize: "0.75rem",
-              height: 36,
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "rgba(45, 212, 255, 0.08)",
-              },
-              "&.Mui-disabled": {
-                color: "rgba(255,255,255,0.5)",
-              },
-              "& .MuiSelect-icon": {
-                color: "rgba(255,255,255,0.3)",
-              },
-            }}
-          >
-            <MenuItem value="7d">Últimos 7 dias</MenuItem>
-          </Select>
-        </FormControl>
-      </Tooltip>
+      {/* Time Range Selector */}
+      <TimeRangeSelect
+        value={timeRange}
+        onChange={onTimeRangeChange}
+        disabled={loading}
+      />
 
       {/* Search Input */}
       <TextField
