@@ -46,6 +46,7 @@ async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
     if (!oembed?.thumbnail_url) {
       await new Promise((r) => setTimeout(r, 2000));
       oembed = await fetchTikTokOEmbed(oEmbedUrl, 20000);
+    }
 
     thumbnailUrl = oembed?.thumbnail_url ?? null;
   }
