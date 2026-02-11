@@ -52,24 +52,24 @@ export function DashboardHeader({
       sx={{
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
-        gap: 2,
+        gap: 1.5,
         alignItems: { xs: "stretch", md: "center" },
-        mb: 4,
       }}
     >
       {/* Time Range Selector - Disabled since XLSX data is fixed to 7 days */}
       <Tooltip title="Dados fixos dos últimos 7 dias">
-        <FormControl size="small" sx={{ minWidth: 160 }}>
+        <FormControl size="small" sx={{ minWidth: 140 }}>
           <Select
             id="time-range-select"
             value="7d"
             disabled
             aria-label="Período: Últimos 7 dias"
             sx={{
-              borderRadius: 2,
+              borderRadius: 1.5,
               backgroundColor: "rgba(255,255,255,0.04)",
               color: "rgba(255,255,255,0.5)",
-              fontSize: "0.875rem",
+              fontSize: "0.75rem",
+              height: 36,
               "& .MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgba(45, 212, 255, 0.08)",
               },
@@ -97,12 +97,13 @@ export function DashboardHeader({
         size="small"
         sx={{
           flex: 1,
-          maxWidth: { md: 400 },
+          maxWidth: { md: 350 },
           "& .MuiOutlinedInput-root": {
-            borderRadius: 2,
+            borderRadius: 1.5,
             backgroundColor: "rgba(255,255,255,0.04)",
             color: "#fff",
-            fontSize: "0.875rem",
+            fontSize: "0.75rem",
+            height: 36,
             "& .MuiOutlinedInput-notchedOutline": {
               borderColor: "rgba(45, 212, 255, 0.18)",
             },
@@ -113,6 +114,9 @@ export function DashboardHeader({
               borderColor: "#2DD4FF",
             },
           },
+          "& .MuiInputBase-input": {
+            padding: "6px 8px",
+          },
           "& .MuiInputBase-input::placeholder": {
             color: "rgba(255,255,255,0.4)",
             opacity: 1,
@@ -121,7 +125,7 @@ export function DashboardHeader({
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <Search sx={{ color: "rgba(255,255,255,0.4)", fontSize: 20 }} />
+              <Search sx={{ color: "rgba(255,255,255,0.4)", fontSize: 18 }} />
             </InputAdornment>
           ),
           "aria-label": "Buscar",
@@ -129,7 +133,7 @@ export function DashboardHeader({
       />
 
       {/* Action Buttons */}
-      <Box sx={{ display: "flex", gap: 1 }}>
+      <Box sx={{ display: "flex", gap: 0.75 }}>
         <Tooltip title="Em breve">
           <span>
             <IconButton
@@ -138,13 +142,15 @@ export function DashboardHeader({
               sx={{
                 color: "rgba(255,255,255,0.3)",
                 border: "1px solid rgba(45, 212, 255, 0.08)",
-                borderRadius: 2,
+                borderRadius: 1.5,
+                width: 36,
+                height: 36,
                 "&.Mui-disabled": {
                   color: "rgba(255,255,255,0.3)",
                 },
               }}
             >
-              <FilterList />
+              <FilterList sx={{ fontSize: 18 }} />
             </IconButton>
           </span>
         </Tooltip>
@@ -158,7 +164,9 @@ export function DashboardHeader({
               sx={{
                 color: "rgba(255,255,255,0.5)",
                 border: "1px solid rgba(45, 212, 255, 0.18)",
-                borderRadius: 2,
+                borderRadius: 1.5,
+                width: 36,
+                height: 36,
                 "&:hover": {
                   color: "#2DD4FF",
                   borderColor: "rgba(45, 212, 255, 0.35)",
@@ -168,7 +176,10 @@ export function DashboardHeader({
                 },
               }}
             >
-              <Refresh className={loading ? "animate-spin" : ""} />
+              <Refresh
+                className={loading ? "animate-spin" : ""}
+                sx={{ fontSize: 18 }}
+              />
             </IconButton>
           </Tooltip>
         )}

@@ -42,25 +42,34 @@ export default function CreatorsPage() {
   }, [fetchData]);
 
   return (
-    <Container maxWidth="xl" disableGutters>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ mb: 3 }}>
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* Fixed Header */}
+      <Box sx={{ flexShrink: 0 }}>
+        <Box sx={{ mb: 1.5 }}>
           <Typography
             component="h1"
             sx={{
-              fontSize: { xs: "1.5rem", md: "1.75rem" },
+              fontSize: "1.25rem",
               fontWeight: 700,
               color: "#fff",
-              mb: 0.5,
+              mb: 0.25,
+              lineHeight: 1.3,
             }}
           >
             Creators
           </Typography>
           <Typography
             sx={{
-              fontSize: "0.875rem",
-              color: "rgba(255,255,255,0.55)",
+              fontSize: "0.75rem",
+              color: "rgba(255,255,255,0.5)",
+              lineHeight: 1.3,
             }}
           >
             Top criadores no TikTok Shop — dados dos últimos 7 dias
@@ -76,31 +85,34 @@ export default function CreatorsPage() {
         />
       </Box>
 
-      {/* Error State */}
-      {error && (
-        <Box
-          role="alert"
-          aria-live="assertive"
-          sx={{
-            mb: 4,
-            p: 3,
-            borderRadius: 2,
-            background: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.25)",
-            color: "#ef4444",
-            fontSize: "0.875rem",
-          }}
-        >
-          {error}
-        </Box>
-      )}
+      {/* Scrollable Content */}
+      <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", mt: 2 }}>
+        {/* Error State */}
+        {error && (
+          <Box
+            role="alert"
+            aria-live="assertive"
+            sx={{
+              mb: 2,
+              p: 2,
+              borderRadius: 2,
+              background: "rgba(239, 68, 68, 0.1)",
+              border: "1px solid rgba(239, 68, 68, 0.25)",
+              color: "#ef4444",
+              fontSize: "0.8125rem",
+            }}
+          >
+            {error}
+          </Box>
+        )}
 
-      {/* Creators Table */}
-      <CreatorTable
-        creators={creators}
-        loading={loading}
-        title="Top Creators"
-      />
-    </Container>
+        {/* Creators Table */}
+        <CreatorTable
+          creators={creators}
+          loading={loading}
+          title="Top Creators"
+        />
+      </Box>
+    </Box>
   );
 }

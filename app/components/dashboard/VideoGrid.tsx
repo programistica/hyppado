@@ -93,7 +93,12 @@ export function VideoGrid({
       )}
 
       {/* Grid always renders 10 slots */}
-      <Grid container spacing={2} role="list" aria-label="Lista de vídeos">
+      <Grid
+        container
+        spacing={1.5}
+        role="list"
+        aria-label="Lista de v\u00eddeos"
+      >
         {slots.map(({ key, video, isLoading, rank }) => (
           <Grid item xs={12} sm={6} md={4} lg={2.4} key={key} role="listitem">
             <VideoCard

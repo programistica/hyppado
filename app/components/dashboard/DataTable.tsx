@@ -68,19 +68,21 @@ function TableSkeleton({
 
 const tableCellSx = {
   color: "rgba(255,255,255,0.7)",
-  fontSize: "0.8rem",
+  fontSize: "0.75rem",
   borderColor: "rgba(255,255,255,0.06)",
-  py: 1.5,
+  py: 0.75,
+  px: 1.5,
 };
 
 const tableHeaderSx = {
   color: "rgba(255,255,255,0.5)",
-  fontSize: "0.75rem",
+  fontSize: "0.6875rem",
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.05em",
   borderColor: "rgba(255,255,255,0.08)",
-  py: 1.5,
+  py: 1,
+  px: 1.5,
 };
 
 export function ProductTable({
@@ -104,18 +106,18 @@ export function ProductTable({
           display: "flex",
           alignItems: "center",
           gap: 1,
-          px: 2.5,
-          py: 2,
+          px: 2,
+          py: 1.5,
           borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
         {showNewBadge ? (
-          <NewReleases sx={{ color: "#2DD4FF", fontSize: 20 }} />
+          <NewReleases sx={{ color: "#2DD4FF", fontSize: 18 }} />
         ) : (
-          <TrendingUp sx={{ color: "#2DD4FF", fontSize: 20 }} />
+          <TrendingUp sx={{ color: "#2DD4FF", fontSize: 18 }} />
         )}
         <Typography
-          sx={{ color: "#fff", fontWeight: 600, fontSize: "0.95rem" }}
+          sx={{ color: "#fff", fontWeight: 600, fontSize: "0.875rem" }}
         >
           {title}
         </Typography>

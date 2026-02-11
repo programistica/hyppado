@@ -18,6 +18,7 @@ import {
   Tooltip,
   Chip,
   Stack,
+  Typography,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import {
@@ -58,12 +59,71 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "Inter, sans-serif",
+    fontSize: 13,
+    h1: {
+      fontSize: "1.25rem",
+      fontWeight: 700,
+      lineHeight: 1.3,
+    },
+    h2: {
+      fontSize: "1.1rem",
+      fontWeight: 600,
+      lineHeight: 1.3,
+    },
+    body1: {
+      fontSize: "0.8125rem",
+      lineHeight: 1.4,
+    },
+    body2: {
+      fontSize: "0.75rem",
+      lineHeight: 1.35,
+    },
+  },
+  components: {
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontSize: "0.8125rem",
+        },
+        input: {
+          padding: "6px 8px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          fontSize: "0.8125rem",
+        },
+        sizeSmall: {
+          padding: "4px 10px",
+          fontSize: "0.75rem",
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          padding: "6px",
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontSize: "0.6875rem",
+          height: "22px",
+        },
+      },
+    },
   },
 });
 
 // Sidebar navigation items organized in sections
 const NAV_SECTIONS = [
   {
+    label: "EXPLORAR",
     items: [
       { label: "Vídeos em Alta", icon: VideoLibrary, href: "/app/videos" },
       { label: "Produtos Hype", icon: Whatshot, href: "/app/products" },
@@ -72,7 +132,7 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    divider: true,
+    label: "BIBLIOTECA",
     items: [
       {
         label: "Vídeos salvos",
@@ -82,7 +142,7 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    divider: true,
+    label: "CONTA",
     items: [
       { label: "Assinatura", icon: CardMembership, href: "/app/assinatura" },
       { label: "Suporte", icon: HelpOutline, href: "/app/suporte" },
@@ -90,11 +150,8 @@ const NAV_SECTIONS = [
   },
 ];
 
-// Bottom nav items (Admin only shown if NEXT_PUBLIC_ADMIN_MODE === "true")
+// Bottom nav section (Admin + Sair)
 const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
-const BOTTOM_NAV_ITEMS = isAdminMode
-  ? [{ label: "Admin", icon: AdminPanelSettingsOutlined, href: "/app/admin" }]
-  : [];
 
 /** Desktop Header with Quota Pills */
 function QuotaHeader() {
@@ -106,9 +163,9 @@ function QuotaHeader() {
         display: { xs: "none", md: "flex" },
         justifyContent: "flex-end",
         alignItems: "center",
-        gap: 2,
-        px: 4,
-        py: 2,
+        gap: 1.5,
+        px: 3,
+        py: 1.25,
         borderBottom: "1px solid rgba(255,255,255,0.04)",
         background: "rgba(10, 15, 24, 0.5)",
       }}
@@ -232,9 +289,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          px: 3,
-          py: 2.5,
-          minHeight: 72,
+          px: 2.5,
+          py: 1.75,
+          minHeight: 58,
           flexShrink: 0,
         }}
       >
@@ -242,151 +299,217 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           href="/app/videos"
           mode="dark"
           variant="full"
-          responsiveHeight={{ xs: 32, sm: 34, md: 38, lg: 42 }}
+          responsiveHeight={{ xs: 28, sm: 30, md: 32, lg: 34 }}
         />
       </Box>
 
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
 
-      {/* Navigation */}
-      <List
+      {/* Navigation - no scroll */}
+      <Box
         sx={{
           flex: 1,
+          overflow: "hidden",
+          px: 2,
           py: 2,
-          overflowY: "auto",
-          overscrollBehavior: "contain",
+          minHeight: 0,
         }}
       >
         {NAV_SECTIONS.map((section, sectionIndex) => (
-          <Box key={sectionIndex}>
-            {section.divider && sectionIndex > 0 && (
-              <Divider
-                sx={{
-                  borderColor: "rgba(255,255,255,0.06)",
-                  my: 1.5,
-                  mx: 1.5,
-                }}
-              />
-            )}
-            {section.items.map(({ label, icon: Icon, href }) => {
-              const active = isActive(href);
-              return (
-                <ListItem key={label} disablePadding>
-                  <ListItemButton
-                    component={Link}
-                    href={href}
-                    onClick={() => setMobileOpen(false)}
-                    sx={{
-                      mx: 1.5,
-                      borderRadius: 2,
-                      mb: 0.5,
-                      py: 1.25,
-                      background: active
-                        ? "rgba(45, 212, 255, 0.1)"
-                        : "transparent",
-                      "&:hover": {
+          <Box
+            key={section.label}
+            sx={{ mb: sectionIndex < NAV_SECTIONS.length - 1 ? 2 : 0 }}
+          >
+            {/* Section Label */}
+            <Typography
+              sx={{
+                fontSize: "0.625rem",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.35)",
+                px: 1.25,
+                mb: 0.75,
+              }}
+            >
+              {section.label}
+            </Typography>
+
+            {/* Section Items */}
+            <List
+              disablePadding
+              sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}
+            >
+              {section.items.map(({ label, icon: Icon, href }) => {
+                const active = isActive(href);
+                return (
+                  <ListItem key={label} disablePadding>
+                    <ListItemButton
+                      component={Link}
+                      href={href}
+                      onClick={() => setMobileOpen(false)}
+                      sx={{
+                        borderRadius: 2,
+                        minHeight: 38,
+                        px: 1.25,
+                        py: 0.75,
+                        position: "relative",
                         background: active
-                          ? "rgba(45, 212, 255, 0.15)"
-                          : "rgba(255,255,255,0.04)",
-                      },
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 40 }}>
-                      <Icon
-                        sx={{
-                          fontSize: 20,
-                          color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
+                          ? "rgba(45, 212, 255, 0.08)"
+                          : "transparent",
+                        "&:hover": {
+                          background: active
+                            ? "rgba(45, 212, 255, 0.12)"
+                            : "rgba(255,255,255,0.03)",
+                        },
+                        "&::before": active
+                          ? {
+                              content: '""',
+                              position: "absolute",
+                              left: 0,
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              width: 3,
+                              height: 18,
+                              borderRadius: "0 4px 4px 0",
+                              background: "#2DD4FF",
+                            }
+                          : {},
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 32 }}>
+                        <Icon
+                          sx={{
+                            fontSize: 18,
+                            color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
+                          }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={label}
+                        primaryTypographyProps={{
+                          fontSize: "0.8125rem",
+                          fontWeight: active ? 600 : 500,
+                          color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
                         }}
                       />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={label}
-                      primaryTypographyProps={{
-                        fontSize: "0.875rem",
-                        fontWeight: active ? 600 : 500,
-                        color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
           </Box>
         ))}
-      </List>
+      </Box>
 
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
-
-      {/* Bottom actions */}
-      <List sx={{ py: 2, flexShrink: 0 }}>
-        {BOTTOM_NAV_ITEMS.map(({ label, icon: Icon, href }) => {
-          const active = isActive(href);
-          return (
-            <ListItem key={label} disablePadding>
-              <ListItemButton
-                component={Link}
-                href={href}
-                onClick={() => setMobileOpen(false)}
-                sx={{
-                  mx: 1.5,
-                  borderRadius: 2,
-                  mb: 0.5,
-                  py: 1.25,
-                  background: active
-                    ? "rgba(45, 212, 255, 0.1)"
-                    : "transparent",
-                  "&:hover": {
-                    background: active
-                      ? "rgba(45, 212, 255, 0.15)"
-                      : "rgba(255,255,255,0.04)",
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 40 }}>
-                  <Icon
-                    sx={{
-                      fontSize: 20,
-                      color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
+      {/* Bottom actions - fixed at bottom */}
+      <Box sx={{ flexShrink: 0, px: 2, pb: 1.5, pt: 1.5 }}>
+        {/* Admin section (if enabled) */}
+        {isAdminMode && (
+          <Box sx={{ mb: 1.5 }}>
+            <Typography
+              sx={{
+                fontSize: "0.625rem",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.35)",
+                px: 1.25,
+                mb: 0.75,
+              }}
+            >
+              ADMIN
+            </Typography>
+            <List disablePadding>
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={Link}
+                  href="/app/admin"
+                  onClick={() => setMobileOpen(false)}
+                  sx={{
+                    borderRadius: 2,
+                    minHeight: 38,
+                    px: 1.25,
+                    py: 0.75,
+                    position: "relative",
+                    background: isActive("/app/admin")
+                      ? "rgba(45, 212, 255, 0.08)"
+                      : "transparent",
+                    "&:hover": {
+                      background: isActive("/app/admin")
+                        ? "rgba(45, 212, 255, 0.12)"
+                        : "rgba(255,255,255,0.03)",
+                    },
+                    "&::before": isActive("/app/admin")
+                      ? {
+                          content: '""',
+                          position: "absolute",
+                          left: 0,
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          width: 3,
+                          height: 18,
+                          borderRadius: "0 4px 4px 0",
+                          background: "#2DD4FF",
+                        }
+                      : {},
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <AdminPanelSettingsOutlined
+                      sx={{
+                        fontSize: 18,
+                        color: isActive("/app/admin")
+                          ? "#2DD4FF"
+                          : "rgba(255,255,255,0.5)",
+                      }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Admin"
+                    primaryTypographyProps={{
+                      fontSize: "0.8125rem",
+                      fontWeight: isActive("/app/admin") ? 600 : 500,
+                      color: isActive("/app/admin")
+                        ? "#2DD4FF"
+                        : "rgba(255,255,255,0.75)",
                     }}
                   />
-                </ListItemIcon>
-                <ListItemText
-                  primary={label}
-                  primaryTypographyProps={{
-                    fontSize: "0.875rem",
-                    fontWeight: active ? 600 : 500,
-                    color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-        <ListItem disablePadding>
-          <ListItemButton
-            component={Link}
-            href="/login"
-            sx={{
-              mx: 1.5,
-              borderRadius: 2,
-              py: 1.25,
-              "&:hover": { background: "rgba(255,255,255,0.04)" },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>
-              <Logout sx={{ fontSize: 20, color: "rgba(255,255,255,0.5)" }} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Sair"
-              primaryTypographyProps={{
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "rgba(255,255,255,0.75)",
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Box>
+        )}
+
+        {/* Sair (Logout) */}
+        <List disablePadding>
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href="/login"
+              sx={{
+                borderRadius: 2,
+                minHeight: 38,
+                px: 1.25,
+                py: 0.75,
+                "&:hover": { background: "rgba(255,255,255,0.03)" },
               }}
-            />
-          </ListItemButton>
-        </ListItem>
-      </List>
+            >
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <Logout sx={{ fontSize: 18, color: "rgba(255,255,255,0.5)" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Sair"
+                primaryTypographyProps={{
+                  fontSize: "0.8125rem",
+                  fontWeight: 500,
+                  color: "rgba(255,255,255,0.75)",
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Box>
     </Box>
   );
 
@@ -468,7 +591,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               borderBottom: "1px solid rgba(255,255,255,0.06)",
             }}
           >
-            <Toolbar sx={{ minHeight: 64, justifyContent: "space-between" }}>
+            <Toolbar sx={{ minHeight: 52, justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <IconButton
                   edge="start"
@@ -491,10 +614,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Box
             sx={{
               flex: 1,
-              py: { xs: 3, md: 4 },
-              px: { xs: 2, md: 4 },
-              overflowY: "auto",
-              overscrollBehavior: "contain",
+              py: { xs: 2, md: 2.5 },
+              px: { xs: 2, md: 3 },
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
             }}
           >
             {children}

@@ -177,11 +177,11 @@ export function VideoCard({
           />
         </Box>
         <Box sx={{ p: 1.5 }}>
-          <Skeleton width="90%" height={16} sx={{ mb: 0.5 }} />
-          <Skeleton width="55%" height={14} sx={{ mb: 1 }} />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Skeleton width={60} height={14} />
-            <Skeleton width={50} height={14} />
+          <Skeleton width="90%" height={14} sx={{ mb: 0.4 }} />
+          <Skeleton width="55%" height={12} sx={{ mb: 0.75 }} />
+          <Box sx={{ display: "flex", gap: 1.5 }}>
+            <Skeleton width={50} height={12} />
+            <Skeleton width={45} height={12} />
           </Box>
         </Box>
       </Box>
@@ -365,21 +365,21 @@ export function VideoCard({
       </Box>
 
       {/* ======== Content area ======== */}
-      <Box sx={{ p: 1.5 }}>
+      <Box sx={{ p: 1.25 }}>
         {/* Title — 2 lines */}
         <Typography
           sx={{
-            fontSize: "0.8rem",
+            fontSize: "0.75rem",
             fontWeight: 600,
             color: "#fff",
-            lineHeight: 1.4,
+            lineHeight: 1.35,
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
-            mb: 0.5,
-            minHeight: "2.24em",
+            mb: 0.4,
+            minHeight: "2.025em",
           }}
         >
           {video.title}
@@ -388,9 +388,9 @@ export function VideoCard({
         {/* Creator handle */}
         <Typography
           sx={{
-            fontSize: "0.7rem",
-            color: "rgba(255,255,255,0.55)",
-            mb: 1,
+            fontSize: "0.6875rem",
+            color: "rgba(255,255,255,0.5)",
+            mb: 0.75,
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
@@ -400,33 +400,33 @@ export function VideoCard({
         </Typography>
 
         {/* Metrics row */}
-        <Box sx={{ display: "flex", gap: 1.5, mb: 1, flexWrap: "wrap" }}>
+        <Box sx={{ display: "flex", gap: 1.25, mb: 0.75, flexWrap: "wrap" }}>
           {/* Revenue */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
-            <Paid sx={{ fontSize: 14, color: "#2DD4FF" }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
+            <Paid sx={{ fontSize: 13, color: "#2DD4FF" }} />
             <Typography
-              sx={{ fontSize: "0.7rem", color: "#2DD4FF", fontWeight: 600 }}
+              sx={{ fontSize: "0.6875rem", color: "#2DD4FF", fontWeight: 600 }}
             >
               {formatCurrency(video.revenueBRL)}
             </Typography>
           </Box>
           {/* Views */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
-            <Visibility sx={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
+            <Visibility sx={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }} />
             <Typography
-              sx={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.6)" }}
+              sx={{ fontSize: "0.6875rem", color: "rgba(255,255,255,0.6)" }}
             >
               {formatNumber(video.views)}
             </Typography>
           </Box>
           {/* Sales */}
           {video.sales > 0 && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
               <ShoppingCart
-                sx={{ fontSize: 14, color: "rgba(255,255,255,0.45)" }}
+                sx={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}
               />
               <Typography
-                sx={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.55)" }}
+                sx={{ fontSize: "0.6875rem", color: "rgba(255,255,255,0.55)" }}
               >
                 {formatNumber(video.sales)}
               </Typography>
@@ -442,7 +442,7 @@ export function VideoCard({
             justifyContent: "space-between",
           }}
         >
-          <Box sx={{ display: "flex", gap: 0.25 }}>
+          <Box sx={{ display: "flex", gap: 0.15 }}>
             <Tooltip title={saved ? "Remover dos salvos" : "Salvar"}>
               <IconButton
                 size="small"
