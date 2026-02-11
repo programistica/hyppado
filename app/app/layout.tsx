@@ -31,6 +31,11 @@ import {
   Logout,
   SubtitlesOutlined,
   TerminalOutlined,
+  BookmarkBorder,
+  Whatshot,
+  FiberNew,
+  CardMembership,
+  HelpOutline,
 } from "@mui/icons-material";
 import { Logo } from "@/app/components/ui/Logo";
 import { useQuotaUsage, formatQuotaDisplay } from "@/lib/admin/useQuotaUsage";
@@ -56,12 +61,33 @@ const theme = createTheme({
   },
 });
 
-// Sidebar navigation items (Dashboard removed)
-const NAV_ITEMS = [
-  { label: "Vídeos", icon: VideoLibrary, href: "/app/videos" },
-  { label: "Produtos", icon: Inventory2, href: "/app/products" },
-  { label: "Creators", icon: Person, href: "/app/creators" },
-  { label: "Tendências", icon: TrendingUp, href: "/app/trends" },
+// Sidebar navigation items organized in sections
+const NAV_SECTIONS = [
+  {
+    items: [
+      { label: "Vídeos em Alta", icon: VideoLibrary, href: "/app/videos" },
+      { label: "Produtos Hype", icon: Whatshot, href: "/app/products" },
+      { label: "Novos Produtos", icon: FiberNew, href: "/app/trends" },
+      { label: "Creators", icon: Person, href: "/app/creators" },
+    ],
+  },
+  {
+    divider: true,
+    items: [
+      {
+        label: "Vídeos salvos",
+        icon: BookmarkBorder,
+        href: "/app/videos-salvos",
+      },
+    ],
+  },
+  {
+    divider: true,
+    items: [
+      { label: "Assinatura", icon: CardMembership, href: "/app/assinatura" },
+      { label: "Suporte", icon: HelpOutline, href: "/app/suporte" },
+    ],
+  },
 ];
 
 // Bottom nav items (Admin only shown if NEXT_PUBLIC_ADMIN_MODE === "true")
@@ -231,49 +257,62 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           overscrollBehavior: "contain",
         }}
       >
-        {NAV_ITEMS.map(({ label, icon: Icon, href }) => {
-          const active = isActive(href);
-          return (
-            <ListItem key={label} disablePadding>
-              <ListItemButton
-                component={Link}
-                href={href}
-                onClick={() => setMobileOpen(false)}
+        {NAV_SECTIONS.map((section, sectionIndex) => (
+          <Box key={sectionIndex}>
+            {section.divider && sectionIndex > 0 && (
+              <Divider
                 sx={{
+                  borderColor: "rgba(255,255,255,0.06)",
+                  my: 1.5,
                   mx: 1.5,
-                  borderRadius: 2,
-                  mb: 0.5,
-                  py: 1.25,
-                  background: active
-                    ? "rgba(45, 212, 255, 0.1)"
-                    : "transparent",
-                  "&:hover": {
-                    background: active
-                      ? "rgba(45, 212, 255, 0.15)"
-                      : "rgba(255,255,255,0.04)",
-                  },
                 }}
-              >
-                <ListItemIcon sx={{ minWidth: 40 }}>
-                  <Icon
+              />
+            )}
+            {section.items.map(({ label, icon: Icon, href }) => {
+              const active = isActive(href);
+              return (
+                <ListItem key={label} disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
                     sx={{
-                      fontSize: 20,
-                      color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
+                      mx: 1.5,
+                      borderRadius: 2,
+                      mb: 0.5,
+                      py: 1.25,
+                      background: active
+                        ? "rgba(45, 212, 255, 0.1)"
+                        : "transparent",
+                      "&:hover": {
+                        background: active
+                          ? "rgba(45, 212, 255, 0.15)"
+                          : "rgba(255,255,255,0.04)",
+                      },
                     }}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={label}
-                  primaryTypographyProps={{
-                    fontSize: "0.875rem",
-                    fontWeight: active ? 600 : 500,
-                    color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
+                  >
+                    <ListItemIcon sx={{ minWidth: 40 }}>
+                      <Icon
+                        sx={{
+                          fontSize: 20,
+                          color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={label}
+                      primaryTypographyProps={{
+                        fontSize: "0.875rem",
+                        fontWeight: active ? 600 : 500,
+                        color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </Box>
+        ))}
       </List>
 
       <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", flexShrink: 0 }} />

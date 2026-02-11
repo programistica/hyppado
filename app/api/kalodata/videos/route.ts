@@ -41,7 +41,7 @@ async function enrichVideo(video: VideoDTO): Promise<VideoDTO> {
   if (oEmbedUrl) {
     // First attempt with 20s timeout
     let oembed = await fetchTikTokOEmbed(oEmbedUrl, 20000);
-    
+
     // Retry once if failed (with 2s delay)
     if (!oembed?.thumbnail_url) {
       await new Promise((r) => setTimeout(r, 2000));
