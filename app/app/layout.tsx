@@ -139,6 +139,11 @@ const NAV_SECTIONS = [
         icon: BookmarkBorder,
         href: "/app/videos-salvos",
       },
+      {
+        label: "Produtos salvos",
+        icon: Inventory2,
+        href: "/app/produtos-salvos",
+      },
     ],
   },
   {
@@ -289,9 +294,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          px: 2.5,
-          py: 1.75,
-          minHeight: 58,
+          px: 2,
+          py: 1.5,
+          minHeight: 50,
           flexShrink: 0,
         }}
       >
@@ -299,7 +304,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           href="/app/videos"
           mode="dark"
           variant="full"
-          responsiveHeight={{ xs: 28, sm: 30, md: 32, lg: 34 }}
+          responsiveHeight={{ xs: 26, sm: 28, md: 30, lg: 32 }}
         />
       </Box>
 
@@ -310,26 +315,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sx={{
           flex: 1,
           overflow: "hidden",
-          px: 2,
-          py: 2,
+          px: 1.5,
+          py: 1.5,
           minHeight: 0,
         }}
       >
         {NAV_SECTIONS.map((section, sectionIndex) => (
           <Box
             key={section.label}
-            sx={{ mb: sectionIndex < NAV_SECTIONS.length - 1 ? 2 : 0 }}
+            sx={{ mb: sectionIndex < NAV_SECTIONS.length - 1 ? 1.5 : 0 }}
           >
             {/* Section Label */}
             <Typography
               sx={{
-                fontSize: "0.625rem",
+                fontSize: "0.6rem",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.35)",
-                px: 1.25,
-                mb: 0.75,
+                px: 1,
+                mb: 0.5,
               }}
             >
               {section.label}
@@ -350,9 +355,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       onClick={() => setMobileOpen(false)}
                       sx={{
                         borderRadius: 2,
-                        minHeight: 38,
-                        px: 1.25,
-                        py: 0.75,
+                        minHeight: 36,
+                        px: 1,
+                        py: 0.5,
                         position: "relative",
                         background: active
                           ? "rgba(45, 212, 255, 0.08)"
@@ -377,10 +382,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           : {},
                       }}
                     >
-                      <ListItemIcon sx={{ minWidth: 32 }}>
+                      <ListItemIcon sx={{ minWidth: 28 }}>
                         <Icon
                           sx={{
-                            fontSize: 18,
+                            fontSize: 17,
                             color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
                           }}
                         />
@@ -388,7 +393,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <ListItemText
                         primary={label}
                         primaryTypographyProps={{
-                          fontSize: "0.8125rem",
+                          fontSize: "0.8rem",
                           fontWeight: active ? 600 : 500,
                           color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
                         }}
@@ -403,19 +408,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Box>
 
       {/* Bottom actions - fixed at bottom */}
-      <Box sx={{ flexShrink: 0, px: 2, pb: 1.5, pt: 1.5 }}>
+      <Box sx={{ flexShrink: 0, px: 1.5, pb: 1.25, pt: 1.25 }}>
         {/* Admin section (if enabled) */}
         {isAdminMode && (
-          <Box sx={{ mb: 1.5 }}>
+          <Box sx={{ mb: 1 }}>
             <Typography
               sx={{
-                fontSize: "0.625rem",
+                fontSize: "0.6rem",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.35)",
-                px: 1.25,
-                mb: 0.75,
+                px: 1,
+                mb: 0.5,
               }}
             >
               ADMIN
@@ -428,9 +433,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => setMobileOpen(false)}
                   sx={{
                     borderRadius: 2,
-                    minHeight: 38,
-                    px: 1.25,
-                    py: 0.75,
+                    minHeight: 36,
+                    px: 1,
+                    py: 0.5,
                     position: "relative",
                     background: isActive("/app/admin")
                       ? "rgba(45, 212, 255, 0.08)"
@@ -455,10 +460,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       : {},
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 32 }}>
+                  <ListItemIcon sx={{ minWidth: 28 }}>
                     <AdminPanelSettingsOutlined
                       sx={{
-                        fontSize: 18,
+                        fontSize: 17,
                         color: isActive("/app/admin")
                           ? "#2DD4FF"
                           : "rgba(255,255,255,0.5)",
@@ -468,7 +473,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <ListItemText
                     primary="Admin"
                     primaryTypographyProps={{
-                      fontSize: "0.8125rem",
+                      fontSize: "0.8rem",
                       fontWeight: isActive("/app/admin") ? 600 : 500,
                       color: isActive("/app/admin")
                         ? "#2DD4FF"
@@ -489,19 +494,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               href="/login"
               sx={{
                 borderRadius: 2,
-                minHeight: 38,
-                px: 1.25,
-                py: 0.75,
+                minHeight: 36,
+                px: 1,
+                py: 0.5,
                 "&:hover": { background: "rgba(255,255,255,0.03)" },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 32 }}>
-                <Logout sx={{ fontSize: 18, color: "rgba(255,255,255,0.5)" }} />
+              <ListItemIcon sx={{ minWidth: 28 }}>
+                <Logout sx={{ fontSize: 17, color: "rgba(255,255,255,0.5)" }} />
               </ListItemIcon>
               <ListItemText
                 primary="Sair"
                 primaryTypographyProps={{
-                  fontSize: "0.8125rem",
+                  fontSize: "0.8rem",
                   fontWeight: 500,
                   color: "rgba(255,255,255,0.75)",
                 }}

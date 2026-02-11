@@ -2,35 +2,35 @@
 
 import { useState, useEffect } from "react";
 import { Box, Container, Typography, Grid } from "@mui/material";
-import { BookmarkBorder } from "@mui/icons-material";
-import { VideoCardPro } from "@/app/components/cards/VideoCardPro";
-import { getSavedVideos } from "@/lib/storage/saved";
-import type { VideoDTO } from "@/lib/types/kalodata";
+import { Inventory2 } from "@mui/icons-material";
+import { ProductCard } from "@/app/components/cards/ProductCard";
+import { getSavedProducts } from "@/lib/storage/saved";
+import type { ProductDTO } from "@/lib/types/kalodata";
 
-export default function VideosSalvosPage() {
-  const [savedVideos, setSavedVideos] = useState<VideoDTO[]>([]);
+export default function ProdutosSalvosPage() {
+  const [savedProducts, setSavedProducts] = useState<ProductDTO[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load saved videos from localStorage
-    const loadSavedVideos = () => {
-      const saved = getSavedVideos();
-      setSavedVideos(saved.map((item) => item.video));
+    // Load saved products from localStorage
+    const loadSavedProducts = () => {
+      const saved = getSavedProducts();
+      setSavedProducts(saved.map((item) => item.product));
       setLoading(false);
     };
 
-    loadSavedVideos();
+    loadSavedProducts();
 
     // Listen to storage events (for cross-tab sync)
     const handleStorageChange = () => {
-      loadSavedVideos();
+      loadSavedProducts();
     };
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const isEmpty = !loading && savedVideos.length === 0;
+  const isEmpty = !loading && savedProducts.length === 0;
 
   return (
     <Container maxWidth="xl" disableGutters>
@@ -45,7 +45,7 @@ export default function VideosSalvosPage() {
             mb: 0.5,
           }}
         >
-          Vídeos salvos
+          Produtos salvos
         </Typography>
         <Typography
           sx={{
@@ -54,7 +54,7 @@ export default function VideosSalvosPage() {
           }}
         >
           {!isEmpty
-            ? `${savedVideos.length} ${savedVideos.length === 1 ? "vídeo salvo" : "vídeos salvos"}`
+            ? `${savedProducts.length} ${savedProducts.length === 1 ? "produto salvo" : "produtos salvos"}`
             : "Itens que você marcou para revisar depois."}
         </Typography>
       </Box>
@@ -78,7 +78,7 @@ export default function VideosSalvosPage() {
               gap: 2,
             }}
           >
-            <BookmarkBorder
+            <Inventory2
               sx={{
                 fontSize: 64,
                 color: "rgba(255,255,255,0.15)",
@@ -93,7 +93,7 @@ export default function VideosSalvosPage() {
                   mb: 1,
                 }}
               >
-                Você ainda não salvou nenhum vídeo.
+                Você ainda não salvou nenhum produto.
               </Typography>
               <Typography
                 sx={{
@@ -108,25 +108,16 @@ export default function VideosSalvosPage() {
         </Box>
       )}
 
-      {/* Videos Grid */}
+      {/* Products Grid */}
       {!isEmpty && (
         <Grid container spacing={{ xs: 2, md: 2.5 }}>
-          {savedVideos.map((video) => (
-            <Grid item xs={6} sm={6} md={4} lg={2.4} key={video.id}>
-              <VideoCardPro
-                video={video}
-                onInsightClick={(v) => {
-                  console.log("Insight clicked:", v.id);
-                  // TODO: Implement insight modal/page
-                }}
-                onShareClick={(v) => {
-                  if (navigator.share && v.tiktokUrl) {
-                    navigator.share({
-                      title: v.title,
-                      url: v.tiktokUrl,
-                    });
-                  } else if (v.tiktokUrl) {
-                    navigator.clipboard.writeText(v.tiktokUrl);
+          {savedProducts.map((product) => (
+            <Grid item xs={6} sm={6} md={4} lg={2.4} key={product.id}>
+              <ProductCard
+                product={product}
+                onViewDetails={(p) => {
+                  if (p.kalodataUrl) {
+                    window.open(p.kalodataUrl, "_blank", "noopener,noreferrer");
                   }
                 }}
               />
