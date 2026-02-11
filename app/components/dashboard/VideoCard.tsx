@@ -28,28 +28,42 @@ import { formatCurrency, formatNumber } from "@/lib/kalodata/parser";
 import { Skeleton } from "@/app/components/ui/Skeleton";
 
 // ============================================
-// Rank + Top 3 helpers
+// Design Tokens
 // ============================================
+const UI = {
+  card: {
+    bg: "linear-gradient(165deg, #0D1422 0%, #0A0F18 100%)",
+    border: "rgba(255,255,255,0.06)",
+    borderHover: "rgba(45,212,255,0.22)",
+    radius: 4.5,
+    shadow: "0 2px 8px rgba(0,0,0,0.12)",
+    shadowHover: "0 8px 24px rgba(0,0,0,0.25), 0 0 0 1px rgba(45,212,255,0.15)",
+  },
+  text: {
+    primary: "rgba(255,255,255,0.92)",
+    secondary: "rgba(255,255,255,0.64)",
+    muted: "rgba(255,255,255,0.42)",
+  },
+  accent: "#2DD4FF",
+};
+
 const TOP_3_STYLES: Record<
   number,
-  { color: string; glow: string; border: string; icon: typeof WorkspacePremium }
+  { color: string; border: string; icon: typeof WorkspacePremium }
 > = {
   1: {
-    color: "#FFD700",
-    glow: "0 0 18px rgba(255, 215, 0, 0.35)",
-    border: "rgba(255, 215, 0, 0.5)",
+    color: "#F5C84C",
+    border: "rgba(245,200,76,0.3)",
     icon: WorkspacePremium,
   },
   2: {
-    color: "#C0C0C0",
-    glow: "0 0 14px rgba(192, 192, 192, 0.3)",
-    border: "rgba(192, 192, 192, 0.45)",
+    color: "#D1D5DB",
+    border: "rgba(209,213,219,0.25)",
     icon: WorkspacePremium,
   },
   3: {
-    color: "#CD7F32",
-    glow: "0 0 14px rgba(205, 127, 50, 0.3)",
-    border: "rgba(205, 127, 50, 0.45)",
+    color: "#CD9777",
+    border: "rgba(205,151,119,0.25)",
     icon: MilitaryTech,
   },
 };
@@ -82,6 +96,7 @@ export function VideoCard({
 }: VideoCardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [saved, setSaved] = useState(isSaved);
+  const [isPressed, setIsPressed] = useState(false);
   const menuOpen = Boolean(anchorEl);
 
   const isTop3 = rank !== undefined && rank >= 1 && rank <= 3;
@@ -138,20 +153,20 @@ export function VideoCard({
         aria-busy="true"
         aria-label="Carregando vídeo"
         sx={{
-          borderRadius: 3,
+          borderRadius: UI.card.radius,
           overflow: "hidden",
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(45, 212, 255, 0.08)",
+          background: UI.card.bg,
+          border: `1px solid ${UI.card.border}`,
         }}
       >
-        {/* Skeleton preview area — same 9:16 as real card */}
+        {/* Skeleton preview area */}
         <Box
           sx={{
             position: "relative",
             width: "100%",
-            aspectRatio: "9 / 16",
+            aspectRatio: { xs: "1 / 1", md: "4 / 5" },
             background: "#0a0f18",
-            borderRadius: "12px 12px 0 0",
+            borderRadius: `${UI.card.radius * 2}px ${UI.card.radius * 2}px 0 0`,
             overflow: "hidden",
           }}
         >
@@ -192,6 +207,9 @@ export function VideoCard({
   return (
     <Box
       onClick={handleCardClick}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -207,26 +225,28 @@ export function VideoCard({
       }
       sx={{
         position: "relative",
-        borderRadius: 3,
+        borderRadius: UI.card.radius,
         overflow: "hidden",
-        background: "rgba(255,255,255,0.03)",
-        border: `1px solid ${topStyle ? topStyle.border : "rgba(45, 212, 255, 0.12)"}`,
+        background: UI.card.bg,
+        border: `1px solid ${topStyle ? topStyle.border : UI.card.border}`,
         cursor: hasTikTokUrl ? "pointer" : "default",
-        transition: "all 0.2s ease",
-        ...(topStyle && { boxShadow: topStyle.glow }),
-        "&:hover": hasTikTokUrl
-          ? {
-              borderColor: topStyle
-                ? topStyle.color
-                : "rgba(45, 212, 255, 0.35)",
-              boxShadow: topStyle
-                ? `${topStyle.glow}, 0 4px 20px rgba(0,0,0,0.3)`
-                : "0 0 24px rgba(45, 212, 255, 0.12)",
-              transform: "translateY(-2px)",
-            }
-          : {},
+        transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+        boxShadow: UI.card.shadow,
+        ...((hasTikTokUrl || true) && {
+          "&:hover": {
+            borderColor: UI.card.borderHover,
+            boxShadow: UI.card.shadowHover,
+            transform: "translateY(-3px)",
+          },
+          "&:active": {
+            transform: "scale(0.98)",
+          },
+        }),
+        ...(isPressed && {
+          transform: "scale(0.98)",
+        }),
         "&:focus-visible": {
-          outline: `2px solid ${topStyle?.color ?? "#2DD4FF"}`,
+          outline: `2px solid ${UI.card.borderHover}`,
           outlineOffset: 2,
         },
       }}
@@ -280,27 +300,28 @@ export function VideoCard({
           <Box
             sx={{
               position: "absolute",
-              top: 8,
-              left: 8,
+              top: { xs: 8, md: 10 },
+              left: { xs: 8, md: 10 },
               zIndex: 5,
               display: "flex",
               alignItems: "center",
               gap: 0.5,
-              px: 1,
-              py: 0.4,
-              borderRadius: 1.5,
+              px: { xs: 0.8, md: 1 },
+              py: { xs: 0.35, md: 0.45 },
+              borderRadius: 3,
               fontWeight: 700,
-              fontSize: "0.75rem",
-              color: topStyle ? topStyle.color : "#fff",
-              background: topStyle ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.55)",
-              backdropFilter: "blur(6px)",
-              border: topStyle
-                ? `1px solid ${topStyle.border}`
-                : "1px solid rgba(255,255,255,0.15)",
+              fontSize: { xs: "0.7rem", md: "0.75rem" },
+              color: topStyle ? topStyle.color : "rgba(255,255,255,0.9)",
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(8px)",
+              border: `1px solid ${topStyle ? topStyle.border : "rgba(255,255,255,0.10)"}`,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
             }}
           >
             {topStyle && (
-              <topStyle.icon sx={{ fontSize: 16, color: topStyle.color }} />
+              <topStyle.icon
+                sx={{ fontSize: { xs: 14, md: 15 }, color: topStyle.color }}
+              />
             )}
             #{rank}
           </Box>
@@ -310,21 +331,22 @@ export function VideoCard({
         {video.duration && video.duration !== "0:00" && (
           <Chip
             size="small"
-            icon={<AccessTime sx={{ fontSize: 12 }} />}
+            icon={<AccessTime sx={{ fontSize: { xs: 11, md: 12 } }} />}
             label={video.duration}
             sx={{
               position: "absolute",
-              top: 8,
-              right: 8,
+              top: { xs: 8, md: 10 },
+              right: { xs: 8, md: 10 },
               zIndex: 5,
-              height: 22,
-              fontSize: "0.65rem",
+              height: { xs: 22, md: 24 },
+              fontSize: { xs: "0.65rem", md: "0.7rem" },
               fontWeight: 600,
-              background: "rgba(0,0,0,0.65)",
-              backdropFilter: "blur(6px)",
-              color: "#fff",
-              border: "1px solid rgba(255,255,255,0.1)",
-              "& .MuiChip-icon": { color: "rgba(255,255,255,0.7)" },
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(8px)",
+              color: "rgba(255,255,255,0.9)",
+              border: "1px solid rgba(255,255,255,0.10)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+              "& .MuiChip-icon": { color: "rgba(255,255,255,0.64)" },
             }}
           />
         )}
@@ -351,35 +373,36 @@ export function VideoCard({
             label={`ROAS ${video.roas.toFixed(1)}x`}
             sx={{
               position: "absolute",
-              bottom: 8,
-              left: 8,
+              bottom: { xs: 8, md: 10 },
+              left: { xs: 8, md: 10 },
               zIndex: 5,
-              height: 22,
-              fontSize: "0.65rem",
+              height: { xs: 22, md: 24 },
+              fontSize: { xs: "0.65rem", md: "0.7rem" },
               fontWeight: 700,
-              background: "rgba(45, 212, 255, 0.85)",
+              background: "rgba(45, 212, 255, 0.9)",
               color: "#06080F",
+              boxShadow: "0 2px 8px rgba(45,212,255,0.3)",
             }}
           />
         )}
       </Box>
 
       {/* ======== Content area ======== */}
-      <Box sx={{ p: 1.25 }}>
+      <Box sx={{ p: { xs: 1.25, md: 1.5 } }}>
         {/* Title — 2 lines */}
         <Typography
           sx={{
-            fontSize: "0.75rem",
-            fontWeight: 600,
-            color: "#fff",
-            lineHeight: 1.35,
+            fontSize: { xs: "0.95rem", md: "1rem" },
+            fontWeight: 650,
+            color: UI.text.primary,
+            lineHeight: 1.2,
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
-            mb: 0.4,
-            minHeight: "2.025em",
+            mb: { xs: 0.4, md: 0.5 },
+            minHeight: "2.4em",
           }}
         >
           {video.title}
@@ -388,9 +411,9 @@ export function VideoCard({
         {/* Creator handle */}
         <Typography
           sx={{
-            fontSize: "0.6875rem",
-            color: "rgba(255,255,255,0.5)",
-            mb: 0.75,
+            fontSize: "0.85rem",
+            color: UI.text.secondary,
+            mb: { xs: 0.75, md: 1 },
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
@@ -400,33 +423,54 @@ export function VideoCard({
         </Typography>
 
         {/* Metrics row */}
-        <Box sx={{ display: "flex", gap: 1.25, mb: 0.75, flexWrap: "wrap" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 1, md: 1.5 },
+            mb: { xs: 0.75, md: 1 },
+            flexWrap: "wrap",
+          }}
+        >
           {/* Revenue */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
-            <Paid sx={{ fontSize: 13, color: "#2DD4FF" }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
+            <Paid
+              sx={{ fontSize: { xs: 14, md: 16 }, color: `${UI.accent}E6` }}
+            />
             <Typography
-              sx={{ fontSize: "0.6875rem", color: "#2DD4FF", fontWeight: 600 }}
+              sx={{
+                fontSize: { xs: "0.8rem", md: "0.85rem" },
+                color: UI.accent,
+                fontWeight: 600,
+              }}
             >
               {formatCurrency(video.revenueBRL)}
             </Typography>
           </Box>
           {/* Views */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
-            <Visibility sx={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
+            <Visibility
+              sx={{ fontSize: { xs: 14, md: 16 }, color: UI.text.muted }}
+            />
             <Typography
-              sx={{ fontSize: "0.6875rem", color: "rgba(255,255,255,0.6)" }}
+              sx={{
+                fontSize: { xs: "0.8rem", md: "0.85rem" },
+                color: UI.text.secondary,
+              }}
             >
               {formatNumber(video.views)}
             </Typography>
           </Box>
           {/* Sales */}
           {video.sales > 0 && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
               <ShoppingCart
-                sx={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}
+                sx={{ fontSize: { xs: 14, md: 16 }, color: UI.text.muted }}
               />
               <Typography
-                sx={{ fontSize: "0.6875rem", color: "rgba(255,255,255,0.55)" }}
+                sx={{
+                  fontSize: { xs: "0.8rem", md: "0.85rem" },
+                  color: UI.text.secondary,
+                }}
               >
                 {formatNumber(video.sales)}
               </Typography>
@@ -449,11 +493,23 @@ export function VideoCard({
                 onClick={handleSave}
                 aria-label={saved ? "Remover dos salvos" : "Salvar vídeo"}
                 sx={{
-                  color: saved ? "#2DD4FF" : "rgba(255,255,255,0.45)",
-                  "&:hover": { color: "#2DD4FF" },
+                  color: saved ? UI.accent : "rgba(255,255,255,0.55)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 3,
+                  padding: { xs: "7px", md: "8px" },
+                  transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    color: "rgba(255,255,255,0.80)",
+                    background: "rgba(255,255,255,0.06)",
+                    borderColor: UI.card.borderHover,
+                  },
                 }}
               >
-                {saved ? <Bookmark /> : <BookmarkBorder />}
+                {saved ? (
+                  <Bookmark sx={{ fontSize: { xs: 16, md: 18 } }} />
+                ) : (
+                  <BookmarkBorder sx={{ fontSize: { xs: 16, md: 18 } }} />
+                )}
               </IconButton>
             </Tooltip>
 
@@ -467,12 +523,23 @@ export function VideoCard({
                   onClick={handleOpenTikTok}
                   aria-label="Abrir no TikTok"
                   sx={{
-                    color: "rgba(255,255,255,0.45)",
-                    "&:hover": { color: "#2DD4FF" },
-                    "&.Mui-disabled": { color: "rgba(255,255,255,0.15)" },
+                    color: "rgba(255,255,255,0.55)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    borderRadius: 3,
+                    padding: { xs: "7px", md: "8px" },
+                    transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      color: "rgba(255,255,255,0.80)",
+                      background: "rgba(255,255,255,0.06)",
+                      borderColor: UI.card.borderHover,
+                    },
+                    "&.Mui-disabled": {
+                      color: "rgba(255,255,255,0.15)",
+                      borderColor: "rgba(255,255,255,0.03)",
+                    },
                   }}
                 >
-                  <OpenInNew sx={{ fontSize: 16 }} />
+                  <OpenInNew sx={{ fontSize: { xs: 14, md: 16 } }} />
                 </IconButton>
               </span>
             </Tooltip>
@@ -486,11 +553,19 @@ export function VideoCard({
             aria-haspopup="true"
             aria-expanded={menuOpen ? "true" : undefined}
             sx={{
-              color: "rgba(255,255,255,0.45)",
-              "&:hover": { color: "#2DD4FF" },
+              color: "rgba(255,255,255,0.55)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 3,
+              padding: { xs: "7px", md: "8px" },
+              transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+              "&:hover": {
+                color: "rgba(255,255,255,0.80)",
+                background: "rgba(255,255,255,0.06)",
+                borderColor: UI.card.borderHover,
+              },
             }}
           >
-            <MoreVert sx={{ fontSize: 16 }} />
+            <MoreVert sx={{ fontSize: { xs: 14, md: 16 } }} />
           </IconButton>
 
           <Menu
@@ -501,13 +576,19 @@ export function VideoCard({
             MenuListProps={{ "aria-labelledby": "more-options-button" }}
             PaperProps={{
               sx: {
-                background: "#0A0F18",
-                border: "1px solid rgba(45, 212, 255, 0.18)",
+                background: UI.card.bg,
+                border: `1px solid ${UI.card.borderHover}`,
+                borderRadius: 3,
+                boxShadow: UI.card.shadowHover,
                 "& .MuiMenuItem-root": {
-                  fontSize: "0.8rem",
-                  color: "rgba(255,255,255,0.85)",
+                  fontSize: "0.85rem",
+                  color: UI.text.primary,
                   gap: 1.5,
-                  "&:hover": { background: "rgba(45, 212, 255, 0.08)" },
+                  transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    background: "rgba(255,255,255,0.06)",
+                    color: UI.accent,
+                  },
                 },
               },
             }}
