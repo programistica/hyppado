@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -12,8 +12,6 @@ import {
 import {
   Bookmark,
   BookmarkBorder,
-  AccessTime,
-  TrendingUp,
   Subtitles,
   AutoAwesome,
   PlayArrowRounded,
@@ -52,7 +50,45 @@ const UI = {
     border: "rgba(255, 193, 7, 0.15)",
     text: "rgba(255, 193, 7, 0.85)",
   },
+  // Top 3 ranking colors (gold, silver, bronze)
+  rank: {
+    1: {
+      color: "#D4AF37", // Rich gold
+      bg: "rgba(212, 175, 55, 0.15)",
+      border: "rgba(212, 175, 55, 0.4)",
+      glow: "0 0 12px rgba(212, 175, 55, 0.35)",
+    },
+    2: {
+      color: "#C0C0C0", // Silver
+      bg: "rgba(192, 192, 192, 0.12)",
+      border: "rgba(192, 192, 192, 0.35)",
+      glow: "0 0 10px rgba(192, 192, 192, 0.25)",
+    },
+    3: {
+      color: "#CD7F32", // Bronze
+      bg: "rgba(205, 127, 50, 0.12)",
+      border: "rgba(205, 127, 50, 0.35)",
+      glow: "0 0 10px rgba(205, 127, 50, 0.25)",
+    },
+  },
 };
+
+// Mock products for fallback when video has no product
+const FALLBACK_PRODUCTS = [
+  { name: "Secador de Cabelo Profissional", priceBRL: 189.90, category: "Beleza", imageUrl: "https://picsum.photos/seed/prod001/200/200" },
+  { name: "Kit Maquiagem Completo", priceBRL: 129.90, category: "Beleza", imageUrl: "https://picsum.photos/seed/prod002/200/200" },
+  { name: "Fone Bluetooth Premium", priceBRL: 249.90, category: "Eletrônicos", imageUrl: "https://picsum.photos/seed/prod003/200/200" },
+  { name: "Escova Alisadora 2-em-1", priceBRL: 159.90, category: "Beleza", imageUrl: "https://picsum.photos/seed/prod004/200/200" },
+  { name: "Luminária LED Inteligente", priceBRL: 89.90, category: "Casa", imageUrl: "https://picsum.photos/seed/prod005/200/200" },
+];
+
+/**
+ * Get a mock product for a video based on index (deterministic)
+ */
+function getMockProductForVideo(videoId: string, index: number) {
+  const idx = index % FALLBACK_PRODUCTS.length;
+  return FALLBACK_PRODUCTS[idx];
+}
 
 interface VideoCardProProps {
   video?: VideoDTO;
@@ -75,9 +111,16 @@ export function VideoCardPro({
   const hasTikTokUrl = !!video?.tiktokUrl;
   const hasThumbnail = !!video?.thumbnailUrl;
 
+  // Always have a product to display (real or fallback mock)
+  const displayProduct = video?.product || (video ? {
+    ...getMockProductForVideo(video.id, rank ?? 0),
+    id: `fallback-${video.id}`,
+  } : null);
+  const hasRealProduct = !!video?.product;
+
   const saved = video ? savedVideos.isSaved(video.id) : false;
-  const productSaved = video?.product
-    ? savedProducts.isSaved(video.product.id)
+  const productSaved = displayProduct && hasRealProduct
+    ? savedProducts.isSaved(video!.product!.id)
     : false;
 
   const handleSave = (e: React.MouseEvent) => {
@@ -347,7 +390,7 @@ Entregue:
           </Box>
         )}
 
-        {/* Rank badge (discreto) */}
+        {/* Rank badge - Top 1/2/3 com destaque sofisticado, demais discreto */}
         {rank !== undefined && (
           <Box
             sx={{
@@ -358,45 +401,33 @@ Entregue:
               display: "flex",
               alignItems: "center",
               gap: 0.3,
-              px: { xs: 0.7, md: 0.85 },
-              py: { xs: 0.3, md: 0.4 },
+              px: { xs: 0.8, md: 1 },
+              py: { xs: 0.35, md: 0.45 },
               borderRadius: 2.5,
               fontWeight: 700,
-              fontSize: { xs: "0.65rem", md: "0.7rem" },
-              color: "rgba(255,255,255,0.85)",
-              background: "rgba(0,0,0,0.5)",
-              backdropFilter: "blur(8px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+              fontSize: { xs: "0.7rem", md: "0.75rem" },
+              ...(rank >= 1 && rank <= 3
+                ? {
+                    color: UI.rank[rank as 1 | 2 | 3].color,
+                    background: UI.rank[rank as 1 | 2 | 3].bg,
+                    backdropFilter: "blur(10px)",
+                    border: `1.5px solid ${UI.rank[rank as 1 | 2 | 3].border}`,
+                    boxShadow: UI.rank[rank as 1 | 2 | 3].glow,
+                  }
+                : {
+                    color: "rgba(255,255,255,0.6)",
+                    background: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                  }),
             }}
           >
             #{rank}
           </Box>
         )}
 
-        {/* Duration */}
-        {video.duration && video.duration !== "0:00" && (
-          <Chip
-            size="small"
-            icon={<AccessTime sx={{ fontSize: { xs: 10, md: 11 } }} />}
-            label={video.duration}
-            sx={{
-              position: "absolute",
-              top: { xs: 6, md: 8 },
-              right: { xs: 6, md: 8 },
-              zIndex: 5,
-              height: { xs: 20, md: 22 },
-              fontSize: { xs: "0.6rem", md: "0.65rem" },
-              fontWeight: 600,
-              background: "rgba(0,0,0,0.5)",
-              backdropFilter: "blur(8px)",
-              color: "rgba(255,255,255,0.85)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-              "& .MuiChip-icon": { color: "rgba(255,255,255,0.65)", ml: 0.5 },
-            }}
-          />
-        )}
+        {/* Duration - REMOVIDO conforme requisito */}
 
         {/* ROAS badge */}
         {video.roas >= 3 && (
@@ -421,106 +452,96 @@ Entregue:
 
       {/* Content */}
       <Box sx={{ p: { xs: 0.9, sm: 0.9, md: 1.5 } }}>
-        {/* Product Section (ALWAYS visible - with fallback) */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            mb: { xs: 1, md: 1.2 },
-            p: { xs: 0.8, md: 1 },
-            borderRadius: 3,
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          {/* Product thumbnail - always show (fallback to video cover if no product) */}
+        {/* Product Section (ALWAYS visible - uses displayProduct fallback) */}
+        {displayProduct && (
           <Box
-            component="img"
-            src={video.product?.imageUrl || video.thumbnailUrl || ""}
-            alt={video.product?.name || "Produto relacionado"}
-            loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.opacity = "0.3";
-            }}
             sx={{
-              width: { xs: 48, md: 52 },
-              height: { xs: 48, md: 52 },
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: { xs: 1, md: 1.2 },
+              p: { xs: 0.8, md: 1 },
               borderRadius: 3,
-              objectFit: "cover",
-              flexShrink: 0,
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.06)",
             }}
-          />
-
-          {/* Product info - with fallback text */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              sx={{
-                fontSize: { xs: "0.8rem", md: "0.84rem" },
-                fontWeight: video.product ? 600 : 500,
-                color: video.product ? UI.text.primary : UI.text.secondary,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                mb: 0.15,
+          >
+            {/* Product thumbnail */}
+            <Box
+              component="img"
+              src={displayProduct.imageUrl || video.thumbnailUrl || ""}
+              alt={displayProduct.name}
+              loading="lazy"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.opacity = "0.3";
               }}
-            >
-              {video.product?.name || "Produto relacionado"}
-            </Typography>
-            {video.product?.priceBRL && video.product.priceBRL > 0 ? (
+              sx={{
+                width: { xs: 44, md: 48 },
+                height: { xs: 44, md: 48 },
+                borderRadius: 2.5,
+                objectFit: "cover",
+                flexShrink: 0,
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            />
+
+            {/* Product info */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 sx={{
-                  fontSize: { xs: "0.73rem", md: "0.77rem" },
+                  fontSize: { xs: "0.78rem", md: "0.82rem" },
+                  fontWeight: 600,
+                  color: UI.text.primary,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  mb: 0.2,
+                }}
+              >
+                {displayProduct.name}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.72rem", md: "0.76rem" },
                   color: UI.accent,
                   fontWeight: 600,
                 }}
               >
-                {formatCurrency(video.product.priceBRL)}
+                {formatCurrency(displayProduct.priceBRL)}
               </Typography>
-            ) : (
-              <Typography
-                sx={{
-                  fontSize: { xs: "0.68rem", md: "0.72rem" },
-                  color: UI.text.muted,
-                  fontStyle: "italic",
-                }}
+            </Box>
+
+            {/* Save product button - only show if real product exists */}
+            {hasRealProduct && (
+              <Tooltip
+                title={productSaved ? "Remover dos salvos" : "Salvar produto"}
               >
-                Sem dados do produto
-              </Typography>
+                <IconButton
+                  size="small"
+                  onClick={handleProductSave}
+                  sx={{
+                    width: { xs: 28, md: 30 },
+                    height: { xs: 28, md: 30 },
+                    color: productSaved ? UI.accent : "rgba(255,255,255,0.5)",
+                    border: `1px solid ${productSaved ? UI.accent : "rgba(255,255,255,0.1)"}`,
+                    transition: "all 160ms ease",
+                    "&:hover": {
+                      background: "rgba(255,255,255,0.05)",
+                      color: UI.accent,
+                      borderColor: UI.accent,
+                    },
+                  }}
+                >
+                  {productSaved ? (
+                    <Bookmark sx={{ fontSize: { xs: 14, md: 16 } }} />
+                  ) : (
+                    <BookmarkBorder sx={{ fontSize: { xs: 14, md: 16 } }} />
+                  )}
+                </IconButton>
+              </Tooltip>
             )}
           </Box>
-
-          {/* Save product button - only show if product exists */}
-          {video.product && (
-            <Tooltip
-              title={productSaved ? "Remover dos salvos" : "Salvar produto"}
-            >
-              <IconButton
-                size="small"
-                onClick={handleProductSave}
-                sx={{
-                  width: { xs: 28, md: 30 },
-                  height: { xs: 28, md: 30 },
-                  color: productSaved ? UI.accent : "rgba(255,255,255,0.5)",
-                  border: `1px solid ${productSaved ? UI.accent : "rgba(255,255,255,0.1)"}`,
-                  transition: "all 160ms ease",
-                  "&:hover": {
-                    background: "rgba(255,255,255,0.05)",
-                    color: UI.accent,
-                    borderColor: UI.accent,
-                  },
-                }}
-              >
-                {productSaved ? (
-                  <Bookmark sx={{ fontSize: { xs: 14, md: 16 } }} />
-                ) : (
-                  <BookmarkBorder sx={{ fontSize: { xs: 14, md: 16 } }} />
-                )}
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
+        )}
 
         {/* Metrics - Centralized with labels */}
         <Box
@@ -608,7 +629,7 @@ Entregue:
           </Box>
         </Box>
 
-        {/* CTA Buttons - Empilhados verticalmente */}
+        {/* CTA Buttons - Apenas 2 empilhados + Salvar como ação secundária */}
         <Box
           sx={{
             display: "flex",
@@ -616,42 +637,6 @@ Entregue:
             gap: { xs: 0.6, md: 0.75 },
           }}
         >
-          {/* Salvar Vídeo */}
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={
-              saved ? (
-                <Bookmark sx={{ fontSize: { xs: 15, md: 16 } }} />
-              ) : (
-                <BookmarkBorder sx={{ fontSize: { xs: 15, md: 16 } }} />
-              )
-            }
-            onClick={handleSave}
-            sx={{
-              py: { xs: 0.65, md: 0.75 },
-              fontSize: { xs: "0.74rem", md: "0.78rem" },
-              fontWeight: 600,
-              textTransform: "none",
-              borderRadius: 3,
-              color: saved ? UI.accent : UI.text.secondary,
-              borderColor: saved ? UI.accent : "rgba(255,255,255,0.12)",
-              transition: "all 160ms ease",
-              "&:hover": {
-                borderColor: saved ? UI.accent : "rgba(255,255,255,0.22)",
-                background: saved
-                  ? "rgba(45,212,255,0.08)"
-                  : "rgba(255,255,255,0.04)",
-                transform: "translateY(-1px)",
-              },
-              "&:active": {
-                transform: "scale(0.98)",
-              },
-            }}
-          >
-            {saved ? "Vídeo Salvo" : "Salvar Vídeo"}
-          </Button>
-
           <Button
             fullWidth
             variant="outlined"
@@ -705,6 +690,43 @@ Entregue:
           >
             Insight Hyppado
           </Button>
+
+          {/* Salvar Vídeo - Ação secundária */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: { xs: 0.3, md: 0.4 },
+            }}
+          >
+            <Button
+              size="small"
+              startIcon={
+                saved ? (
+                  <Bookmark sx={{ fontSize: 14 }} />
+                ) : (
+                  <BookmarkBorder sx={{ fontSize: 14 }} />
+                )
+              }
+              onClick={handleSave}
+              sx={{
+                py: 0.5,
+                px: 1.5,
+                fontSize: "0.7rem",
+                fontWeight: 500,
+                textTransform: "none",
+                borderRadius: 2,
+                color: saved ? UI.accent : UI.text.muted,
+                transition: "all 160ms ease",
+                "&:hover": {
+                  background: "rgba(255,255,255,0.04)",
+                  color: UI.accent,
+                },
+              }}
+            >
+              {saved ? "Salvo" : "Salvar"}
+            </Button>
+          </Box>
         </Box>
       </Box>
 

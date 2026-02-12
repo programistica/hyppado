@@ -91,14 +91,11 @@ const MOCK_PRODUCTS: ProductDTO[] = [
 /**
  * Associates mock products with videos (simulates EchoTik integration)
  * In production: use video_products from EchoTik API
+ * ALWAYS assigns a product to every video for demo consistency
  */
 function enrichWithProducts(videos: VideoDTO[]): VideoDTO[] {
   return videos.map((video, idx) => {
-    // Simulate: ~60% of videos have associated products
-    const hasProduct = idx % 5 !== 0; // Skip every 5th video
-    if (!hasProduct) return video;
-
-    // Rotate through mock products
+    // Always assign a product (rotate through mock products)
     const productIdx = idx % MOCK_PRODUCTS.length;
     const product = MOCK_PRODUCTS[productIdx];
 
