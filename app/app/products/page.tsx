@@ -28,11 +28,7 @@ function ProductsContent() {
 
   // Extract unique categories from products
   const categories = Array.from(
-    new Set(
-      allProducts
-        .map((p) => p.category)
-        .filter((c): c is string => !!c)
-    )
+    new Set(allProducts.map((p) => p.category).filter((c): c is string => !!c)),
   ).sort();
 
   const fetchData = useCallback(async () => {
@@ -50,7 +46,7 @@ function ProductsContent() {
 
       const items: ProductDTO[] = json?.data?.items ?? [];
       setAllProducts(items);
-      
+
       // Apply category filter if set
       const filtered = categoryFilter
         ? items.filter((p) => p.category === categoryFilter)
@@ -77,7 +73,7 @@ function ProductsContent() {
     const nextPage = page + 1;
     const start = nextPage * pageSize;
     const end = start + pageSize;
-    
+
     // Apply category filter for load more
     const filtered = categoryFilter
       ? allProducts.filter((p) => p.category === categoryFilter)
