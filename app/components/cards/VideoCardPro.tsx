@@ -34,33 +34,37 @@ import {
 import { TranscriptDialog } from "@/app/components/videos/TranscriptDialog";
 import { InsightDialog } from "@/app/components/videos/InsightDialog";
 
-// Design tokens (paleta refinada e sofisticada)
+// Design tokens (paleta premium e sofisticada)
 const UI = {
   card: {
-    bg: "linear-gradient(165deg, #0D1422 0%, #0A0F18 100%)",
+    bg: "rgba(255,255,255,0.03)",
+    bgHover: "rgba(255,255,255,0.05)",
     border: "rgba(255,255,255,0.06)",
-    borderHover: "rgba(45,212,255,0.18)",
+    borderHover: "rgba(45,212,255,0.15)",
     radius: 4,
-    shadow: "0 1px 3px rgba(0,0,0,0.08)",
-    shadowHover: "0 6px 20px rgba(0,0,0,0.2), 0 0 8px rgba(45,212,255,0.06)",
+    shadow: "0 1px 2px rgba(0,0,0,0.05)",
+    shadowHover: "0 4px 16px rgba(0,0,0,0.15), 0 0 6px rgba(45,212,255,0.04)",
   },
   text: {
-    primary: "rgba(255,255,255,0.94)",
-    secondary: "rgba(255,255,255,0.62)",
-    muted: "rgba(255,255,255,0.38)",
+    primary: "rgba(255,255,255,0.92)",
+    secondary: "rgba(255,255,255,0.60)",
+    muted: "rgba(255,255,255,0.40)",
   },
   accent: "#2DD4FF",
-  accentSecondary: "#B388FF",
+  accentSecondary: "#AE87FF",
+  purple: {
+    bg: "rgba(174, 135, 255, 0.18)",
+    bgHover: "rgba(174, 135, 255, 0.24)",
+  },
   adChip: {
-    bg: "rgba(255, 193, 7, 0.1)",
-    border: "rgba(255, 193, 7, 0.18)",
-    text: "rgba(255, 193, 7, 0.92)",
+    bg: "rgba(255, 193, 7, 0.08)",
+    border: "rgba(255, 193, 7, 0.15)",
+    text: "rgba(255, 193, 7, 0.85)",
   },
 };
 
 interface VideoCardProProps {
   video?: VideoDTO;
-  product?: ProductDTO | null;
   rank?: number;
   onShareClick?: (video: VideoDTO) => void;
   isLoading?: boolean;
@@ -68,14 +72,13 @@ interface VideoCardProProps {
 
 export function VideoCardPro({
   video,
-  product,
   rank,
   onShareClick,
   isLoading = false,
 }: VideoCardProProps) {
   const [saved, setSaved] = useState(video ? isVideoSaved(video.id) : false);
   const [productSaved, setProductSaved] = useState(
-    product ? isProductSaved(product.id) : false,
+    video?.product ? isProductSaved(video.product.id) : false,
   );
   const [isPressed, setIsPressed] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
@@ -93,8 +96,8 @@ export function VideoCardPro({
 
   const handleProductSave = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!product) return;
-    const newState = toggleProductSaved(product);
+    if (!video?.product) return;
+    const newState = toggleProductSaved(video.product);
     setProductSaved(newState);
   };
 
@@ -238,9 +241,10 @@ Entregue:
         overflow: "hidden",
         background: UI.card.bg,
         border: `1px solid ${UI.card.border}`,
-        transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "all 160ms cubic-bezier(0.4, 0, 0.2, 1)",
         boxShadow: UI.card.shadow,
         "&:hover": {
+          background: UI.card.bgHover,
           borderColor: UI.card.borderHover,
           boxShadow: UI.card.shadowHover,
           transform: "translateY(-2px)",
@@ -367,24 +371,24 @@ Entregue:
               size="small"
               onClick={handleSave}
               sx={{
-                width: { xs: 30, md: 32 },
-                height: { xs: 30, md: 32 },
-                background: "rgba(0,0,0,0.5)",
-                backdropFilter: "blur(8px)",
-                color: saved ? UI.accent : "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                transition: "all 180ms ease",
+                width: { xs: 26, md: 28 },
+                height: { xs: 26, md: 28 },
+                background: "rgba(0,0,0,0.35)",
+                backdropFilter: "blur(6px)",
+                color: saved ? UI.accent : "rgba(255,255,255,0.65)",
+                border: `1px solid ${saved ? UI.accent : "rgba(255,255,255,0.12)"}`,
+                transition: "all 160ms ease",
                 "&:hover": {
-                  background: "rgba(0,0,0,0.7)",
+                  background: "rgba(0,0,0,0.55)",
                   color: UI.accent,
                   borderColor: UI.accent,
                 },
               }}
             >
               {saved ? (
-                <Bookmark sx={{ fontSize: { xs: 16, md: 18 } }} />
+                <Bookmark sx={{ fontSize: { xs: 14, md: 15 } }} />
               ) : (
-                <BookmarkBorder sx={{ fontSize: { xs: 16, md: 18 } }} />
+                <BookmarkBorder sx={{ fontSize: { xs: 14, md: 15 } }} />
               )}
             </IconButton>
           </Tooltip>
@@ -394,21 +398,21 @@ Entregue:
               size="small"
               onClick={handleShare}
               sx={{
-                width: { xs: 30, md: 32 },
-                height: { xs: 30, md: 32 },
-                background: "rgba(0,0,0,0.5)",
-                backdropFilter: "blur(8px)",
-                color: "rgba(255,255,255,0.7)",
+                width: { xs: 26, md: 28 },
+                height: { xs: 26, md: 28 },
+                background: "rgba(0,0,0,0.35)",
+                backdropFilter: "blur(6px)",
+                color: "rgba(255,255,255,0.65)",
                 border: "1px solid rgba(255,255,255,0.12)",
-                transition: "all 180ms ease",
+                transition: "all 160ms ease",
                 "&:hover": {
-                  background: "rgba(0,0,0,0.7)",
+                  background: "rgba(0,0,0,0.55)",
                   color: UI.accent,
                   borderColor: UI.accent,
                 },
               }}
             >
-              <Share sx={{ fontSize: { xs: 16, md: 18 } }} />
+              <Share sx={{ fontSize: { xs: 14, md: 15 } }} />
             </IconButton>
           </Tooltip>
 
@@ -418,21 +422,21 @@ Entregue:
                 size="small"
                 onClick={handleOpenTikTok}
                 sx={{
-                  width: { xs: 30, md: 32 },
-                  height: { xs: 30, md: 32 },
-                  background: "rgba(0,0,0,0.5)",
-                  backdropFilter: "blur(8px)",
-                  color: "rgba(255,255,255,0.7)",
+                  width: { xs: 26, md: 28 },
+                  height: { xs: 26, md: 28 },
+                  background: "rgba(0,0,0,0.35)",
+                  backdropFilter: "blur(6px)",
+                  color: "rgba(255,255,255,0.65)",
                   border: "1px solid rgba(255,255,255,0.12)",
-                  transition: "all 180ms ease",
+                  transition: "all 160ms ease",
                   "&:hover": {
-                    background: "rgba(0,0,0,0.7)",
+                    background: "rgba(0,0,0,0.55)",
                     color: UI.accent,
                     borderColor: UI.accent,
                   },
                 }}
               >
-                <OpenInNew sx={{ fontSize: { xs: 16, md: 18 } }} />
+                <OpenInNew sx={{ fontSize: { xs: 14, md: 15 } }} />
               </IconButton>
             </Tooltip>
           )}
@@ -441,116 +445,191 @@ Entregue:
 
       {/* Content */}
       <Box sx={{ p: { xs: 0.9, sm: 0.9, md: 1.5 } }}>
-        {/* Title (2 lines clamp) */}
-        <Typography
-          sx={{
-            fontSize: { xs: "0.85rem", md: "0.925rem" },
-            fontWeight: 640,
-            color: UI.text.primary,
-            lineHeight: 1.3,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            mb: { xs: 0.4, md: 0.5 },
-            minHeight: "2.6em",
-          }}
-        >
-          {video.title}
-        </Typography>
-
-        {/* Creator handle + time ago */}
+        {/* Product Section (ALWAYS visible - with fallback) */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 0.75,
-            mb: { xs: 0.8, md: 0.95 },
+            gap: 1,
+            mb: { xs: 1, md: 1.2 },
+            p: { xs: 0.8, md: 1 },
+            borderRadius: 3,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
-          <Typography
-            sx={{
-              fontSize: { xs: "0.75rem", md: "0.8rem" },
-              color: UI.text.secondary,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              flex: 1,
+          {/* Product thumbnail - always show (fallback to video cover if no product) */}
+          <Box
+            component="img"
+            src={video.product?.imageUrl || video.thumbnailUrl || ""}
+            alt={video.product?.name || "Produto relacionado"}
+            loading="lazy"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.opacity = "0.3";
             }}
-          >
-            {video.creatorHandle}
-          </Typography>
-          {video.publishedAt && (
+            sx={{
+              width: { xs: 48, md: 52 },
+              height: { xs: 48, md: 52 },
+              borderRadius: 3,
+              objectFit: "cover",
+              flexShrink: 0,
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          />
+
+          {/* Product info - with fallback text */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
               sx={{
-                fontSize: { xs: "0.7rem", md: "0.75rem" },
-                color: UI.text.muted,
+                fontSize: { xs: "0.8rem", md: "0.84rem" },
+                fontWeight: video.product ? 600 : 500,
+                color: video.product ? UI.text.primary : UI.text.secondary,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
+                mb: 0.15,
               }}
             >
-              {formatTimeAgo(video.publishedAt)}
+              {video.product?.name || "Produto relacionado"}
             </Typography>
-          )}
-        </Box>
-
-        {/* Metrics - 2 lines mobile, 1 line desktop */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(3, 1fr)" },
-            gap: { xs: 0.65, md: 0.8 },
-            mb: { xs: 1, md: 1.15 },
-          }}
-        >
-          {video.revenueBRL > 0 && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
-              <Paid
-                sx={{ fontSize: { xs: 14, md: 15 }, color: `${UI.accent}E6` }}
-              />
+            {video.product?.priceBRL && video.product.priceBRL > 0 ? (
               <Typography
                 sx={{
-                  fontSize: { xs: "0.7rem", md: "0.75rem" },
+                  fontSize: { xs: "0.73rem", md: "0.77rem" },
                   color: UI.accent,
                   fontWeight: 600,
                 }}
               >
-                {formatCurrency(video.revenueBRL)}
+                {formatCurrency(video.product.priceBRL)}
               </Typography>
-            </Box>
-          )}
-
-          {video.views > 0 && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
-              <Visibility
-                sx={{ fontSize: { xs: 14, md: 15 }, color: UI.text.muted }}
-              />
+            ) : (
               <Typography
                 sx={{
-                  fontSize: { xs: "0.7rem", md: "0.75rem" },
-                  color: UI.text.secondary,
+                  fontSize: { xs: "0.68rem", md: "0.72rem" },
+                  color: UI.text.muted,
+                  fontStyle: "italic",
                 }}
               >
-                {formatNumber(video.views)}
+                Sem dados do produto
               </Typography>
-            </Box>
-          )}
+            )}
+          </Box>
 
-          {video.sales > 0 && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.35 }}>
-              <ShoppingCart
-                sx={{ fontSize: { xs: 14, md: 15 }, color: UI.text.muted }}
-              />
-              <Typography
+          {/* Save product button - only show if product exists */}
+          {video.product && (
+            <Tooltip
+              title={productSaved ? "Remover dos salvos" : "Salvar produto"}
+            >
+              <IconButton
+                size="small"
+                onClick={handleProductSave}
                 sx={{
-                  fontSize: { xs: "0.7rem", md: "0.75rem" },
-                  color: UI.text.secondary,
+                  width: { xs: 28, md: 30 },
+                  height: { xs: 28, md: 30 },
+                  color: productSaved ? UI.accent : "rgba(255,255,255,0.5)",
+                  border: `1px solid ${productSaved ? UI.accent : "rgba(255,255,255,0.1)"}`,
+                  transition: "all 160ms ease",
+                  "&:hover": {
+                    background: "rgba(255,255,255,0.05)",
+                    color: UI.accent,
+                    borderColor: UI.accent,
+                  },
                 }}
               >
-                {formatNumber(video.sales)}
-              </Typography>
-            </Box>
+                {productSaved ? (
+                  <Bookmark sx={{ fontSize: { xs: 14, md: 16 } }} />
+                ) : (
+                  <BookmarkBorder sx={{ fontSize: { xs: 14, md: 16 } }} />
+                )}
+              </IconButton>
+            </Tooltip>
           )}
+        </Box>
+
+        {/* Metrics - Centralized with labels */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 1,
+            mb: { xs: 1.1, md: 1.3 },
+            px: { xs: 0.5, md: 0.75 },
+          }}
+        >
+          {/* Revenue */}
+          <Box sx={{ flex: 1, textAlign: "center" }}>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.92rem", md: "0.98rem" },
+                fontWeight: 700,
+                color: UI.accent,
+                mb: 0.2,
+                lineHeight: 1.2,
+              }}
+            >
+              {video.revenueBRL > 0 ? formatCurrency(video.revenueBRL) : "-"}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.68rem", md: "0.72rem" },
+                color: UI.text.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.03em",
+              }}
+            >
+              Receita
+            </Typography>
+          </Box>
+
+          {/* Views */}
+          <Box sx={{ flex: 1, textAlign: "center" }}>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.92rem", md: "0.98rem" },
+                fontWeight: 700,
+                color: UI.text.primary,
+                mb: 0.2,
+                lineHeight: 1.2,
+              }}
+            >
+              {video.views > 0 ? formatNumber(video.views) : "-"}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.68rem", md: "0.72rem" },
+                color: UI.text.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.03em",
+              }}
+            >
+              Views
+            </Typography>
+          </Box>
+
+          {/* Sales */}
+          <Box sx={{ flex: 1, textAlign: "center" }}>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.92rem", md: "0.98rem" },
+                fontWeight: 700,
+                color: UI.text.primary,
+                mb: 0.2,
+                lineHeight: 1.2,
+              }}
+            >
+              {video.sales > 0 ? formatNumber(video.sales) : "-"}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.68rem", md: "0.72rem" },
+                color: UI.text.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.03em",
+              }}
+            >
+              Vendas
+            </Typography>
+          </Box>
         </Box>
 
         {/* CTA Buttons - Empilhados verticalmente */}
@@ -567,18 +646,17 @@ Entregue:
             startIcon={<Subtitles sx={{ fontSize: { xs: 15, md: 16 } }} />}
             onClick={handleTranscribe}
             sx={{
-              py: { xs: 0.6, md: 0.75 },
-              fontSize: { xs: "0.72rem", md: "0.78rem" },
+              py: { xs: 0.65, md: 0.75 },
+              fontSize: { xs: "0.74rem", md: "0.78rem" },
               fontWeight: 600,
               textTransform: "none",
-              borderRadius: 2,
+              borderRadius: 3,
               color: UI.text.secondary,
-              borderColor: "rgba(255,255,255,0.15)",
-              transition: "all 180ms ease",
+              borderColor: "rgba(255,255,255,0.12)",
+              transition: "all 160ms ease",
               "&:hover": {
-                borderColor: UI.accent,
-                color: UI.accent,
-                background: "rgba(45,212,255,0.08)",
+                borderColor: "rgba(255,255,255,0.22)",
+                background: "rgba(255,255,255,0.04)",
                 transform: "translateY(-1px)",
               },
               "&:active": {
@@ -595,131 +673,28 @@ Entregue:
             startIcon={<AutoAwesome sx={{ fontSize: { xs: 15, md: 16 } }} />}
             onClick={handleInsight}
             sx={{
-              background: `linear-gradient(135deg, ${UI.accentSecondary} 0%, ${UI.accentSecondary}DD 100%)`,
+              background: UI.purple.bg,
               color: "#fff",
               fontWeight: 600,
-              fontSize: { xs: "0.72rem", md: "0.78rem" },
+              fontSize: { xs: "0.74rem", md: "0.78rem" },
               textTransform: "none",
-              borderRadius: 2,
-              py: { xs: 0.6, md: 0.75 },
-              boxShadow: `0 4px 12px ${UI.accentSecondary}40`,
+              borderRadius: 3,
+              py: { xs: 0.65, md: 0.75 },
+              textShadow: "0 1px 2px rgba(0,0,0,0.2)",
               "&:hover": {
-                background: `linear-gradient(135deg, ${UI.accentSecondary}EE 0%, ${UI.accentSecondary}CC 100%)`,
-                boxShadow: `0 6px 16px ${UI.accentSecondary}60`,
+                background: UI.purple.bgHover,
                 transform: "translateY(-1px)",
               },
               "&:active": {
                 transform: "scale(0.98)",
               },
-              transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "all 160ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             Insight Hyppado
           </Button>
         </Box>
       </Box>
-
-      {/* Product section BELOW card (se existir) */}
-      {product && (
-        <Box
-          sx={{
-            borderTop: `1px solid ${UI.card.border}`,
-            p: { xs: 1, md: 1.25 },
-            background: "rgba(0,0,0,0.25)",
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: "0.65rem",
-              fontWeight: 600,
-              color: UI.text.muted,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              mb: 0.7,
-            }}
-          >
-            Produto
-          </Typography>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            {/* Product thumbnail */}
-            {product.imageUrl && (
-              <Box
-                component="img"
-                src={product.imageUrl}
-                alt={product.name}
-                loading="lazy"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-                sx={{
-                  width: { xs: 56, md: 64 },
-                  height: { xs: 56, md: 64 },
-                  borderRadius: 2,
-                  objectFit: "cover",
-                  flexShrink: 0,
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              />
-            )}
-
-            {/* Product info */}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography
-                sx={{
-                  fontSize: { xs: "0.8rem", md: "0.85rem" },
-                  fontWeight: 600,
-                  color: UI.text.primary,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  mb: 0.2,
-                }}
-              >
-                {product.name}
-              </Typography>
-              {product.priceBRL > 0 && (
-                <Typography
-                  sx={{
-                    fontSize: { xs: "0.75rem", md: "0.8rem" },
-                    color: UI.accent,
-                    fontWeight: 600,
-                  }}
-                >
-                  {formatCurrency(product.priceBRL)}
-                </Typography>
-              )}
-            </Box>
-
-            {/* Save product button */}
-            <Tooltip
-              title={productSaved ? "Remover dos salvos" : "Salvar produto"}
-            >
-              <IconButton
-                size="small"
-                onClick={handleProductSave}
-                sx={{
-                  width: { xs: 30, md: 32 },
-                  height: { xs: 30, md: 32 },
-                  color: productSaved ? UI.accent : "rgba(255,255,255,0.6)",
-                  border: `1px solid ${productSaved ? UI.accent : "rgba(255,255,255,0.12)"}`,
-                  transition: "all 180ms ease",
-                  "&:hover": {
-                    background: "rgba(255,255,255,0.05)",
-                    color: UI.accent,
-                    borderColor: UI.accent,
-                  },
-                }}
-              >
-                {productSaved ? (
-                  <Bookmark sx={{ fontSize: { xs: 16, md: 18 } }} />
-                ) : (
-                  <BookmarkBorder sx={{ fontSize: { xs: 16, md: 18 } }} />
-                )}
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-      )}
 
       {/* Dialogs */}
       {video && (
