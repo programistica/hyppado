@@ -58,15 +58,18 @@ const UI = {
 const RANK_STYLES = {
   // Top 1 - Premium Gold (tons dourados quentes + âmbar)
   1: {
-    gradient: "linear-gradient(145deg, #D4A847 0%, #B8941F 35%, #E6C35A 65%, #C9A227 100%)",
+    gradient:
+      "linear-gradient(145deg, #D4A847 0%, #B8941F 35%, #E6C35A 65%, #C9A227 100%)",
     border: "rgba(230, 195, 90, 0.6)",
     glow: "0 0 18px rgba(212, 168, 71, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4)",
-    textShadow: "0 1px 2px rgba(0, 0, 0, 0.35), 0 0 8px rgba(255, 225, 150, 0.3)",
+    textShadow:
+      "0 1px 2px rgba(0, 0, 0, 0.35), 0 0 8px rgba(255, 225, 150, 0.3)",
     textColor: "#FFFFFF",
   },
   // Top 2 - Premium Silver (cinza frio/azulado metálico)
   2: {
-    gradient: "linear-gradient(145deg, #C8CDD5 0%, #9BA5B5 35%, #D5DBE5 65%, #A8B3C2 100%)",
+    gradient:
+      "linear-gradient(145deg, #C8CDD5 0%, #9BA5B5 35%, #D5DBE5 65%, #A8B3C2 100%)",
     border: "rgba(200, 210, 225, 0.55)",
     glow: "0 0 14px rgba(180, 195, 215, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35)",
     textShadow: "0 1px 2px rgba(0, 0, 0, 0.35)",
@@ -74,7 +77,8 @@ const RANK_STYLES = {
   },
   // Top 3 - Premium Bronze (cobre/bronze com toque rosé)
   3: {
-    gradient: "linear-gradient(145deg, #CD8847 0%, #A86A35 35%, #D9A070 65%, #B87545 100%)",
+    gradient:
+      "linear-gradient(145deg, #CD8847 0%, #A86A35 35%, #D9A070 65%, #B87545 100%)",
     border: "rgba(205, 136, 71, 0.55)",
     glow: "0 0 14px rgba(205, 136, 71, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35)",
     textShadow: "0 1px 2px rgba(0, 0, 0, 0.35)",
@@ -82,7 +86,8 @@ const RANK_STYLES = {
   },
   // #4+ - Accent Hyppado (ciano slate premium)
   default: {
-    gradient: "linear-gradient(145deg, #1A3040 0%, #0F2030 35%, #254050 65%, #1A3545 100%)",
+    gradient:
+      "linear-gradient(145deg, #1A3040 0%, #0F2030 35%, #254050 65%, #1A3545 100%)",
     border: "rgba(45, 212, 255, 0.35)",
     glow: "0 0 10px rgba(45, 212, 255, 0.2), 0 4px 10px rgba(0, 0, 0, 0.3)",
     textShadow: "0 1px 2px rgba(0, 0, 0, 0.4)",

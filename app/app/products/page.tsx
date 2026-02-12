@@ -23,7 +23,17 @@ function ProductsContent() {
   // Read from URL
   const timeRange = normalizeRange(searchParams.get("range"));
   const searchQuery = searchParams.get("q") || "";
+  const categoryFilter = searchParams.get("category") || "";
   const pageSize = 24; // Carregar 24 por vez
+
+  // Extract unique categories from products
+  const categories = Array.from(
+    new Set(
+      allProducts
+        .map((p) => p.category)
+        .filter((c): c is string => !!c)
+    )
+  ).sort();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -40,7 +50,12 @@ function ProductsContent() {
 
       const items: ProductDTO[] = json?.data?.items ?? [];
       setAllProducts(items);
-      setProducts(items.slice(0, pageSize));
+      
+      // Apply category filter if set
+      const filtered = categoryFilter
+        ? items.filter((p) => p.category === categoryFilter)
+        : items;
+      setProducts(filtered.slice(0, pageSize));
 
       if (json?.data?.error) {
         console.warn("Products API returned error:", json.data.error);
@@ -51,7 +66,7 @@ function ProductsContent() {
     } finally {
       setLoading(false);
     }
-  }, [timeRange, searchQuery, pageSize]);
+  }, [timeRange, searchQuery, categoryFilter, pageSize]);
 
   useEffect(() => {
     fetchData();
@@ -62,7 +77,12 @@ function ProductsContent() {
     const nextPage = page + 1;
     const start = nextPage * pageSize;
     const end = start + pageSize;
-    const moreProducts = allProducts.slice(start, end);
+    
+    // Apply category filter for load more
+    const filtered = categoryFilter
+      ? allProducts.filter((p) => p.category === categoryFilter)
+      : allProducts;
+    const moreProducts = filtered.slice(start, end);
 
     setTimeout(() => {
       setProducts((prev) => [...prev, ...moreProducts]);
@@ -75,6 +95,7 @@ function ProductsContent() {
     const params = new URLSearchParams();
     params.set("range", range);
     if (searchQuery) params.set("q", searchQuery);
+    if (categoryFilter) params.set("category", categoryFilter);
     router.push(`/app/products?${params.toString()}`);
   };
 
@@ -82,6 +103,15 @@ function ProductsContent() {
     const params = new URLSearchParams();
     params.set("range", timeRange);
     if (query) params.set("q", query);
+    if (categoryFilter) params.set("category", categoryFilter);
+    router.push(`/app/products?${params.toString()}`);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    const params = new URLSearchParams();
+    params.set("range", timeRange);
+    if (searchQuery) params.set("q", searchQuery);
+    if (category) params.set("category", category);
     router.push(`/app/products?${params.toString()}`);
   };
 
@@ -90,7 +120,11 @@ function ProductsContent() {
     // TODO: Implementar modal de detalhes
   };
 
-  const hasMore = products.length < allProducts.length;
+  // Calculate hasMore based on filtered data
+  const filteredTotal = categoryFilter
+    ? allProducts.filter((p) => p.category === categoryFilter).length
+    : allProducts.length;
+  const hasMore = products.length < filteredTotal;
 
   return (
     <Box
@@ -124,7 +158,7 @@ function ProductsContent() {
             }}
           >
             {allProducts.length > 0
-              ? `${allProducts.length} produtos • Mostrando ${products.length}`
+              ? `${filteredTotal} produtos${categoryFilter ? ` em ${categoryFilter}` : ""} • Mostrando ${products.length}`
               : "Explorando os produtos mais vendidos"}
           </Typography>
         </Box>
@@ -135,6 +169,10 @@ function ProductsContent() {
           onSearchChange={handleSearchChange}
           onRefresh={fetchData}
           loading={loading}
+          category={categoryFilter}
+          onCategoryChange={handleCategoryChange}
+          categories={categories}
+          showCountryBadge={true}
         />
       </Box>
 

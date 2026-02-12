@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import { Search, FilterList, Refresh } from "@mui/icons-material";
 import { TimeRangeSelect } from "@/app/components/filters/TimeRangeSelect";
+import { CategoryFilter } from "@/app/components/filters/CategoryFilter";
+import { CountryBadge } from "@/app/components/ui/CountryBadge";
 import type { TimeRange } from "@/lib/filters/timeRange";
 
 interface DashboardHeaderProps {
@@ -20,6 +22,11 @@ interface DashboardHeaderProps {
   onSearchChange: (query: string) => void;
   onRefresh?: () => void;
   loading?: boolean;
+  // Category filter (opcional)
+  category?: string;
+  onCategoryChange?: (category: string) => void;
+  categories?: string[];
+  showCountryBadge?: boolean;
 }
 
 export function DashboardHeader({
@@ -29,8 +36,14 @@ export function DashboardHeader({
   onSearchChange,
   onRefresh,
   loading = false,
+  category,
+  onCategoryChange,
+  categories,
+  showCountryBadge = true,
 }: DashboardHeaderProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
+  const hasCategoryFilter =
+    categories && categories.length > 0 && onCategoryChange;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,12 +67,23 @@ export function DashboardHeader({
         alignItems: { xs: "stretch", md: "center" },
       }}
     >
-      {/* Time Range Selector */}
-      <TimeRangeSelect
-        value={timeRange}
-        onChange={onTimeRangeChange}
-        disabled={loading}
-      />
+      {/* Country Badge + Time Range Selector */}
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        {showCountryBadge && <CountryBadge />}
+        <TimeRangeSelect
+          value={timeRange}
+          onChange={onTimeRangeChange}
+          disabled={loading}
+        />
+        {hasCategoryFilter && (
+          <CategoryFilter
+            value={category || ""}
+            onChange={onCategoryChange}
+            categories={categories}
+            disabled={loading}
+          />
+        )}
+      </Box>
 
       {/* Search Input */}
       <TextField

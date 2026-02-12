@@ -23,7 +23,15 @@ function VideosContent() {
   // Read from URL
   const timeRange = normalizeRange(searchParams.get("range"));
   const searchQuery = searchParams.get("q") || "";
+  const categoryFilter = searchParams.get("category") || "";
   const pageSize = 24; // Carregar 24 por vez
+
+  // Extract unique categories from video products
+  const categories = Array.from(
+    new Set(
+      allVideos.map((v) => v.product?.category).filter((c): c is string => !!c),
+    ),
+  ).sort();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -40,7 +48,12 @@ function VideosContent() {
 
       const items: VideoDTO[] = json?.data?.items ?? [];
       setAllVideos(items);
-      setVideos(items.slice(0, pageSize));
+
+      // Apply category filter if set
+      const filtered = categoryFilter
+        ? items.filter((v) => v.product?.category === categoryFilter)
+        : items;
+      setVideos(filtered.slice(0, pageSize));
 
       if (json?.data?.error) {
         console.warn("Videos API returned error:", json.data.error);
@@ -51,7 +64,7 @@ function VideosContent() {
     } finally {
       setLoading(false);
     }
-  }, [timeRange, searchQuery, pageSize]);
+  }, [timeRange, searchQuery, categoryFilter, pageSize]);
 
   useEffect(() => {
     fetchData();
@@ -62,7 +75,12 @@ function VideosContent() {
     const nextPage = page + 1;
     const start = nextPage * pageSize;
     const end = start + pageSize;
-    const moreVideos = allVideos.slice(start, end);
+
+    // Apply category filter for load more
+    const filtered = categoryFilter
+      ? allVideos.filter((v) => v.product?.category === categoryFilter)
+      : allVideos;
+    const moreVideos = filtered.slice(start, end);
 
     setTimeout(() => {
       setVideos((prev) => [...prev, ...moreVideos]);
@@ -75,6 +93,7 @@ function VideosContent() {
     const params = new URLSearchParams();
     params.set("range", range);
     if (searchQuery) params.set("q", searchQuery);
+    if (categoryFilter) params.set("category", categoryFilter);
     router.push(`/app/videos?${params.toString()}`);
   };
 
@@ -82,6 +101,15 @@ function VideosContent() {
     const params = new URLSearchParams();
     params.set("range", timeRange);
     if (query) params.set("q", query);
+    if (categoryFilter) params.set("category", categoryFilter);
+    router.push(`/app/videos?${params.toString()}`);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    const params = new URLSearchParams();
+    params.set("range", timeRange);
+    if (searchQuery) params.set("q", searchQuery);
+    if (category) params.set("category", category);
     router.push(`/app/videos?${params.toString()}`);
   };
 
@@ -90,7 +118,11 @@ function VideosContent() {
     // TODO: Implementar modal de insight
   };
 
-  const hasMore = videos.length < allVideos.length;
+  // Calculate hasMore based on filtered data
+  const filteredTotal = categoryFilter
+    ? allVideos.filter((v) => v.product?.category === categoryFilter).length
+    : allVideos.length;
+  const hasMore = videos.length < filteredTotal;
 
   return (
     <Box
@@ -124,7 +156,7 @@ function VideosContent() {
             }}
           >
             {allVideos.length > 0
-              ? `${allVideos.length} vídeos • Mostrando ${videos.length}`
+              ? `${filteredTotal} vídeos${categoryFilter ? ` em ${categoryFilter}` : ""} • Mostrando ${videos.length}`
               : "Explorando os vídeos mais performáticos"}
           </Typography>
         </Box>
@@ -135,6 +167,10 @@ function VideosContent() {
           onSearchChange={handleSearchChange}
           onRefresh={fetchData}
           loading={loading}
+          category={categoryFilter}
+          onCategoryChange={handleCategoryChange}
+          categories={categories}
+          showCountryBadge={true}
         />
       </Box>
 
