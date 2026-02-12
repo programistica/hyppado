@@ -170,7 +170,6 @@ function VideosContent() {
           category={categoryFilter}
           onCategoryChange={handleCategoryChange}
           categories={categories}
-          showCountryBadge={true}
         />
       </Box>
 

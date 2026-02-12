@@ -168,7 +168,6 @@ function ProductsContent() {
           category={categoryFilter}
           onCategoryChange={handleCategoryChange}
           categories={categories}
-          showCountryBadge={true}
         />
       </Box>
 

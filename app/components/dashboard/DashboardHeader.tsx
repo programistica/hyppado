@@ -12,7 +12,6 @@ import {
 import { Search, FilterList, Refresh } from "@mui/icons-material";
 import { TimeRangeSelect } from "@/app/components/filters/TimeRangeSelect";
 import { CategoryFilter } from "@/app/components/filters/CategoryFilter";
-import { CountryBadge } from "@/app/components/ui/CountryBadge";
 import type { TimeRange } from "@/lib/filters/timeRange";
 
 interface DashboardHeaderProps {
@@ -26,7 +25,6 @@ interface DashboardHeaderProps {
   category?: string;
   onCategoryChange?: (category: string) => void;
   categories?: string[];
-  showCountryBadge?: boolean;
 }
 
 export function DashboardHeader({
@@ -39,7 +37,6 @@ export function DashboardHeader({
   category,
   onCategoryChange,
   categories,
-  showCountryBadge = true,
 }: DashboardHeaderProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const hasCategoryFilter =
@@ -67,9 +64,8 @@ export function DashboardHeader({
         alignItems: { xs: "stretch", md: "center" },
       }}
     >
-      {/* Country Badge + Time Range Selector */}
+      {/* Time Range + Category Selector */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        {showCountryBadge && <CountryBadge />}
         <TimeRangeSelect
           value={timeRange}
           onChange={onTimeRangeChange}
