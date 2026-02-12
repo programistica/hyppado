@@ -189,7 +189,7 @@ Entregue:
           sx={{
             position: "relative",
             width: "100%",
-            aspectRatio: { xs: "4 / 5", md: "4 / 5" },
+            aspectRatio: { xs: "4 / 5", sm: "4 / 5", md: "9 / 16" },
             background: "#0a0f18",
             overflow: "hidden",
           }}
@@ -255,7 +255,7 @@ Entregue:
         sx={{
           position: "relative",
           width: "100%",
-          aspectRatio: { xs: "4 / 5", md: "4 / 5" },
+          aspectRatio: { xs: "4 / 5", sm: "4 / 5", md: "9 / 16" },
           overflow: "hidden",
           background:
             "linear-gradient(160deg, #0d1420 0%, #151c2a 50%, #0f1724 100%)",
@@ -440,7 +440,7 @@ Entregue:
       </Box>
 
       {/* Content */}
-      <Box sx={{ p: { xs: 0.9, md: 1.15 } }}>
+      <Box sx={{ p: { xs: 0.9, sm: 0.9, md: 1.5 } }}>
         {/* Title (2 lines clamp) */}
         <Typography
           sx={{

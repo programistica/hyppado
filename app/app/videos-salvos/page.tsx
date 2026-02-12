@@ -112,7 +112,7 @@ export default function VideosSalvosPage() {
       {!isEmpty && (
         <Grid container spacing={{ xs: 2, md: 2.5 }}>
           {savedVideos.map((video) => (
-            <Grid item xs={6} sm={6} md={4} lg={2.4} key={video.id}>
+            <Grid item xs={6} sm={6} md={6} lg={3} key={video.id}>
               <VideoCardPro
                 video={video}
                 onShareClick={(v) => {

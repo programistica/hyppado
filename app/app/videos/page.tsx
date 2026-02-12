@@ -177,7 +177,7 @@ function VideosContent() {
         {/* Video Grid */}
         <Grid container spacing={{ xs: 2, md: 2.5 }}>
           {videos.map((video, idx) => (
-            <Grid item xs={6} sm={6} md={4} lg={2.4} key={video.id}>
+            <Grid item xs={6} sm={6} md={6} lg={3} key={video.id}>
               <VideoCardPro
                 video={video}
                 rank={idx + 1}
@@ -189,7 +189,7 @@ function VideosContent() {
           {/* Loading skeletons */}
           {loading &&
             Array.from({ length: 12 }).map((_, idx) => (
-              <Grid item xs={6} sm={6} md={4} lg={2.4} key={`skeleton-${idx}`}>
+              <Grid item xs={6} sm={6} md={6} lg={3} key={`skeleton-${idx}`}>
                 <VideoCardPro isLoading />
               </Grid>
             ))}
