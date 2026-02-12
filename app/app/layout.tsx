@@ -34,6 +34,8 @@ import {
   HelpOutline,
 } from "@mui/icons-material";
 import { Logo } from "@/app/components/ui/Logo";
+import { CountryBadge } from "@/app/components/ui/CountryBadge";
+import { AppTopHeader } from "@/app/components/layout/AppTopHeader";
 import { useQuotaUsage, formatQuotaDisplay } from "@/lib/admin/useQuotaUsage";
 
 // Hyppado dark theme (navy #06080F + accent #2DD4FF)
@@ -654,8 +656,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Logo href="/app/videos" mode="dark" size="nav" />
                 </Box>
               </Box>
+              {/* Country Badge - Mobile */}
+              <CountryBadge size="sm" />
             </Toolbar>
           </AppBar>
+
+          {/* Desktop Top Header with BR Badge */}
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <AppTopHeader />
+          </Box>
 
           {/* Page Content - scrollable */}
           <Box
