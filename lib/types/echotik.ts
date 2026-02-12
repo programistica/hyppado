@@ -10,13 +10,13 @@ export interface ShopCategory {
   /** Nome da categoria */
   name: string;
   /** ID da categoria pai (null para categorias raiz) */
-  parentId: string | null;
+  parentId?: string | null;
   /** Caminho completo para exibição (ex: "Beleza > Maquiagem > Base") */
-  path: string;
+  path?: string;
   /** Nível na hierarquia (0 = raiz, 1 = subcategoria, etc.) */
-  level: number;
+  level?: number;
   /** Slug para URL (ex: "beleza-maquiagem-base") */
-  slug: string;
+  slug?: string;
 }
 
 /**

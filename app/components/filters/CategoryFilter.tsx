@@ -8,12 +8,15 @@ import {
   ListSubheader,
 } from "@mui/material";
 import type { ShopCategory } from "@/lib/types/echotik";
+import type { Category } from "@/lib/categories";
+
+type CategoryItem = ShopCategory | Category;
 
 interface CategoryFilterProps {
   value: string;
   onChange: (category: string) => void;
-  /** Pode receber ShopCategory[] ou string[] para compatibilidade */
-  categories: ShopCategory[] | string[];
+  /** Pode receber ShopCategory[], Category[] ou string[] para compatibilidade */
+  categories: (ShopCategory | Category)[] | string[];
   size?: "small" | "medium";
   disabled?: boolean;
   allLabel?: string;
@@ -37,13 +40,18 @@ export function CategoryFilter({
     onChange(event.target.value);
   };
 
-  // Detectar se são ShopCategory ou strings simples
-  const isShopCategories =
+  // Detectar se são CategoryItem (objetos) ou strings simples
+  const isCategoryObjects =
     categories.length > 0 && typeof categories[0] !== "string";
+
+  // Helper para obter value de uma categoria (slug ou id)
+  const getCategoryValue = (cat: CategoryItem): string => {
+    return (cat as ShopCategory).slug || cat.id;
+  };
 
   // Organizar categorias por nível para exibição hierárquica
   const renderCategories = () => {
-    if (!isShopCategories) {
+    if (!isCategoryObjects) {
       // Modo simples: strings
       return (categories as string[]).map((category) => (
         <MenuItem key={category} value={category} sx={{ fontSize: "0.75rem" }}>
@@ -52,14 +60,17 @@ export function CategoryFilter({
       ));
     }
 
-    // Modo ShopCategory: exibir com hierarquia visual
-    const shopCategories = categories as ShopCategory[];
+    // Modo Category/ShopCategory: exibir com hierarquia visual
+    const catList = categories as CategoryItem[];
 
     // Agrupar por categoria raiz
-    const rootCategories = shopCategories.filter((c) => c.level === 0);
+    const rootCategories = catList.filter((c) => c.level === 0 || !c.parentId);
     const items: React.ReactNode[] = [];
 
     rootCategories.forEach((root) => {
+      // Skip "all" category from subheaders
+      if (root.id === "all") return;
+
       // Adicionar categoria raiz como subheader
       items.push(
         <ListSubheader
@@ -82,7 +93,7 @@ export function CategoryFilter({
       items.push(
         <MenuItem
           key={root.id}
-          value={root.slug}
+          value={getCategoryValue(root)}
           sx={{
             fontSize: "0.75rem",
             pl: 2,
@@ -94,12 +105,12 @@ export function CategoryFilter({
       );
 
       // Adicionar subcategorias
-      const subs = shopCategories.filter((c) => c.parentId === root.id);
+      const subs = catList.filter((c) => c.parentId === root.id);
       subs.forEach((sub) => {
         items.push(
           <MenuItem
             key={sub.id}
-            value={sub.slug}
+            value={getCategoryValue(sub)}
             sx={{
               fontSize: "0.75rem",
               pl: 3,
@@ -111,12 +122,12 @@ export function CategoryFilter({
         );
 
         // Subcategorias de nível 2
-        const subs2 = shopCategories.filter((c) => c.parentId === sub.id);
+        const subs2 = catList.filter((c) => c.parentId === sub.id);
         subs2.forEach((sub2) => {
           items.push(
             <MenuItem
               key={sub2.id}
-              value={sub2.slug}
+              value={getCategoryValue(sub2)}
               sx={{
                 fontSize: "0.7rem",
                 pl: 4,
@@ -139,10 +150,13 @@ export function CategoryFilter({
       return <span style={{ color: "rgba(255,255,255,0.5)" }}>Categoria</span>;
     }
 
-    if (isShopCategories) {
-      const shopCategories = categories as ShopCategory[];
-      const found = shopCategories.find((c) => c.slug === selected);
-      return found?.path || found?.name || selected;
+    if (isCategoryObjects) {
+      const catList = categories as CategoryItem[];
+      const found = catList.find(
+        (c) => getCategoryValue(c) === selected || c.id === selected,
+      );
+      const shopCat = found as ShopCategory;
+      return shopCat?.path || found?.name || selected;
     }
 
     return selected;

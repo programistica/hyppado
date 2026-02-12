@@ -8,6 +8,13 @@ import { ProductCard } from "@/app/components/cards/ProductCard";
 import type { ProductDTO } from "@/lib/types/kalodata";
 import { normalizeRange, type TimeRange } from "@/lib/filters/timeRange";
 import { ExpandMore } from "@mui/icons-material";
+import {
+  fetchCategories,
+  pickCategoryByHash,
+  matchesCategory,
+  ALL_CATEGORY_ID,
+  type Category,
+} from "@/lib/categories";
 
 function ProductsContent() {
   const router = useRouter();
@@ -19,6 +26,7 @@ function ProductsContent() {
   const [products, setProducts] = useState<ProductDTO[]>([]);
   const [allProducts, setAllProducts] = useState<ProductDTO[]>([]);
   const [page, setPage] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Read from URL
   const timeRange = normalizeRange(searchParams.get("range"));
@@ -26,10 +34,32 @@ function ProductsContent() {
   const categoryFilter = searchParams.get("category") || "";
   const pageSize = 24; // Carregar 24 por vez
 
-  // Extract unique categories from products
-  const categories = Array.from(
-    new Set(allProducts.map((p) => p.category).filter((c): c is string => !!c)),
-  ).sort();
+  // Load categories on mount
+  useEffect(() => {
+    fetchCategories().then(setCategories);
+  }, []);
+
+  // Helper to get/assign category ID for a product
+  const getProductCategoryId = useCallback(
+    (product: ProductDTO): string => {
+      // Use existing category if available
+      if (product.category) return product.category;
+      // Otherwise, assign deterministically
+      return pickCategoryByHash(product.id, categories);
+    },
+    [categories],
+  );
+
+  // Filter products by category
+  const filterByCategory = useCallback(
+    (items: ProductDTO[]): ProductDTO[] => {
+      if (!categoryFilter || categoryFilter === ALL_CATEGORY_ID) return items;
+      return items.filter((p) =>
+        matchesCategory(getProductCategoryId(p), categoryFilter, categories),
+      );
+    },
+    [categoryFilter, categories, getProductCategoryId],
+  );
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -47,10 +77,8 @@ function ProductsContent() {
       const items: ProductDTO[] = json?.data?.items ?? [];
       setAllProducts(items);
 
-      // Apply category filter if set
-      const filtered = categoryFilter
-        ? items.filter((p) => p.category === categoryFilter)
-        : items;
+      // Apply category filter
+      const filtered = filterByCategory(items);
       setProducts(filtered.slice(0, pageSize));
 
       if (json?.data?.error) {
@@ -62,7 +90,7 @@ function ProductsContent() {
     } finally {
       setLoading(false);
     }
-  }, [timeRange, searchQuery, categoryFilter, pageSize]);
+  }, [timeRange, searchQuery, filterByCategory, pageSize]);
 
   useEffect(() => {
     fetchData();
@@ -75,9 +103,7 @@ function ProductsContent() {
     const end = start + pageSize;
 
     // Apply category filter for load more
-    const filtered = categoryFilter
-      ? allProducts.filter((p) => p.category === categoryFilter)
-      : allProducts;
+    const filtered = filterByCategory(allProducts);
     const moreProducts = filtered.slice(start, end);
 
     setTimeout(() => {
@@ -117,10 +143,17 @@ function ProductsContent() {
   };
 
   // Calculate hasMore based on filtered data
-  const filteredTotal = categoryFilter
-    ? allProducts.filter((p) => p.category === categoryFilter).length
-    : allProducts.length;
+  const filteredTotal = filterByCategory(allProducts).length;
   const hasMore = products.length < filteredTotal;
+
+  // Get category name for display
+  const getCategoryName = () => {
+    if (!categoryFilter || categoryFilter === ALL_CATEGORY_ID) return "";
+    const cat = categories.find(
+      (c) => c.id === categoryFilter || c.slug === categoryFilter,
+    );
+    return cat?.name || categoryFilter;
+  };
 
   return (
     <Box
@@ -154,7 +187,7 @@ function ProductsContent() {
             }}
           >
             {allProducts.length > 0
-              ? `${filteredTotal} produtos${categoryFilter ? ` em ${categoryFilter}` : ""} • Mostrando ${products.length}`
+              ? `${filteredTotal} produtos${getCategoryName() ? ` em ${getCategoryName()}` : ""} • Mostrando ${products.length}`
               : "Explorando os produtos mais vendidos"}
           </Typography>
         </Box>

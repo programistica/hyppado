@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import type { ShopCategory, CategoriesResponse } from "@/lib/types/echotik";
-import { mockCategories } from "@/lib/echotik/categories";
+import type { CategoriesResponse } from "@/lib/types/echotik";
+import {
+  FALLBACK_TIKTOKSHOP_CATEGORIES,
+  type Category,
+} from "@/lib/categories";
 
 /**
  * API Route: GET /api/echotik/categories
@@ -20,7 +23,7 @@ const ECHOTIK_API_KEY = process.env.ECHOTIK_API_KEY || "";
  * Busca categorias da API EchoTik
  * TODO: Implementar quando endpoint real estiver disponível
  */
-async function fetchEchotikCategories(): Promise<ShopCategory[] | null> {
+async function fetchEchotikCategories(): Promise<Category[] | null> {
   // Se não houver configuração, retornar null para usar fallback
   if (!ECHOTIK_BASE_URL || !ECHOTIK_API_KEY) {
     console.log("[categories] EchoTik não configurado, usando mock");
@@ -44,7 +47,7 @@ async function fetchEchotikCategories(): Promise<ShopCategory[] | null> {
 
     const data = await res.json();
 
-    // TODO: Mapear resposta EchoTik para ShopCategory[]
+    // TODO: Mapear resposta EchoTik para Category[]
     // A estrutura exata depende da documentação da API
     // Exemplo placeholder:
     // return data.categories.map((c: any) => ({
@@ -66,8 +69,8 @@ async function fetchEchotikCategories(): Promise<ShopCategory[] | null> {
 /**
  * Retorna categorias mockadas como fallback
  */
-function fallbackMockCategories(): ShopCategory[] {
-  return mockCategories;
+function fallbackMockCategories(): Category[] {
+  return FALLBACK_TIKTOKSHOP_CATEGORIES;
 }
 
 export async function GET() {

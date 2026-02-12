@@ -13,6 +13,8 @@ import { Search, FilterList, Refresh } from "@mui/icons-material";
 import { TimeRangeSelect } from "@/app/components/filters/TimeRangeSelect";
 import { CategoryFilter } from "@/app/components/filters/CategoryFilter";
 import type { TimeRange } from "@/lib/filters/timeRange";
+import type { Category } from "@/lib/categories";
+import type { ShopCategory } from "@/lib/types/echotik";
 
 interface DashboardHeaderProps {
   timeRange: TimeRange;
@@ -24,7 +26,7 @@ interface DashboardHeaderProps {
   // Category filter (opcional)
   category?: string;
   onCategoryChange?: (category: string) => void;
-  categories?: string[];
+  categories?: (ShopCategory | Category)[] | string[];
 }
 
 export function DashboardHeader({

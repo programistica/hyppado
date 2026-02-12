@@ -453,6 +453,6 @@ export function findCategoryByName(name: string): ShopCategory | undefined {
   return mockCategories.find(
     (c) =>
       c.name.toLowerCase() === normalized ||
-      c.path.toLowerCase().includes(normalized),
+      (c.path && c.path.toLowerCase().includes(normalized)),
   );
 }

@@ -8,6 +8,13 @@ import { VideoCardPro } from "@/app/components/cards/VideoCardPro";
 import type { VideoDTO } from "@/lib/types/kalodata";
 import { normalizeRange, type TimeRange } from "@/lib/filters/timeRange";
 import { ExpandMore } from "@mui/icons-material";
+import {
+  fetchCategories,
+  pickCategoryByHash,
+  matchesCategory,
+  ALL_CATEGORY_ID,
+  type Category,
+} from "@/lib/categories";
 
 function VideosContent() {
   const router = useRouter();
@@ -19,6 +26,7 @@ function VideosContent() {
   const [videos, setVideos] = useState<VideoDTO[]>([]);
   const [allVideos, setAllVideos] = useState<VideoDTO[]>([]);
   const [page, setPage] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Read from URL
   const timeRange = normalizeRange(searchParams.get("range"));
@@ -26,12 +34,32 @@ function VideosContent() {
   const categoryFilter = searchParams.get("category") || "";
   const pageSize = 24; // Carregar 24 por vez
 
-  // Extract unique categories from video products
-  const categories = Array.from(
-    new Set(
-      allVideos.map((v) => v.product?.category).filter((c): c is string => !!c),
-    ),
-  ).sort();
+  // Load categories on mount
+  useEffect(() => {
+    fetchCategories().then(setCategories);
+  }, []);
+
+  // Helper to get/assign category ID for a video
+  const getVideoCategoryId = useCallback(
+    (video: VideoDTO): string => {
+      // Use existing category if available
+      if (video.product?.category) return video.product.category;
+      // Otherwise, assign deterministically
+      return pickCategoryByHash(video.id, categories);
+    },
+    [categories],
+  );
+
+  // Filter videos by category
+  const filterByCategory = useCallback(
+    (items: VideoDTO[]): VideoDTO[] => {
+      if (!categoryFilter || categoryFilter === ALL_CATEGORY_ID) return items;
+      return items.filter((v) =>
+        matchesCategory(getVideoCategoryId(v), categoryFilter, categories),
+      );
+    },
+    [categoryFilter, categories, getVideoCategoryId],
+  );
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -49,10 +77,8 @@ function VideosContent() {
       const items: VideoDTO[] = json?.data?.items ?? [];
       setAllVideos(items);
 
-      // Apply category filter if set
-      const filtered = categoryFilter
-        ? items.filter((v) => v.product?.category === categoryFilter)
-        : items;
+      // Apply category filter
+      const filtered = filterByCategory(items);
       setVideos(filtered.slice(0, pageSize));
 
       if (json?.data?.error) {
@@ -64,7 +90,7 @@ function VideosContent() {
     } finally {
       setLoading(false);
     }
-  }, [timeRange, searchQuery, categoryFilter, pageSize]);
+  }, [timeRange, searchQuery, filterByCategory, pageSize]);
 
   useEffect(() => {
     fetchData();
@@ -77,9 +103,7 @@ function VideosContent() {
     const end = start + pageSize;
 
     // Apply category filter for load more
-    const filtered = categoryFilter
-      ? allVideos.filter((v) => v.product?.category === categoryFilter)
-      : allVideos;
+    const filtered = filterByCategory(allVideos);
     const moreVideos = filtered.slice(start, end);
 
     setTimeout(() => {
@@ -119,10 +143,17 @@ function VideosContent() {
   };
 
   // Calculate hasMore based on filtered data
-  const filteredTotal = categoryFilter
-    ? allVideos.filter((v) => v.product?.category === categoryFilter).length
-    : allVideos.length;
+  const filteredTotal = filterByCategory(allVideos).length;
   const hasMore = videos.length < filteredTotal;
+
+  // Get category name for display
+  const getCategoryName = () => {
+    if (!categoryFilter || categoryFilter === ALL_CATEGORY_ID) return "";
+    const cat = categories.find(
+      (c) => c.id === categoryFilter || c.slug === categoryFilter,
+    );
+    return cat?.name || categoryFilter;
+  };
 
   return (
     <Box
@@ -156,7 +187,7 @@ function VideosContent() {
             }}
           >
             {allVideos.length > 0
-              ? `${filteredTotal} vídeos${categoryFilter ? ` em ${categoryFilter}` : ""} • Mostrando ${videos.length}`
+              ? `${filteredTotal} vídeos${getCategoryName() ? ` em ${getCategoryName()}` : ""} • Mostrando ${videos.length}`
               : "Explorando os vídeos mais performáticos"}
           </Typography>
         </Box>
