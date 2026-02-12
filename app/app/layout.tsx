@@ -15,9 +15,6 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Tooltip,
-  Chip,
-  Stack,
   Typography,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -30,8 +27,6 @@ import {
   TrendingUp,
   AdminPanelSettingsOutlined,
   Logout,
-  SubtitlesOutlined,
-  TerminalOutlined,
   BookmarkBorder,
   Whatshot,
   FiberNew,
@@ -158,104 +153,114 @@ const NAV_SECTIONS = [
 // Bottom nav section (Admin + Sair)
 const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
 
-/** Desktop Header with Quota Pills */
-function QuotaHeader() {
+/** Sidebar Quota - Compact status block */
+function SidebarQuota() {
   const quota = useQuotaUsage();
+  const t = quota.transcripts;
+  const s = quota.scripts;
+
+  const pct = (used: number | null, max: number | null) =>
+    max && used ? Math.min(1, Math.max(0, used / max)) : 0;
 
   return (
-    <Box
-      sx={{
-        display: { xs: "none", md: "flex" },
-        justifyContent: "flex-end",
-        alignItems: "center",
-        gap: 1.5,
-        px: 3,
-        py: 1.25,
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
-        background: "rgba(10, 15, 24, 0.5)",
-      }}
-    >
-      {/* Transcripts */}
-      <Tooltip title="Transcrições usadas este mês">
-        <Chip
-          icon={<SubtitlesOutlined sx={{ fontSize: 16 }} />}
-          label={`Transcripts: ${formatQuotaDisplay(quota.transcripts.used, quota.transcripts.max)}`}
-          size="small"
+    <Box sx={{ mt: 2, px: 0.5 }}>
+      <Box
+        sx={{
+          borderRadius: 2,
+          border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(255,255,255,0.03)",
+          px: 1.5,
+          py: 1.25,
+        }}
+      >
+        <Typography
           sx={{
-            background: "rgba(45, 212, 255, 0.1)",
-            border: "1px solid rgba(45, 212, 255, 0.2)",
-            color: "#2DD4FF",
-            "& .MuiChip-icon": { color: "#2DD4FF" },
-            fontWeight: 500,
-            fontSize: "0.75rem",
+            fontSize: "0.7rem",
+            opacity: 0.6,
+            fontWeight: 600,
+            mb: 1,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
-        />
-      </Tooltip>
+        >
+          Uso do mês
+        </Typography>
 
-      {/* Scripts */}
-      <Tooltip title="Roteiros gerados este mês">
-        <Chip
-          icon={<TerminalOutlined sx={{ fontSize: 16 }} />}
-          label={`Scripts: ${formatQuotaDisplay(quota.scripts.used, quota.scripts.max)}`}
-          size="small"
+        {/* Transcripts */}
+        <Box
           sx={{
-            background: "rgba(156, 39, 176, 0.1)",
-            border: "1px solid rgba(156, 39, 176, 0.2)",
-            color: "#CE93D8",
-            "& .MuiChip-icon": { color: "#CE93D8" },
-            fontWeight: 500,
-            fontSize: "0.75rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
           }}
-        />
-      </Tooltip>
+        >
+          <Typography sx={{ fontSize: "0.78rem", opacity: 0.8 }}>
+            Transcripts
+          </Typography>
+          <Typography
+            sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#2DD4FF" }}
+          >
+            {formatQuotaDisplay(t.used, t.max)}
+          </Typography>
+        </Box>
+        <Box sx={{ mt: 0.5, mb: 1 }}>
+          <Box
+            sx={{
+              height: 6,
+              borderRadius: 999,
+              background: "rgba(45,212,255,0.12)",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                height: "100%",
+                width: `${pct(t.used, t.max) * 100}%`,
+                background: "rgba(45,212,255,0.75)",
+                transition: "width 200ms ease",
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Scripts */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+          }}
+        >
+          <Typography sx={{ fontSize: "0.78rem", opacity: 0.8 }}>
+            Scripts
+          </Typography>
+          <Typography
+            sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#CE93D8" }}
+          >
+            {formatQuotaDisplay(s.used, s.max)}
+          </Typography>
+        </Box>
+        <Box sx={{ mt: 0.5 }}>
+          <Box
+            sx={{
+              height: 6,
+              borderRadius: 999,
+              background: "rgba(206,147,216,0.12)",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                height: "100%",
+                width: `${pct(s.used, s.max) * 100}%`,
+                background: "rgba(206,147,216,0.75)",
+                transition: "width 200ms ease",
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
     </Box>
-  );
-}
-
-/** Mobile Quota Pills - Compact */
-function MobileQuotaPills() {
-  const quota = useQuotaUsage();
-
-  return (
-    <Stack direction="row" spacing={0.5}>
-      <Tooltip
-        title={`Transcripts: ${formatQuotaDisplay(quota.transcripts.used, quota.transcripts.max)}`}
-      >
-        <Chip
-          icon={<SubtitlesOutlined sx={{ fontSize: 12 }} />}
-          label={formatQuotaDisplay(
-            quota.transcripts.used,
-            quota.transcripts.max,
-          )}
-          size="small"
-          sx={{
-            background: "rgba(45, 212, 255, 0.1)",
-            color: "#2DD4FF",
-            "& .MuiChip-icon": { color: "#2DD4FF", ml: 0.5 },
-            height: 24,
-            fontSize: "0.65rem",
-            "& .MuiChip-label": { px: 0.75 },
-          }}
-        />
-      </Tooltip>
-      <Tooltip
-        title={`Scripts: ${formatQuotaDisplay(quota.scripts.used, quota.scripts.max)}`}
-      >
-        <Chip
-          icon={<TerminalOutlined sx={{ fontSize: 12 }} />}
-          label={formatQuotaDisplay(quota.scripts.used, quota.scripts.max)}
-          size="small"
-          sx={{
-            background: "rgba(156, 39, 176, 0.1)",
-            color: "#CE93D8",
-            "& .MuiChip-icon": { color: "#CE93D8", ml: 0.5 },
-            height: 24,
-            fontSize: "0.65rem",
-            "& .MuiChip-label": { px: 0.75 },
-          }}
-        />
-      </Tooltip>
-    </Stack>
   );
 }
 
@@ -310,14 +315,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
 
-      {/* Navigation - no scroll */}
+      {/* Navigation - scrollable area */}
       <Box
         sx={{
           flex: 1,
-          overflow: "hidden",
+          overflowY: "auto",
+          overflowX: "hidden",
           px: 1.25,
-          py: 1,
+          py: 1.5,
           minHeight: 0,
+          "&::-webkit-scrollbar": { width: 6 },
+          "&::-webkit-scrollbar-track": {
+            background: "rgba(255,255,255,0.02)",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(255,255,255,0.08)",
+            borderRadius: 3,
+          },
         }}
       >
         {NAV_SECTIONS.map((section, sectionIndex) => (
@@ -405,6 +419,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </List>
           </Box>
         ))}
+
+        {/* Quota Status - in sidebar */}
+        <SidebarQuota />
       </Box>
 
       {/* Bottom actions - fixed at bottom */}
@@ -582,9 +599,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             overflow: "hidden",
           }}
         >
-          {/* Desktop Header with Quota Pills */}
-          <QuotaHeader />
-
           {/* Mobile Top Bar */}
           <AppBar
             position="static"
@@ -610,8 +624,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Logo href="/app/videos" mode="dark" size="nav" />
                 </Box>
               </Box>
-              {/* Mobile quota pills - compact */}
-              <MobileQuotaPills />
             </Toolbar>
           </AppBar>
 
