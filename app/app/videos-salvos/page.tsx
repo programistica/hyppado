@@ -115,10 +115,6 @@ export default function VideosSalvosPage() {
             <Grid item xs={6} sm={6} md={4} lg={2.4} key={video.id}>
               <VideoCardPro
                 video={video}
-                onInsightClick={(v) => {
-                  console.log("Insight clicked:", v.id);
-                  // TODO: Implement insight modal/page
-                }}
                 onShareClick={(v) => {
                   if (navigator.share && v.tiktokUrl) {
                     navigator.share({

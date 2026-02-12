@@ -294,9 +294,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          px: 2,
-          py: 1.5,
-          minHeight: 50,
+          px: 1.5,
+          py: 1,
+          minHeight: 40,
           flexShrink: 0,
         }}
       >
@@ -304,7 +304,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           href="/app/videos"
           mode="dark"
           variant="full"
-          responsiveHeight={{ xs: 26, sm: 28, md: 30, lg: 32 }}
+          responsiveHeight={{ xs: 22, sm: 24, md: 26, lg: 28 }}
         />
       </Box>
 
@@ -315,26 +315,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sx={{
           flex: 1,
           overflow: "hidden",
-          px: 1.5,
-          py: 1.5,
+          px: 1.25,
+          py: 1,
           minHeight: 0,
         }}
       >
         {NAV_SECTIONS.map((section, sectionIndex) => (
           <Box
             key={section.label}
-            sx={{ mb: sectionIndex < NAV_SECTIONS.length - 1 ? 1.5 : 0 }}
+            sx={{ mb: sectionIndex < NAV_SECTIONS.length - 1 ? 0.9 : 0 }}
           >
             {/* Section Label */}
             <Typography
               sx={{
-                fontSize: "0.6rem",
+                fontSize: "0.55rem",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.35)",
                 px: 1,
-                mb: 0.5,
+                mb: 0.3,
               }}
             >
               {section.label}
@@ -343,7 +343,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Section Items */}
             <List
               disablePadding
-              sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}
+              sx={{ display: "flex", flexDirection: "column", gap: 0.15 }}
             >
               {section.items.map(({ label, icon: Icon, href }) => {
                 const active = isActive(href);
@@ -355,9 +355,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       onClick={() => setMobileOpen(false)}
                       sx={{
                         borderRadius: 2,
-                        minHeight: 36,
+                        minHeight: 32,
                         px: 1,
-                        py: 0.5,
+                        py: 0.35,
                         position: "relative",
                         background: active
                           ? "rgba(45, 212, 255, 0.08)"
@@ -375,17 +375,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                               top: "50%",
                               transform: "translateY(-50%)",
                               width: 3,
-                              height: 18,
+                              height: 14,
                               borderRadius: "0 4px 4px 0",
                               background: "#2DD4FF",
                             }
                           : {},
                       }}
                     >
-                      <ListItemIcon sx={{ minWidth: 28 }}>
+                      <ListItemIcon sx={{ minWidth: 24 }}>
                         <Icon
                           sx={{
-                            fontSize: 17,
+                            fontSize: 15,
                             color: active ? "#2DD4FF" : "rgba(255,255,255,0.5)",
                           }}
                         />
@@ -393,7 +393,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <ListItemText
                         primary={label}
                         primaryTypographyProps={{
-                          fontSize: "0.8rem",
+                          fontSize: "0.75rem",
                           fontWeight: active ? 600 : 500,
                           color: active ? "#2DD4FF" : "rgba(255,255,255,0.75)",
                         }}
@@ -408,19 +408,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Box>
 
       {/* Bottom actions - fixed at bottom */}
-      <Box sx={{ flexShrink: 0, px: 1.5, pb: 1.25, pt: 1.25 }}>
+      <Box sx={{ flexShrink: 0, px: 1.25, pb: 0.75, pt: 0.75 }}>
         {/* Admin section (if enabled) */}
         {isAdminMode && (
-          <Box sx={{ mb: 1 }}>
+          <Box sx={{ mb: 0.6 }}>
             <Typography
               sx={{
-                fontSize: "0.6rem",
+                fontSize: "0.55rem",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.35)",
                 px: 1,
-                mb: 0.5,
+                mb: 0.3,
               }}
             >
               ADMIN
@@ -433,9 +433,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => setMobileOpen(false)}
                   sx={{
                     borderRadius: 2,
-                    minHeight: 36,
+                    minHeight: 32,
                     px: 1,
-                    py: 0.5,
+                    py: 0.35,
                     position: "relative",
                     background: isActive("/app/admin")
                       ? "rgba(45, 212, 255, 0.08)"
@@ -453,17 +453,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           top: "50%",
                           transform: "translateY(-50%)",
                           width: 3,
-                          height: 18,
+                          height: 14,
                           borderRadius: "0 4px 4px 0",
                           background: "#2DD4FF",
                         }
                       : {},
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 28 }}>
+                  <ListItemIcon sx={{ minWidth: 24 }}>
                     <AdminPanelSettingsOutlined
                       sx={{
-                        fontSize: 17,
+                        fontSize: 15,
                         color: isActive("/app/admin")
                           ? "#2DD4FF"
                           : "rgba(255,255,255,0.5)",
@@ -473,7 +473,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <ListItemText
                     primary="Admin"
                     primaryTypographyProps={{
-                      fontSize: "0.8rem",
+                      fontSize: "0.75rem",
                       fontWeight: isActive("/app/admin") ? 600 : 500,
                       color: isActive("/app/admin")
                         ? "#2DD4FF"
@@ -494,19 +494,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               href="/login"
               sx={{
                 borderRadius: 2,
-                minHeight: 36,
+                minHeight: 32,
                 px: 1,
-                py: 0.5,
+                py: 0.35,
                 "&:hover": { background: "rgba(255,255,255,0.03)" },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 28 }}>
-                <Logout sx={{ fontSize: 17, color: "rgba(255,255,255,0.5)" }} />
+              <ListItemIcon sx={{ minWidth: 24 }}>
+                <Logout sx={{ fontSize: 15, color: "rgba(255,255,255,0.5)" }} />
               </ListItemIcon>
               <ListItemText
                 primary="Sair"
                 primaryTypographyProps={{
-                  fontSize: "0.8rem",
+                  fontSize: "0.75rem",
                   fontWeight: 500,
                   color: "rgba(255,255,255,0.75)",
                 }}

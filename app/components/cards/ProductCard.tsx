@@ -26,11 +26,11 @@ import { isProductSaved, toggleProductSaved } from "@/lib/storage/saved";
 const UI = {
   card: {
     bg: "linear-gradient(165deg, #0D1422 0%, #0A0F18 100%)",
-    border: "rgba(255,255,255,0.06)",
+    border: "rgba(255,255,255,0.08)",
     borderHover: "rgba(45,212,255,0.22)",
     radius: 4.5,
     shadow: "0 2px 8px rgba(0,0,0,0.12)",
-    shadowHover: "0 8px 24px rgba(0,0,0,0.25), 0 0 0 1px rgba(45,212,255,0.15)",
+    shadowHover: "0 8px 24px rgba(0,0,0,0.25), 0 0 12px rgba(45,212,255,0.08)",
   },
   text: {
     primary: "rgba(255,255,255,0.92)",
@@ -51,7 +51,9 @@ export function ProductCard({
   onViewDetails,
   isLoading = false,
 }: ProductCardProps) {
-  const [saved, setSaved] = useState(product ? isProductSaved(product.id) : false);
+  const [saved, setSaved] = useState(
+    product ? isProductSaved(product.id) : false,
+  );
   const [isPressed, setIsPressed] = useState(false);
 
   const handleSave = (e: React.MouseEvent) => {
@@ -212,17 +214,25 @@ export function ProductCard({
               size="small"
               onClick={handleSave}
               sx={{
-                background: "rgba(0,0,0,0.45)",
+                width: { xs: 30, md: 32 },
+                height: { xs: 30, md: 32 },
+                background: "rgba(0,0,0,0.5)",
                 backdropFilter: "blur(8px)",
                 color: saved ? UI.accent : "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                transition: "all 180ms ease",
                 "&:hover": {
-                  background: "rgba(0,0,0,0.65)",
+                  background: "rgba(0,0,0,0.7)",
                   color: UI.accent,
+                  borderColor: UI.accent,
                 },
               }}
             >
-              {saved ? <Bookmark sx={{ fontSize: 16 }} /> : <BookmarkBorder sx={{ fontSize: 16 }} />}
+              {saved ? (
+                <Bookmark sx={{ fontSize: { xs: 16, md: 18 } }} />
+              ) : (
+                <BookmarkBorder sx={{ fontSize: { xs: 16, md: 18 } }} />
+              )}
             </IconButton>
           </Tooltip>
 
@@ -231,17 +241,21 @@ export function ProductCard({
               size="small"
               onClick={handleOpen}
               sx={{
-                background: "rgba(0,0,0,0.45)",
+                width: { xs: 30, md: 32 },
+                height: { xs: 30, md: 32 },
+                background: "rgba(0,0,0,0.5)",
                 backdropFilter: "blur(8px)",
                 color: "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                transition: "all 180ms ease",
                 "&:hover": {
-                  background: "rgba(0,0,0,0.65)",
+                  background: "rgba(0,0,0,0.7)",
                   color: UI.accent,
+                  borderColor: UI.accent,
                 },
               }}
             >
-              <OpenInNew sx={{ fontSize: 16 }} />
+              <OpenInNew sx={{ fontSize: { xs: 16, md: 18 } }} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -316,7 +330,9 @@ export function ProductCard({
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
-            <ShoppingCart sx={{ fontSize: { xs: 15, md: 16 }, color: UI.text.muted }} />
+            <ShoppingCart
+              sx={{ fontSize: { xs: 15, md: 16 }, color: UI.text.muted }}
+            />
             <Typography
               sx={{
                 fontSize: { xs: "0.775rem", md: "0.8125rem" },
@@ -328,7 +344,9 @@ export function ProductCard({
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.4 }}>
-            <Person sx={{ fontSize: { xs: 15, md: 16 }, color: UI.text.muted }} />
+            <Person
+              sx={{ fontSize: { xs: 15, md: 16 }, color: UI.text.muted }}
+            />
             <Typography
               sx={{
                 fontSize: { xs: "0.775rem", md: "0.8125rem" },

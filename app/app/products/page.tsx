@@ -2,36 +2,45 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Box, Typography } from "@mui/material";
-import { ProductTable } from "@/app/components/dashboard/DataTable";
+import { Box, Typography, Button, CircularProgress, Grid } from "@mui/material";
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader";
+import { ProductCard } from "@/app/components/cards/ProductCard";
 import type { ProductDTO } from "@/lib/types/kalodata";
 import { normalizeRange, type TimeRange } from "@/lib/filters/timeRange";
+import { ExpandMore } from "@mui/icons-material";
 
 function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductDTO[]>([]);
+  const [page, setPage] = useState(1);
 
   // Read from URL
   const timeRange = normalizeRange(searchParams.get("range"));
   const searchQuery = searchParams.get("q") || "";
+  const pageSize = 24; // Carregar 24 por vez
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setPage(1);
+
     try {
-      const params = new URLSearchParams({ range: timeRange, limit: "10" });
+      // Fetch sem limit hardcoded - backend retorna o que tiver
+      const params = new URLSearchParams({ range: timeRange });
       if (searchQuery) params.set("search", searchQuery);
 
       const res = await fetch(`/api/kalodata/products?${params}`);
       const json = await res.json();
 
       const items: ProductDTO[] = json?.data?.items ?? [];
-      setProducts(items);
+      setAllProducts(items);
+      setProducts(items.slice(0, pageSize));
 
       if (json?.data?.error) {
         console.warn("Products API returned error:", json.data.error);
@@ -42,11 +51,25 @@ function ProductsContent() {
     } finally {
       setLoading(false);
     }
-  }, [timeRange, searchQuery]);
+  }, [timeRange, searchQuery, pageSize]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleLoadMore = () => {
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    const start = nextPage * pageSize;
+    const end = start + pageSize;
+    const moreProducts = allProducts.slice(start, end);
+
+    setTimeout(() => {
+      setProducts((prev) => [...prev, ...moreProducts]);
+      setPage(nextPage);
+      setLoadingMore(false);
+    }, 300);
+  };
 
   const handleTimeRangeChange = (range: TimeRange) => {
     const params = new URLSearchParams();
@@ -61,6 +84,13 @@ function ProductsContent() {
     if (query) params.set("q", query);
     router.push(`/app/products?${params.toString()}`);
   };
+
+  const handleViewDetails = (product: ProductDTO) => {
+    console.log("View details for", product.id);
+    // TODO: Implementar modal de detalhes
+  };
+
+  const hasMore = products.length < allProducts.length;
 
   return (
     <Box
@@ -84,7 +114,7 @@ function ProductsContent() {
               lineHeight: 1.3,
             }}
           >
-            Produtos
+            Produtos em Alta
           </Typography>
           <Typography
             sx={{
@@ -93,7 +123,9 @@ function ProductsContent() {
               lineHeight: 1.3,
             }}
           >
-            Produtos em alta no TikTok Shop — dados dos últimos 7 dias
+            {allProducts.length > 0
+              ? `${allProducts.length} produtos • Mostrando ${products.length}`
+              : "Explorando os produtos mais vendidos"}
           </Typography>
         </Box>
         <DashboardHeader
@@ -127,12 +159,79 @@ function ProductsContent() {
           </Box>
         )}
 
-        {/* Product Table - Top Products Only */}
-        <ProductTable
-          products={products}
-          loading={loading}
-          title="Top 10 Produtos"
-        />
+        {/* Product Grid */}
+        <Grid container spacing={{ xs: 2, md: 2.5 }}>
+          {products.map((product) => (
+            <Grid item xs={6} sm={6} md={4} lg={2.4} key={product.id}>
+              <ProductCard
+                product={product}
+                onViewDetails={handleViewDetails}
+              />
+            </Grid>
+          ))}
+
+          {/* Loading skeletons */}
+          {loading &&
+            Array.from({ length: 12 }).map((_, idx) => (
+              <Grid item xs={6} sm={6} md={4} lg={2.4} key={`skeleton-${idx}`}>
+                <ProductCard isLoading />
+              </Grid>
+            ))}
+        </Grid>
+
+        {/* Load More Button */}
+        {!loading && hasMore && products.length > 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 4,
+              mb: 2,
+            }}
+          >
+            <Button
+              variant="outlined"
+              size="large"
+              endIcon={
+                loadingMore ? <CircularProgress size={16} /> : <ExpandMore />
+              }
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              sx={{
+                px: 4,
+                py: 1.25,
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: 3,
+                borderColor: "rgba(45,212,255,0.3)",
+                color: "#2DD4FF",
+                transition: "all 180ms ease",
+                "&:hover": {
+                  borderColor: "#2DD4FF",
+                  background: "rgba(45,212,255,0.08)",
+                },
+              }}
+            >
+              {loadingMore ? "Carregando..." : "Carregar mais"}
+            </Button>
+          </Box>
+        )}
+
+        {/* Empty State */}
+        {!loading && products.length === 0 && (
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 8,
+              color: "rgba(255,255,255,0.5)",
+            }}
+          >
+            <Typography sx={{ fontSize: "0.95rem" }}>
+              Nenhum produto encontrado
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
