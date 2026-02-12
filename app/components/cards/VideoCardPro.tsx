@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -12,25 +12,16 @@ import {
 import {
   Bookmark,
   BookmarkBorder,
-  OpenInNew,
-  Share,
-  Visibility,
-  Paid,
-  ShoppingCart,
   AccessTime,
   TrendingUp,
   Subtitles,
   AutoAwesome,
+  PlayArrowRounded,
 } from "@mui/icons-material";
 import type { VideoDTO, ProductDTO } from "@/lib/types/kalodata";
 import { formatCurrency, formatNumber } from "@/lib/kalodata/parser";
 import { Skeleton } from "@/app/components/ui/Skeleton";
-import {
-  isVideoSaved,
-  toggleVideoSaved,
-  isProductSaved,
-  toggleProductSaved,
-} from "@/lib/storage/saved";
+import { useSavedVideos, useSavedProducts } from "@/lib/storage/saved";
 import { TranscriptDialog } from "@/app/components/videos/TranscriptDialog";
 import { InsightDialog } from "@/app/components/videos/InsightDialog";
 
@@ -66,20 +57,17 @@ const UI = {
 interface VideoCardProProps {
   video?: VideoDTO;
   rank?: number;
-  onShareClick?: (video: VideoDTO) => void;
   isLoading?: boolean;
 }
 
 export function VideoCardPro({
   video,
   rank,
-  onShareClick,
   isLoading = false,
 }: VideoCardProProps) {
-  const [saved, setSaved] = useState(video ? isVideoSaved(video.id) : false);
-  const [productSaved, setProductSaved] = useState(
-    video?.product ? isProductSaved(video.product.id) : false,
-  );
+  const savedVideos = useSavedVideos();
+  const savedProducts = useSavedProducts();
+
   const [isPressed, setIsPressed] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
   const [insightOpen, setInsightOpen] = useState(false);
@@ -87,30 +75,29 @@ export function VideoCardPro({
   const hasTikTokUrl = !!video?.tiktokUrl;
   const hasThumbnail = !!video?.thumbnailUrl;
 
+  const saved = video ? savedVideos.isSaved(video.id) : false;
+  const productSaved = video?.product
+    ? savedProducts.isSaved(video.product.id)
+    : false;
+
   const handleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (!video) return;
-    const newState = toggleVideoSaved(video);
-    setSaved(newState);
+    savedVideos.toggle(video);
   };
 
   const handleProductSave = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (!video?.product) return;
-    const newState = toggleProductSaved(video.product);
-    setProductSaved(newState);
+    savedProducts.toggle(video.product);
   };
 
   const handleOpenTikTok = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!video || !hasTikTokUrl) return;
     window.open(video.tiktokUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!video) return;
-    onShareClick?.(video);
   };
 
   const handleInsight = () => {
@@ -254,8 +241,19 @@ Entregue:
         }),
       }}
     >
-      {/* Thumbnail */}
+      {/* Thumbnail - Clicável para abrir vídeo */}
       <Box
+        className="thumbLink"
+        onClick={handleOpenTikTok}
+        role="button"
+        tabIndex={0}
+        aria-label={`Abrir vídeo ${video.title || video.id} no TikTok`}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleOpenTikTok(e as any);
+          }
+        }}
         sx={{
           position: "relative",
           width: "100%",
@@ -263,6 +261,17 @@ Entregue:
           overflow: "hidden",
           background:
             "linear-gradient(160deg, #0d1420 0%, #151c2a 50%, #0f1724 100%)",
+          cursor: hasTikTokUrl ? "pointer" : "default",
+          outline: "none",
+          transition: "transform 180ms ease, filter 180ms ease",
+          "&:hover": hasTikTokUrl
+            ? {
+                transform: "translateY(-1px)",
+              }
+            : {},
+          "&:focus-visible": {
+            boxShadow: "0 0 0 3px rgba(45, 212, 255, 0.35)",
+          },
         }}
       >
         {hasThumbnail && (
@@ -282,6 +291,60 @@ Entregue:
               objectFit: "cover",
             }}
           />
+        )}
+
+        {/* Overlay gradiente sutil */}
+        <Box
+          aria-hidden
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.18) 100%)",
+            opacity: 0.9,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Player icon sutil */}
+        {hasTikTokUrl && (
+          <Box
+            aria-hidden
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "grid",
+              placeItems: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: "999px",
+                background: "rgba(10, 15, 24, 0.35)",
+                border: "1px solid rgba(255,255,255,0.14)",
+                backdropFilter: "blur(8px)",
+                display: "grid",
+                placeItems: "center",
+                boxShadow: "0 10px 24px rgba(0,0,0,0.35)",
+                opacity: 0.55,
+                transform: "scale(0.98)",
+                transition:
+                  "opacity 160ms ease, transform 160ms ease, border-color 160ms ease",
+                ".thumbLink:hover &": {
+                  opacity: 0.78,
+                  transform: "scale(1.02)",
+                  borderColor: "rgba(255,255,255,0.22)",
+                },
+              }}
+            >
+              <PlayArrowRounded
+                sx={{ fontSize: 22, color: "rgba(255,255,255,0.85)" }}
+              />
+            </Box>
+          </Box>
         )}
 
         {/* Rank badge (discreto) */}
@@ -354,93 +417,6 @@ Entregue:
             }}
           />
         )}
-
-        {/* Action buttons overlay */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: { xs: 6, md: 8 },
-            right: { xs: 6, md: 8 },
-            zIndex: 5,
-            display: "flex",
-            gap: 0.5,
-          }}
-        >
-          <Tooltip title={saved ? "Remover dos salvos" : "Salvar vídeo"}>
-            <IconButton
-              size="small"
-              onClick={handleSave}
-              sx={{
-                width: { xs: 26, md: 28 },
-                height: { xs: 26, md: 28 },
-                background: "rgba(0,0,0,0.35)",
-                backdropFilter: "blur(6px)",
-                color: saved ? UI.accent : "rgba(255,255,255,0.65)",
-                border: `1px solid ${saved ? UI.accent : "rgba(255,255,255,0.12)"}`,
-                transition: "all 160ms ease",
-                "&:hover": {
-                  background: "rgba(0,0,0,0.55)",
-                  color: UI.accent,
-                  borderColor: UI.accent,
-                },
-              }}
-            >
-              {saved ? (
-                <Bookmark sx={{ fontSize: { xs: 14, md: 15 } }} />
-              ) : (
-                <BookmarkBorder sx={{ fontSize: { xs: 14, md: 15 } }} />
-              )}
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Compartilhar">
-            <IconButton
-              size="small"
-              onClick={handleShare}
-              sx={{
-                width: { xs: 26, md: 28 },
-                height: { xs: 26, md: 28 },
-                background: "rgba(0,0,0,0.35)",
-                backdropFilter: "blur(6px)",
-                color: "rgba(255,255,255,0.65)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                transition: "all 160ms ease",
-                "&:hover": {
-                  background: "rgba(0,0,0,0.55)",
-                  color: UI.accent,
-                  borderColor: UI.accent,
-                },
-              }}
-            >
-              <Share sx={{ fontSize: { xs: 14, md: 15 } }} />
-            </IconButton>
-          </Tooltip>
-
-          {hasTikTokUrl && (
-            <Tooltip title="Abrir no TikTok">
-              <IconButton
-                size="small"
-                onClick={handleOpenTikTok}
-                sx={{
-                  width: { xs: 26, md: 28 },
-                  height: { xs: 26, md: 28 },
-                  background: "rgba(0,0,0,0.35)",
-                  backdropFilter: "blur(6px)",
-                  color: "rgba(255,255,255,0.65)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  transition: "all 160ms ease",
-                  "&:hover": {
-                    background: "rgba(0,0,0,0.55)",
-                    color: UI.accent,
-                    borderColor: UI.accent,
-                  },
-                }}
-              >
-                <OpenInNew sx={{ fontSize: { xs: 14, md: 15 } }} />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
       </Box>
 
       {/* Content */}
@@ -640,6 +616,42 @@ Entregue:
             gap: { xs: 0.6, md: 0.75 },
           }}
         >
+          {/* Salvar Vídeo */}
+          <Button
+            fullWidth
+            variant="outlined"
+            startIcon={
+              saved ? (
+                <Bookmark sx={{ fontSize: { xs: 15, md: 16 } }} />
+              ) : (
+                <BookmarkBorder sx={{ fontSize: { xs: 15, md: 16 } }} />
+              )
+            }
+            onClick={handleSave}
+            sx={{
+              py: { xs: 0.65, md: 0.75 },
+              fontSize: { xs: "0.74rem", md: "0.78rem" },
+              fontWeight: 600,
+              textTransform: "none",
+              borderRadius: 3,
+              color: saved ? UI.accent : UI.text.secondary,
+              borderColor: saved ? UI.accent : "rgba(255,255,255,0.12)",
+              transition: "all 160ms ease",
+              "&:hover": {
+                borderColor: saved ? UI.accent : "rgba(255,255,255,0.22)",
+                background: saved
+                  ? "rgba(45,212,255,0.08)"
+                  : "rgba(255,255,255,0.04)",
+                transform: "translateY(-1px)",
+              },
+              "&:active": {
+                transform: "scale(0.98)",
+              },
+            }}
+          >
+            {saved ? "Vídeo Salvo" : "Salvar Vídeo"}
+          </Button>
+
           <Button
             fullWidth
             variant="outlined"

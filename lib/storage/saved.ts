@@ -3,14 +3,25 @@
  * Uses localStorage with versioning for schema migrations
  */
 
+import { useState, useEffect } from "react";
 import type { VideoDTO, ProductDTO } from "@/lib/types/kalodata";
 
 const STORAGE_VERSION = "v1";
 const SAVED_VIDEOS_KEY = `hyppado:savedVideos:${STORAGE_VERSION}`;
 const SAVED_PRODUCTS_KEY = `hyppado:savedProducts:${STORAGE_VERSION}`;
 
+// Custom events for same-tab synchronization
+const STORAGE_CHANGE_EVENT = "hyppado:storage:changed";
+
 // Helper to check if we're in browser
 const isBrowser = () => typeof window !== "undefined";
+
+// Helper to dispatch storage change event
+const dispatchStorageChange = () => {
+  if (isBrowser()) {
+    window.dispatchEvent(new Event(STORAGE_CHANGE_EVENT));
+  }
+};
 
 // ============================================
 // Videos
@@ -54,6 +65,7 @@ export function saveVideo(video: VideoDTO): void {
 
     const updated = [newItem, ...current];
     localStorage.setItem(SAVED_VIDEOS_KEY, JSON.stringify(updated));
+    dispatchStorageChange();
   } catch (error) {
     console.error("Error saving video:", error);
   }
@@ -66,6 +78,7 @@ export function removeSavedVideo(videoId: string): void {
     const current = getSavedVideos();
     const filtered = current.filter((item) => item.video.id !== videoId);
     localStorage.setItem(SAVED_VIDEOS_KEY, JSON.stringify(filtered));
+    dispatchStorageChange();
   } catch (error) {
     console.error("Error removing saved video:", error);
   }
@@ -130,6 +143,7 @@ export function saveProduct(product: ProductDTO): void {
 
     const updated = [newItem, ...current];
     localStorage.setItem(SAVED_PRODUCTS_KEY, JSON.stringify(updated));
+    dispatchStorageChange();
   } catch (error) {
     console.error("Error saving product:", error);
   }
@@ -142,6 +156,7 @@ export function removeSavedProduct(productId: string): void {
     const current = getSavedProducts();
     const filtered = current.filter((item) => item.product.id !== productId);
     localStorage.setItem(SAVED_PRODUCTS_KEY, JSON.stringify(filtered));
+    dispatchStorageChange();
   } catch (error) {
     console.error("Error removing saved product:", error);
   }
@@ -182,7 +197,124 @@ export function clearAllSaved(): void {
   try {
     localStorage.removeItem(SAVED_VIDEOS_KEY);
     localStorage.removeItem(SAVED_PRODUCTS_KEY);
+    dispatchStorageChange();
   } catch (error) {
     console.error("Error clearing saved items:", error);
   }
+}
+
+// ============================================
+// React Hooks (Reactive)
+// ============================================
+
+/**
+ * Reactive hook for saved videos
+ * Automatically syncs across tabs and components
+ */
+export function useSavedVideos() {
+  const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([]);
+
+  const refresh = () => {
+    setSavedVideos(getSavedVideos());
+  };
+
+  useEffect(() => {
+    // Initial load
+    refresh();
+
+    // Listen to storage events (cross-tab sync)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === SAVED_VIDEOS_KEY || e.key === null) {
+        refresh();
+      }
+    };
+
+    // Listen to custom events (same-tab sync)
+    const handleCustomChange = () => {
+      refresh();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(STORAGE_CHANGE_EVENT, handleCustomChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(STORAGE_CHANGE_EVENT, handleCustomChange);
+    };
+  }, []);
+
+  return {
+    videos: savedVideos,
+    count: savedVideos.length,
+    isSaved: (videoId: string) => isVideoSaved(videoId),
+    toggle: (video: VideoDTO) => {
+      const newState = toggleVideoSaved(video);
+      refresh();
+      return newState;
+    },
+    remove: (videoId: string) => {
+      removeSavedVideo(videoId);
+      refresh();
+    },
+    clear: () => {
+      clearAllSaved();
+      refresh();
+    },
+  };
+}
+
+/**
+ * Reactive hook for saved products
+ * Automatically syncs across tabs and components
+ */
+export function useSavedProducts() {
+  const [savedProducts, setSavedProducts] = useState<SavedProduct[]>([]);
+
+  const refresh = () => {
+    setSavedProducts(getSavedProducts());
+  };
+
+  useEffect(() => {
+    // Initial load
+    refresh();
+
+    // Listen to storage events (cross-tab sync)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === SAVED_PRODUCTS_KEY || e.key === null) {
+        refresh();
+      }
+    };
+
+    // Listen to custom events (same-tab sync)
+    const handleCustomChange = () => {
+      refresh();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(STORAGE_CHANGE_EVENT, handleCustomChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(STORAGE_CHANGE_EVENT, handleCustomChange);
+    };
+  }, []);
+
+  return {
+    products: savedProducts,
+    count: savedProducts.length,
+    isSaved: (productId: string) => isProductSaved(productId),
+    toggle: (product: ProductDTO) => {
+      const newState = toggleProductSaved(product);
+      refresh();
+      return newState;
+    },
+    remove: (productId: string) => {
+      removeSavedProduct(productId);
+      refresh();
+    },
+    clear: () => {
+      clearAllSaved();
+      refresh();
+    },
+  };
 }

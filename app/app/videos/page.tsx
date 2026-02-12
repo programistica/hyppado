@@ -90,21 +90,6 @@ function VideosContent() {
     // TODO: Implementar modal de insight
   };
 
-  const handleShareClick = (video: VideoDTO) => {
-    if (navigator.share) {
-      navigator.share({
-        title: video.title,
-        text: `Confira este vídeo: ${video.title}`,
-        url: video.tiktokUrl || window.location.href,
-      });
-    } else {
-      // Fallback: copiar URL
-      const url = video.tiktokUrl || window.location.href;
-      navigator.clipboard.writeText(url);
-      console.log("Link copiado:", url);
-    }
-  };
-
   const hasMore = videos.length < allVideos.length;
 
   return (
@@ -178,11 +163,7 @@ function VideosContent() {
         <Grid container spacing={{ xs: 2, md: 2.5 }}>
           {videos.map((video, idx) => (
             <Grid item xs={6} sm={6} md={6} lg={3} key={video.id}>
-              <VideoCardPro
-                video={video}
-                rank={idx + 1}
-                onShareClick={handleShareClick}
-              />
+              <VideoCardPro video={video} rank={idx + 1} />
             </Grid>
           ))}
 

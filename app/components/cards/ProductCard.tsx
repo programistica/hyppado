@@ -21,7 +21,7 @@ import {
 import type { ProductDTO } from "@/lib/types/kalodata";
 import { formatCurrency, formatNumber } from "@/lib/kalodata/parser";
 import { Skeleton } from "@/app/components/ui/Skeleton";
-import { isProductSaved, toggleProductSaved } from "@/lib/storage/saved";
+import { useSavedProducts } from "@/lib/storage/saved";
 
 const UI = {
   card: {
@@ -51,16 +51,16 @@ export function ProductCard({
   onViewDetails,
   isLoading = false,
 }: ProductCardProps) {
-  const [saved, setSaved] = useState(
-    product ? isProductSaved(product.id) : false,
-  );
+  const savedProducts = useSavedProducts();
   const [isPressed, setIsPressed] = useState(false);
 
+  const saved = product ? savedProducts.isSaved(product.id) : false;
+
   const handleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (!product) return;
-    const newState = toggleProductSaved(product);
-    setSaved(newState);
+    savedProducts.toggle(product);
   };
 
   const handleOpen = (e: React.MouseEvent) => {
