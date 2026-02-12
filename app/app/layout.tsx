@@ -349,7 +349,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
 
-      {/* Navigation - scrollable area */}
+      {/* Navigation - no scrollbar */}
       <Box
         sx={{
           flex: 1,
@@ -358,14 +358,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           px: 1.25,
           py: 1.5,
           minHeight: 0,
-          "&::-webkit-scrollbar": { width: 6 },
-          "&::-webkit-scrollbar-track": {
-            background: "rgba(255,255,255,0.02)",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: 3,
-          },
+          "&::-webkit-scrollbar": { width: 0, height: 0 },
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
         {NAV_SECTIONS.map((section, sectionIndex) => (
@@ -630,6 +625,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             display: "flex",
             flexDirection: "column",
             height: "100%",
+            minHeight: 0,
             overflow: "hidden",
           }}
         >
@@ -661,15 +657,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Toolbar>
           </AppBar>
 
-          {/* Page Content */}
+          {/* Page Content - scrollable */}
           <Box
             sx={{
               flex: 1,
               py: { xs: 2, md: 2.5 },
               px: { xs: 2, md: 3 },
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
+              overflowY: "auto",
+              overflowX: "hidden",
               minHeight: 0,
             }}
           >

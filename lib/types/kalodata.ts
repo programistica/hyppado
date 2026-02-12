@@ -29,6 +29,7 @@ export interface VideoDTO {
   tiktokUrl: string; // Link do TikTok (canonical when possible)
   thumbnailUrl: string | null; // Real thumbnail from TikTok oEmbed
   dateRange: string; // Intervalo de datas
+  product?: ProductDTO; // Produto relacionado ao vídeo (opcional)
 }
 
 // ============================================
