@@ -50,36 +50,146 @@ const UI = {
     border: "rgba(255, 193, 7, 0.15)",
     text: "rgba(255, 193, 7, 0.85)",
   },
-  // Top 3 ranking colors (gold, silver, bronze)
-  rank: {
-    1: {
-      color: "#D4AF37", // Rich gold
-      bg: "rgba(212, 175, 55, 0.15)",
-      border: "rgba(212, 175, 55, 0.4)",
-      glow: "0 0 12px rgba(212, 175, 55, 0.35)",
-    },
-    2: {
-      color: "#C0C0C0", // Silver
-      bg: "rgba(192, 192, 192, 0.12)",
-      border: "rgba(192, 192, 192, 0.35)",
-      glow: "0 0 10px rgba(192, 192, 192, 0.25)",
-    },
-    3: {
-      color: "#CD7F32", // Bronze
-      bg: "rgba(205, 127, 50, 0.12)",
-      border: "rgba(205, 127, 50, 0.35)",
-      glow: "0 0 10px rgba(205, 127, 50, 0.25)",
-    },
+};
+
+// ============================================================
+// RANK BADGE - Premium "medalha" styling
+// ============================================================
+const RANK_STYLES = {
+  // Top 1 - Premium Gold (tons dourados quentes + âmbar)
+  1: {
+    gradient: "linear-gradient(145deg, #D4A847 0%, #B8941F 35%, #E6C35A 65%, #C9A227 100%)",
+    border: "rgba(230, 195, 90, 0.6)",
+    glow: "0 0 18px rgba(212, 168, 71, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4)",
+    textShadow: "0 1px 2px rgba(0, 0, 0, 0.35), 0 0 8px rgba(255, 225, 150, 0.3)",
+    textColor: "#FFFFFF",
+  },
+  // Top 2 - Premium Silver (cinza frio/azulado metálico)
+  2: {
+    gradient: "linear-gradient(145deg, #C8CDD5 0%, #9BA5B5 35%, #D5DBE5 65%, #A8B3C2 100%)",
+    border: "rgba(200, 210, 225, 0.55)",
+    glow: "0 0 14px rgba(180, 195, 215, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35)",
+    textShadow: "0 1px 2px rgba(0, 0, 0, 0.35)",
+    textColor: "#FFFFFF",
+  },
+  // Top 3 - Premium Bronze (cobre/bronze com toque rosé)
+  3: {
+    gradient: "linear-gradient(145deg, #CD8847 0%, #A86A35 35%, #D9A070 65%, #B87545 100%)",
+    border: "rgba(205, 136, 71, 0.55)",
+    glow: "0 0 14px rgba(205, 136, 71, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35)",
+    textShadow: "0 1px 2px rgba(0, 0, 0, 0.35)",
+    textColor: "#FFFFFF",
+  },
+  // #4+ - Accent Hyppado (ciano slate premium)
+  default: {
+    gradient: "linear-gradient(145deg, #1A3040 0%, #0F2030 35%, #254050 65%, #1A3545 100%)",
+    border: "rgba(45, 212, 255, 0.35)",
+    glow: "0 0 10px rgba(45, 212, 255, 0.2), 0 4px 10px rgba(0, 0, 0, 0.3)",
+    textShadow: "0 1px 2px rgba(0, 0, 0, 0.4)",
+    textColor: "#2DD4FF",
   },
 };
 
+interface RankBadgeProps {
+  rank: number;
+}
+
+/**
+ * RankBadge - Badge grande e chamativo de ranking estilo "medalha"
+ * Top 1/2/3: ouro/prata/bronze premium
+ * #4+: accent Hyppado (ciano dark)
+ */
+function RankBadge({ rank }: RankBadgeProps) {
+  const isTop3 = rank >= 1 && rank <= 3;
+  const style = isTop3 ? RANK_STYLES[rank as 1 | 2 | 3] : RANK_STYLES.default;
+
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        top: { xs: 10, md: 12 },
+        left: { xs: 10, md: 12 },
+        zIndex: 5,
+        // Sizing responsivo (grande e chamativo)
+        width: { xs: 52, sm: 58, md: 66 },
+        height: { xs: 40, sm: 44, md: 50 },
+        // Shape: placa arredondada sofisticada
+        borderRadius: "14px",
+        // Background preenchido com gradiente
+        background: style.gradient,
+        // Border sutil para recorte no dark
+        border: `1.5px solid ${style.border}`,
+        // Sombra + glow colorido
+        boxShadow: style.glow,
+        // Backdrop blur para legibilidade em thumbs variadas
+        backdropFilter: "blur(10px)",
+        // Layout centralizado
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        // Transições suaves para hover
+        transition: "transform 180ms ease, box-shadow 180ms ease",
+        // Hover: scale + glow intensificado (desktop only)
+        "@media (hover: hover)": {
+          "&:hover": {
+            transform: "scale(1.03)",
+            boxShadow: isTop3
+              ? `${style.glow}, 0 0 24px ${style.border}`
+              : `${style.glow}, 0 0 16px rgba(45, 212, 255, 0.25)`,
+          },
+        },
+      }}
+    >
+      <Typography
+        sx={{
+          fontWeight: 900,
+          letterSpacing: "-0.02em",
+          fontSize: { xs: "1.35rem", sm: "1.5rem", md: "1.7rem" },
+          lineHeight: 1,
+          color: style.textColor,
+          textShadow: style.textShadow,
+          // Evita seleção de texto
+          userSelect: "none",
+        }}
+      >
+        #{rank}
+      </Typography>
+    </Box>
+  );
+}
+
 // Mock products for fallback when video has no product
 const FALLBACK_PRODUCTS = [
-  { name: "Secador de Cabelo Profissional", priceBRL: 189.90, category: "Beleza", imageUrl: "https://picsum.photos/seed/prod001/200/200" },
-  { name: "Kit Maquiagem Completo", priceBRL: 129.90, category: "Beleza", imageUrl: "https://picsum.photos/seed/prod002/200/200" },
-  { name: "Fone Bluetooth Premium", priceBRL: 249.90, category: "Eletrônicos", imageUrl: "https://picsum.photos/seed/prod003/200/200" },
-  { name: "Escova Alisadora 2-em-1", priceBRL: 159.90, category: "Beleza", imageUrl: "https://picsum.photos/seed/prod004/200/200" },
-  { name: "Luminária LED Inteligente", priceBRL: 89.90, category: "Casa", imageUrl: "https://picsum.photos/seed/prod005/200/200" },
+  {
+    name: "Secador de Cabelo Profissional",
+    priceBRL: 189.9,
+    category: "Beleza",
+    imageUrl: "https://picsum.photos/seed/prod001/200/200",
+  },
+  {
+    name: "Kit Maquiagem Completo",
+    priceBRL: 129.9,
+    category: "Beleza",
+    imageUrl: "https://picsum.photos/seed/prod002/200/200",
+  },
+  {
+    name: "Fone Bluetooth Premium",
+    priceBRL: 249.9,
+    category: "Eletrônicos",
+    imageUrl: "https://picsum.photos/seed/prod003/200/200",
+  },
+  {
+    name: "Escova Alisadora 2-em-1",
+    priceBRL: 159.9,
+    category: "Beleza",
+    imageUrl: "https://picsum.photos/seed/prod004/200/200",
+  },
+  {
+    name: "Luminária LED Inteligente",
+    priceBRL: 89.9,
+    category: "Casa",
+    imageUrl: "https://picsum.photos/seed/prod005/200/200",
+  },
 ];
 
 /**
@@ -112,16 +222,21 @@ export function VideoCardPro({
   const hasThumbnail = !!video?.thumbnailUrl;
 
   // Always have a product to display (real or fallback mock)
-  const displayProduct = video?.product || (video ? {
-    ...getMockProductForVideo(video.id, rank ?? 0),
-    id: `fallback-${video.id}`,
-  } : null);
+  const displayProduct =
+    video?.product ||
+    (video
+      ? {
+          ...getMockProductForVideo(video.id, rank ?? 0),
+          id: `fallback-${video.id}`,
+        }
+      : null);
   const hasRealProduct = !!video?.product;
 
   const saved = video ? savedVideos.isSaved(video.id) : false;
-  const productSaved = displayProduct && hasRealProduct
-    ? savedProducts.isSaved(video!.product!.id)
-    : false;
+  const productSaved =
+    displayProduct && hasRealProduct
+      ? savedProducts.isSaved(video!.product!.id)
+      : false;
 
   const handleSave = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -390,42 +505,8 @@ Entregue:
           </Box>
         )}
 
-        {/* Rank badge - Top 1/2/3 com destaque sofisticado, demais discreto */}
-        {rank !== undefined && (
-          <Box
-            sx={{
-              position: "absolute",
-              top: { xs: 6, md: 8 },
-              left: { xs: 6, md: 8 },
-              zIndex: 5,
-              display: "flex",
-              alignItems: "center",
-              gap: 0.3,
-              px: { xs: 0.8, md: 1 },
-              py: { xs: 0.35, md: 0.45 },
-              borderRadius: 2.5,
-              fontWeight: 700,
-              fontSize: { xs: "0.7rem", md: "0.75rem" },
-              ...(rank >= 1 && rank <= 3
-                ? {
-                    color: UI.rank[rank as 1 | 2 | 3].color,
-                    background: UI.rank[rank as 1 | 2 | 3].bg,
-                    backdropFilter: "blur(10px)",
-                    border: `1.5px solid ${UI.rank[rank as 1 | 2 | 3].border}`,
-                    boxShadow: UI.rank[rank as 1 | 2 | 3].glow,
-                  }
-                : {
-                    color: "rgba(255,255,255,0.6)",
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(8px)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                  }),
-            }}
-          >
-            #{rank}
-          </Box>
-        )}
+        {/* Rank badge - Grande, preenchido, estilo "medalha" premium */}
+        {rank !== undefined && <RankBadge rank={rank} />}
 
         {/* Duration - REMOVIDO conforme requisito */}
 
