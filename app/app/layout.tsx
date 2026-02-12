@@ -167,20 +167,28 @@ function SidebarQuota() {
       <Box
         sx={{
           borderRadius: 2,
-          border: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.10)",
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+          backdropFilter: "blur(10px)",
           px: 1.5,
           py: 1.25,
+          transition: "transform 160ms ease, border-color 160ms ease",
+          "&:hover": {
+            borderColor: "rgba(255,255,255,0.16)",
+            transform: "translateY(-1px)",
+          },
         }}
       >
         <Typography
           sx={{
             fontSize: "0.7rem",
-            opacity: 0.6,
-            fontWeight: 600,
-            mb: 1,
+            letterSpacing: "0.12em",
             textTransform: "uppercase",
-            letterSpacing: "0.05em",
+            fontWeight: 700,
+            color: "rgba(255,255,255,0.62)",
+            mb: 1,
           }}
         >
           Uso do mês
@@ -194,11 +202,22 @@ function SidebarQuota() {
             alignItems: "baseline",
           }}
         >
-          <Typography sx={{ fontSize: "0.78rem", opacity: 0.8 }}>
+          <Typography
+            sx={{
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.78)",
+            }}
+          >
             Transcripts
           </Typography>
           <Typography
-            sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#2DD4FF" }}
+            sx={{
+              fontSize: "0.78rem",
+              fontWeight: 600,
+              color: "#2DD4FF",
+              textShadow: "0 0 14px rgba(45,212,255,0.18)",
+            }}
           >
             {formatQuotaDisplay(t.used, t.max)}
           </Typography>
@@ -208,7 +227,7 @@ function SidebarQuota() {
             sx={{
               height: 6,
               borderRadius: 999,
-              background: "rgba(45,212,255,0.12)",
+              background: "rgba(45,212,255,0.14)",
               overflow: "hidden",
             }}
           >
@@ -216,7 +235,9 @@ function SidebarQuota() {
               sx={{
                 height: "100%",
                 width: `${pct(t.used, t.max) * 100}%`,
-                background: "rgba(45,212,255,0.75)",
+                background:
+                  "linear-gradient(90deg, rgba(45,212,255,0.95), rgba(45,212,255,0.55))",
+                boxShadow: "0 0 18px rgba(45,212,255,0.18)",
                 transition: "width 200ms ease",
               }}
             />
@@ -231,11 +252,22 @@ function SidebarQuota() {
             alignItems: "baseline",
           }}
         >
-          <Typography sx={{ fontSize: "0.78rem", opacity: 0.8 }}>
+          <Typography
+            sx={{
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.78)",
+            }}
+          >
             Scripts
           </Typography>
           <Typography
-            sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#CE93D8" }}
+            sx={{
+              fontSize: "0.78rem",
+              fontWeight: 600,
+              color: "#C7A3FF",
+              textShadow: "0 0 14px rgba(199,163,255,0.16)",
+            }}
           >
             {formatQuotaDisplay(s.used, s.max)}
           </Typography>
@@ -245,7 +277,7 @@ function SidebarQuota() {
             sx={{
               height: 6,
               borderRadius: 999,
-              background: "rgba(206,147,216,0.12)",
+              background: "rgba(199,163,255,0.14)",
               overflow: "hidden",
             }}
           >
@@ -253,7 +285,9 @@ function SidebarQuota() {
               sx={{
                 height: "100%",
                 width: `${pct(s.used, s.max) * 100}%`,
-                background: "rgba(206,147,216,0.75)",
+                background:
+                  "linear-gradient(90deg, rgba(199,163,255,0.95), rgba(199,163,255,0.55))",
+                boxShadow: "0 0 18px rgba(199,163,255,0.14)",
                 transition: "width 200ms ease",
               }}
             />
