@@ -2882,7 +2882,7 @@ export default function HomePage() {
                     item
                     xs={12}
                     sm={6}
-                    md={4}
+                    md={5}
                     key={plan.id}
                     sx={{ overflow: "visible" }}
                   >
