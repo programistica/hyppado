@@ -14,7 +14,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   Typography,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -33,7 +32,7 @@ import {
   CardMembership,
   HelpOutline,
 } from "@mui/icons-material";
-import { Logo } from "@/app/components/ui/Logo";
+import { BrandLogo } from "@/app/components/BrandLogo";
 import { CountryBadge } from "@/app/components/ui/CountryBadge";
 import { AppTopHeader } from "@/app/components/layout/AppTopHeader";
 import { useQuotaUsage, formatQuotaDisplay } from "@/lib/admin/useQuotaUsage";
@@ -330,26 +329,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         overflow: "hidden",
       }}
     >
-      {/* Logo / Brand Header */}
+      {/* ==================== BRAND HEADER ==================== */}
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          px: 1.5,
-          py: 1,
-          minHeight: 40,
+          position: "relative",
+          minHeight: 100,
           flexShrink: 0,
+          background: "rgba(255, 255, 255, 0.02)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
         }}
       >
-        <Logo
-          href="/app/videos"
-          mode="dark"
-          variant="full"
-          responsiveHeight={{ xs: 22, sm: 24, md: 26, lg: 28 }}
-        />
+        {/* Logo isolado - mesmo estilo da landing page */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: 20,
+            transform: "translateY(-50%)",
+            height: { xs: 48, sm: 56, md: 64 },
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <BrandLogo
+            href="/app/videos"
+            mode="dark"
+            variant="full"
+            size="lg"
+            priority
+          />
+        </Box>
       </Box>
-
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", flexShrink: 0 }} />
 
       {/* Navigation - no scrollbar */}
       <Box
@@ -653,7 +663,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <MenuIcon />
                 </IconButton>
                 <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
-                  <Logo href="/app/videos" mode="dark" size="nav" />
+                  <BrandLogo
+                    href="/app/videos"
+                    mode="dark"
+                    variant="full"
+                    size="sm"
+                  />
                 </Box>
               </Box>
               {/* Country Badge - Mobile */}
