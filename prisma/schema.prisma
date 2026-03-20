@@ -1,4 +1,4 @@
-// Prisma schema for Hyppado user features
+// Prisma schema for Hyppado
 // Run: npx prisma generate && npx prisma db push
 
 generator client {
@@ -10,17 +10,239 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------------------
+// AUTH / USERS
+// ---------------------------------------------------------------------------
+
 model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  name        String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  
-  savedItems  SavedItem[]
-  collections Collection[]
-  notes       Note[]
-  alerts      Alert[]
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  role          UserRole  @default(USER)
+  status        UserStatus @default(ACTIVE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  savedItems    SavedItem[]
+  collections   Collection[]
+  notes         Note[]
+  alerts        Alert[]
+
+  // Hotmart / subscriptions
+  hotmartIdentity   HotmartIdentity?
+  subscriptions     Subscription[]
+  auditLogs         AuditLog[]
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+// ---------------------------------------------------------------------------
+// PLANS
+// ---------------------------------------------------------------------------
+
+// Map: PRO_MENSAL  → Hotmart product + plan/offer code
+//      PREMIUM_ANUAL → Hotmart product + plan/offer code
+model Plan {
+  id                  String   @id @default(uuid())
+  code                PlanCode @unique
+  name                String
+  description         String?
+  priceAmount         Int      // centavos (ex: 5990 = R$ 59,90)
+  currency            String   @default("BRL")
+  periodicity         PlanPeriod
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Hotmart product/offer mappings (pode ter >1 offer por plano)
+  hotmartProductId    String?
+  hotmartPlanCode     String?  // hotmart plan_name or code
+  hotmartOfferCode    String?  // hotmart offer_code
+
+  subscriptions       Subscription[]
+}
+
+enum PlanCode {
+  PRO_MENSAL
+  PREMIUM_ANUAL
+}
+
+enum PlanPeriod {
+  MONTHLY
+  ANNUAL
+}
+
+// ---------------------------------------------------------------------------
+// SUBSCRIPTIONS
+// ---------------------------------------------------------------------------
+
+model Subscription {
+  id              String             @id @default(uuid())
+  userId          String
+  planId          String
+  status          SubscriptionStatus @default(PENDING)
+  startedAt       DateTime?
+  renewedAt       DateTime?
+  nextChargeAt    DateTime?
+  cancelledAt     DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  user            User               @relation(fields: [userId], references: [id])
+  plan            Plan               @relation(fields: [planId], references: [id])
+  hotmart         HotmartSubscription?
+  charges         SubscriptionCharge[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+// Mapeamento Hotmart → Subscription interna
+model HotmartSubscription {
+  id                     String    @id @default(uuid())
+  subscriptionId         String    @unique
+  hotmartSubscriptionId  String    @unique  // subscriber_code da Hotmart
+  hotmartProductId       String?
+  hotmartPlanCode        String?
+  hotmartOfferCode       String?
+  buyerEmail             String?
+  subscriberCode         String?   @unique
+  externalStatus         String?   // status vindo da Hotmart (ACTIVE, CANCELLED, etc.)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  subscription           Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([hotmartProductId])
+  @@index([subscriberCode])
+}
+
+// Pagamentos/tentativas por assinatura
+model SubscriptionCharge {
+  id              String       @id @default(uuid())
+  subscriptionId  String
+  transactionId   String?      @unique // transaction da Hotmart
+  amountCents     Int?
+  currency        String       @default("BRL")
+  status          ChargeStatus @default(PENDING)
+  paidAt          DateTime?
+  chargeAt        DateTime?
+  createdAt       DateTime     @default(now())
+
+  subscription    Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+  @@index([transactionId])
+}
+
+enum ChargeStatus {
+  PENDING
+  PAID
+  REFUNDED
+  CANCELLED
+  CHARGEBACK
+  FAILED
+}
+
+// ---------------------------------------------------------------------------
+// HOTMART IDENTITY  (liga email/subscriberCode ao User interno)
+// ---------------------------------------------------------------------------
+
+model HotmartIdentity {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  subscriberCode  String?  @unique
+  buyerEmail      String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([buyerEmail])
+  @@index([subscriberCode])
+}
+
+// ---------------------------------------------------------------------------
+// HOTMART WEBHOOK EVENTS
+// ---------------------------------------------------------------------------
+
+model HotmartWebhookEvent {
+  id                      String              @id @default(uuid())
+  // Campos extraídos para facilitar consultas
+  eventType               String
+  eventExternalId         String?
+  transactionId           String?
+  subscriptionExternalId  String?
+  subscriberCode          String?
+  buyerEmail              String?
+  productId               String?
+  planCode                String?
+  offerCode               String?
+  occurredAt              DateTime?
+
+  // Payload bruto completo
+  payloadJson             Json
+
+  // Idempotência: SHA-256(eventType + subscriptionId/transactionId + occurredAt + payload)
+  idempotencyKey          String              @unique
+
+  // Processamento
+  processingStatus        WebhookStatus       @default(RECEIVED)
+  receivedAt              DateTime            @default(now())
+  processedAt             DateTime?
+  errorMessage            String?
+
+  @@index([eventType, receivedAt])
+  @@index([subscriberCode])
+  @@index([transactionId])
+  @@index([buyerEmail])
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  DUPLICATE
+}
+
+// ---------------------------------------------------------------------------
+// AUDIT LOG
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  actorId     String?  // quem fez a ação (admin user_id ou "system")
+  action      String   // ex: SUBSCRIPTION_ACTIVATED, PLAN_CHANGED
+  entityType  String?  // Subscription, Plan, etc.
+  entityId    String?
+  before      Json?
+  after       Json?
+  occurredAt  DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action, occurredAt])
 }
 
 model SavedItem {

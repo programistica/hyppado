@@ -1,0 +1,112 @@
+/**
+ * app/api/webhooks/hotmart/route.ts
+ * Endpoint: POST /api/webhooks/hotmart
+ *
+ * Responsabilidades:
+ *  1. Lê o body bruto (para futura validação de assinatura)
+ *  2. Valida assinatura (placeholder)
+ *  3. Extrai campos do payload
+ *  4. Gera idempotencyKey determinística
+ *  5. Persiste evento bruto na tabela HotmartWebhookEvent
+ *     - Se UNIQUE constraint falhar → evento duplicado → retorna 200
+ *  6. Chama processHotmartEvent em background (não bloqueia resposta)
+ *  7. Retorna 200 rapidamente (Hotmart exige resposta < 5s)
+ */
+
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "../../../../lib/prisma";
+import type { Prisma } from "@prisma/client";
+import {
+  verifySignature,
+  extractWebhookFields,
+  buildIdempotencyKey,
+} from "../../../../lib/hotmart/webhook";
+import { processHotmartEvent } from "../../../../lib/hotmart/processor";
+
+export const dynamic = "force-dynamic";
+
+// Hotmart precisa de resposta em < 5s. Persistimos o evento e processamos depois.
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  // 1. Lê body bruto (Buffer) — necessário para validação de assinatura futura
+  const rawBuffer = Buffer.from(await req.arrayBuffer());
+  const rawText = rawBuffer.toString("utf-8");
+
+  // 2. Valida assinatura (placeholder — não lança por enquanto)
+  try {
+    verifySignature(req.headers, rawBuffer);
+  } catch (err) {
+    console.warn(
+      "[Hotmart Webhook] Assinatura inválida:",
+      (err as Error).message,
+    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // 3. Parse do JSON
+  let payload: Record<string, unknown>;
+  try {
+    payload = JSON.parse(rawText);
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  // 4. Extrai campos padronizados
+  const fields = extractWebhookFields(payload);
+
+  // 5. Gera idempotencyKey
+  const idempotencyKey = buildIdempotencyKey(fields, payload);
+
+  // 6. Tenta persistir evento bruto
+  let eventId: string;
+  try {
+    const event = await prisma.hotmartWebhookEvent.create({
+      data: {
+        eventType: fields.eventType,
+        eventExternalId: fields.eventExternalId,
+        transactionId: fields.transactionId,
+        subscriptionExternalId: fields.subscriptionExternalId,
+        subscriberCode: fields.subscriberCode,
+        buyerEmail: fields.buyerEmail,
+        productId: fields.productId,
+        planCode: fields.planCode,
+        offerCode: fields.offerCode,
+        occurredAt: fields.occurredAt,
+        payloadJson: payload as Prisma.InputJsonValue,
+        idempotencyKey,
+        processingStatus: "RECEIVED",
+      },
+      select: { id: true },
+    });
+    eventId = event.id;
+  } catch (err: unknown) {
+    // Unique constraint violation → evento duplicado (Prisma error code P2002)
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      (err as { code: string }).code === "P2002"
+    ) {
+      // Idempotência: já recebemos este evento, retorna 200 sem reprocessar
+      return NextResponse.json(
+        { status: "duplicate", message: "Evento já recebido." },
+        { status: 200 },
+      );
+    }
+
+    console.error("[Hotmart Webhook] Erro ao salvar evento:", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  }
+
+  // 7. Processa de forma assíncrona (não bloqueia a resposta)
+  // Em Vercel, use `waitUntil` se disponível para garantir execução após resposta.
+  // Por ora, inicia sem await para responder < 5s.
+  processHotmartEvent(eventId, fields).catch((err) => {
+    console.error(
+      `[Hotmart Webhook] Falha ao processar evento ${eventId}:`,
+      (err as Error).message,
+    );
+  });
+
+  // 8. Responde 200 imediatamente (Hotmart considera sucesso)
+  return NextResponse.json({ status: "received", eventId }, { status: 200 });
+}
